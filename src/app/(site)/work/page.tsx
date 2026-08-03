@@ -24,7 +24,7 @@ export default async function WorkPage() {
         <StudioField />
         <div className="u-wrap relative z-10">
           <span className="u-eyebrow block mb-4">Work</span>
-          <h1 className="u-h1 max-w-[18ch]">
+          <h1 className="u-h1 max-w-(--measure-title)">
             Every project, with the reasoning left in
           </h1>
           <p

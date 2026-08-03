@@ -13,7 +13,7 @@ export function ConnectBand({ linkedinUrl }: { linkedinUrl?: string }) {
       <StudioField variant="inverted" />
       <div className="u-wrap relative z-10 py-[var(--space-2xl)]">
         <span className="u-eyebrow block mb-4">Connect</span>
-        <h2 className="u-h2 max-w-[18ch]">
+        <h2 className="u-h2 max-w-(--measure-section)">
           If any of this is useful to you, I would like to hear about it
         </h2>
         <p

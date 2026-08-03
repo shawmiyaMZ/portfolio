@@ -128,13 +128,19 @@ export default async function PostPage({ params }: Params) {
 
         <div className="u-section">
           <div className="u-wrap grid xl:grid-cols-12 gap-x-12">
-            <div className="xl:col-span-8 xl:col-start-2">
+            {/* Column 1, not column 2. Indenting the prose centred it against the
+                sticky TOC but gave the page two left margins — the title
+                started at the content edge and the text you actually read
+                started 102px further in. An editorial page has one left
+                edge; the TOC sits in the gutter it was always meant to
+                occupy. */}
+            <div className="xl:col-span-8">
               <Prose value={post.body} />
             </div>
 
             {/* Sticky TOC lives in the right gutter, and only where there is
                 genuinely a gutter to put it in. */}
-            <aside className="hidden xl:block xl:col-span-3">
+            <aside className="hidden xl:block xl:col-span-3 xl:col-start-10">
               <div className="sticky top-24">
                 <TableOfContents headings={headings} />
               </div>

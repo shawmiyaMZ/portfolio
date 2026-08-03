@@ -24,7 +24,7 @@ export default async function JournalPage() {
         <StudioField />
         <div className="u-wrap relative z-10">
           <span className="u-eyebrow block mb-4">Journal</span>
-          <h1 className="u-h1 max-w-[17ch]">
+          <h1 className="u-h1 max-w-(--measure-title)">
             Working notes from learning in public
           </h1>
           <p

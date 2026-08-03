@@ -81,7 +81,7 @@ export default async function HomePage() {
                 the hero still *acts* as a thesis statement: roughly half the
                 name's size, primary ink, tight leading, short measure. Two
                 voices, one hierarchy — see `.u-lede` in globals.css. */}
-            <h1 className="u-hero max-w-[13ch]">{name}</h1>
+            <h1 className="u-hero max-w-(--measure-hero)">{name}</h1>
 
             {/* The chapter accent, not the technical ink — Chapter 01's
                 signature is Madder, and the role line is where it lands. */}

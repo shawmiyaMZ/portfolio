@@ -145,9 +145,17 @@
   /* The section rhythm — the largest interval the page ever uses. */
   --space-2xl: clamp(4rem, 9vw, 9rem);
 
-  /* Measure */
+  /* ---------- measure ----------
+     Body measures, then the heading progression. Display type takes fewer
+     characters per line as it grows — 13ch at hero size is the same optical
+     line length as 20ch at section-title size — so the progression is real
+     rather than arbitrary. It was undeclared before, which is exactly why
+     page titles had drifted to 17ch, 18ch and 18ch with no reason. */
   --measure-prose: 68ch;
   --measure-default: 60ch;
+  --measure-hero: 13ch;
+  --measure-title: 18ch;
+  --measure-section: 20ch;
 
   /* Layout */
   --layout-max: 1240px;

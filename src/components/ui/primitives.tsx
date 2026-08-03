@@ -27,7 +27,7 @@ export function SectionHead({
             {eyebrow}
           </span>
         )}
-        <h2 className="u-h2 max-w-[20ch]">{title}</h2>
+        <h2 className="u-h2 max-w-(--measure-section)">{title}</h2>
         {lede && (
           <p
             className="text-(length:--text-prose)/[1.7]"

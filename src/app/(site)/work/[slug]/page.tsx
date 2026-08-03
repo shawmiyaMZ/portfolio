@@ -59,7 +59,7 @@ export default async function CaseStudyPage({ params }: Params) {
             ← All work
           </Link>
 
-          <h1 className="u-h1 max-w-[18ch] mt-6">{project.title}</h1>
+          <h1 className="u-h1 max-w-(--measure-title) mt-6">{project.title}</h1>
 
           <p
             className="mt-5 text-(length:--text-prose)/[1.7]"
