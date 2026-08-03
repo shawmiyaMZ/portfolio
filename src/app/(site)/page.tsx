@@ -142,7 +142,7 @@ export default async function HomePage() {
       </section>
 
       {/* ============ 03 · JOURNAL ============ */}
-      <section id="journal" className="u-section pt-0 scroll-mt-24">
+      <section id="journal" className="u-section u-ground-raised scroll-mt-24">
         <div className="u-wrap">
           <SectionHead
             eyebrow="Chapter 03 · Journal"

@@ -40,7 +40,7 @@ export default async function JournalPage() {
         </div>
       </section>
 
-      <section className="u-section pt-0">
+      <section className="u-section u-ground-raised">
         <div className="u-wrap">
           {posts.length > 0 ? (
             <JournalIndex posts={posts} tags={tags} />

@@ -111,7 +111,7 @@ export default async function CaseStudyPage({ params }: Params) {
       </div>
 
       {/* ---------- meta rail ---------- */}
-      <section className="u-section">
+      <section className="u-section u-ground-raised">
         <div className="u-wrap grid lg:grid-cols-12 gap-x-10 gap-y-12">
           <aside className="lg:col-span-3">
             <div className="lg:sticky lg:top-28 grid gap-7">

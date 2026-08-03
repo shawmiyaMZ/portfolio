@@ -283,6 +283,22 @@
     }
   }
 
+  /* ---------- alternating grounds ----------
+     The site read as flat because every section sat on the same surface,
+     so nothing marked progress down a long page. This raises a section
+     onto Slip — the other surface the system already defines — so adjacent
+     sections never share a ground and the eye has something to measure by.
+
+     The tonal step is deliberately small: these are two lit surfaces in one
+     room, not two rooms. Anything stronger would turn a calm document into
+     a set of banded panels.
+
+     Long-form reading deliberately stays on Porcelain. The journal body is
+     the one place where the ground should never change under the reader. */
+  .u-ground-raised {
+    background: var(--surface-raised);
+  }
+
   /* Wide content scrolls inside its own container so the page
      body never scrolls sideways. */
   .u-scroll-x {

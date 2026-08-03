@@ -41,7 +41,7 @@ export default async function WorkPage() {
         </div>
       </section>
 
-      <section className="u-section pt-0">
+      <section className="u-section u-ground-raised">
         <div className="u-wrap">
           {projects.length > 0 ? (
             <Suspense fallback={null}>
