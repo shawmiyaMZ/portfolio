@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import { ProjectCard } from "@/components/content/cards";
+import { ProjectGrid } from "@/components/content/cards";
 import type { ProjectSummary } from "@/sanity/lib/types";
 
 /**
@@ -57,15 +57,7 @@ export function ProjectFilter({ projects }: { projects: ProjectSummary[] }) {
       )}
 
       {visible.length > 0 ? (
-        /* Two-up on tablet with more air between cards than the desktop
-           three-up gets. At 900px a 28px gutter reads as two cards that
-           happen to be adjacent; the wider gap is what makes them read as a
-           considered pair. */
-        <div className="grid gap-7 sm:grid-cols-2 md:gap-8 lg:grid-cols-3 lg:gap-7">
-          {visible.map((p) => (
-            <ProjectCard key={p.slug} project={p} />
-          ))}
-        </div>
+        <ProjectGrid projects={visible} />
       ) : (
         <p style={{ color: "var(--ink-secondary)" }}>
           No projects use {active} yet.

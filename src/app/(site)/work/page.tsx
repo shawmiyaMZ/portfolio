@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ConnectBand } from "@/components/content/ConnectBand";
 import { ProjectFilter } from "@/components/content/ProjectFilter";
+import { ProjectGrid } from "@/components/content/cards";
 import { StudioField } from "@/components/field/StudioField";
 import { EmptyState } from "@/components/ui/primitives";
 import { getAllProjects, getProfile } from "@/sanity/lib/content";
@@ -44,7 +45,7 @@ export default async function WorkPage() {
       <section className="u-section u-ground-raised">
         <div className="u-wrap">
           {projects.length > 0 ? (
-            <Suspense fallback={null}>
+            <Suspense fallback={<ProjectGrid projects={projects} />}>
               <ProjectFilter projects={projects} />
             </Suspense>
           ) : (

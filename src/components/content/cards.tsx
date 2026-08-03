@@ -130,6 +130,31 @@ export function ProjectRow({
   );
 }
 
+/**
+ * The unfiltered grid.
+ *
+ * Shared deliberately. `ProjectFilter` is a client component reading
+ * `useSearchParams`, so Next opts its subtree out of static rendering — with
+ * a `null` Suspense fallback the built page contained no projects at all:
+ * no titles, no card links, nothing for a crawler that does not run
+ * JavaScript. On a projects index, on a brief targeting SEO, that is the
+ * whole page missing.
+ *
+ * Rendering this as the fallback means the static HTML carries the complete,
+ * unfiltered list — which is also the correct initial state — and the client
+ * takes over on hydration. One definition, so the static and interactive
+ * grids cannot diverge.
+ */
+export function ProjectGrid({ projects }: { projects: ProjectSummary[] }) {
+  return (
+    <div className="grid gap-7 sm:grid-cols-2 md:gap-8 lg:grid-cols-3 lg:gap-7">
+      {projects.map((project) => (
+        <ProjectCard key={project.slug} project={project} />
+      ))}
+    </div>
+  );
+}
+
 /** The projects index uses a real grid — there, comparability beats emphasis. */
 export function ProjectCard({ project }: { project: ProjectSummary }) {
   return (
