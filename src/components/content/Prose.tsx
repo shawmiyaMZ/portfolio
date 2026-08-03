@@ -90,7 +90,7 @@ const components: PortableTextComponents = {
     h2: ({ children, value }) => (
       <h2
         id={slugifyHeading(value)}
-        className="u-h2 mt-[1.9em] mb-[0.6em] scroll-mt-24"
+        className="u-h2 mt-[1.9em] mb-[0.6em]"
       >
         {children}
       </h2>
@@ -98,7 +98,7 @@ const components: PortableTextComponents = {
     h3: ({ children, value }) => (
       <h3
         id={slugifyHeading(value)}
-        className="u-h3 mt-[1.6em] mb-[0.5em] scroll-mt-24"
+        className="u-h3 mt-[1.6em] mb-[0.5em]"
       >
         {children}
       </h3>

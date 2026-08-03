@@ -64,7 +64,7 @@ export default async function HomePage() {
       <section
         id="hero"
         data-chapter="hero"
-        className="relative pb-[var(--space-lg)] u-top-clear scroll-mt-24"
+        className="relative pb-[var(--space-lg)] u-top-clear"
       >
         <StudioField />
 
@@ -120,7 +120,7 @@ export default async function HomePage() {
       <section
         id="work"
         data-chapter="work"
-        className="relative u-section scroll-mt-24"
+        className="relative u-section"
       >
         <StudioField />
         <div className="u-wrap relative z-10">
@@ -153,7 +153,7 @@ export default async function HomePage() {
       <section
         id="journal"
         data-chapter="journal"
-        className="relative u-section u-ground-raised scroll-mt-24"
+        className="relative u-section u-ground-raised"
       >
         <StudioField />
         <div className="u-wrap relative z-10">
@@ -198,7 +198,7 @@ export default async function HomePage() {
       <section
         id="about"
         data-chapter="about"
-        className="relative u-section pt-0 scroll-mt-24"
+        className="relative u-section"
       >
         <StudioField />
         <div className="u-wrap relative z-10 grid lg:grid-cols-12 gap-x-12 gap-y-10 items-center">

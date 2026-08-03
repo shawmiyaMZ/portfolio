@@ -15,8 +15,13 @@
 
   html {
     scroll-behavior: smooth;
-    /* Nav clearance for in-page anchors and the journal TOC. */
-    scroll-padding-top: 6rem;
+    /* Nav clearance for in-page anchors and the journal TOC.
+       Measured rather than guessed: the floating chrome's lower edge sits at
+       ~56px on a phone and ~66px at desktop. At the old 6rem a chapter landed
+       with its eyebrow only 8px clear of the monogram, so "CHAPTER 02" read
+       as "TER 02". 7.5rem puts the eyebrow a full interval below the chrome
+       at every width. */
+    scroll-padding-top: 7.5rem;
     /* `clip`, never `hidden`. On <body>, overflow-x:hidden silently promotes
        the body to its own scroll container: position:sticky stops working,
        scroll(root block) timelines never advance, and window.scrollY freezes.
