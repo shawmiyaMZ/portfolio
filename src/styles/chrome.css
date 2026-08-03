@@ -541,6 +541,33 @@
 }
 
 /* ============================================================
+   EDUCATION ROW
+
+   Stacked on a phone: period, qualification, institution, in reading
+   order. From 768 the row spans the measure and is anchored at both ends —
+   period against the left edge, institution against the right — so the
+   hairline beneath it divides something rather than trailing off into
+   empty space. With a single degree entry the previous 3/9 column split
+   left roughly 630px of the row empty.
+   ============================================================ */
+
+.education-row {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .education-row {
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    column-gap: 2.5rem;
+  }
+
+  .education-row__institution {
+    text-align: end;
+  }
+}
+
+/* ============================================================
    FILTER STRIP — chips that scale to the number of filters
 
    Wrapping is correct when there is width to wrap into. On a phone it is

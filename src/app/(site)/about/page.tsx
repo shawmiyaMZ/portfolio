@@ -138,17 +138,30 @@ export default async function AboutPage() {
             <ul className="list-none m-0 p-0 grid gap-6">
               {profile.education.map((e, i) => (
                 <Reveal key={`${e.qualification}-${i}`} index={i} as="li">
+                  {/* Anchored at both ends from 768 up: period at the left
+                      edge, qualification against it, institution driven to
+                      the right. Previously the period took 3 of 12 columns
+                      and the rest sat in the remaining 9 — which for one
+                      degree left ~630px of empty row beneath a hairline
+                      spanning the full 1200px. A rule that wide has to have
+                      something at both ends or it reads as an unfinished
+                      table. */}
                   <div
-                    className="grid sm:grid-cols-12 gap-x-8 gap-y-1 pb-6"
+                    className="education-row grid gap-x-8 gap-y-1 pb-6"
                     style={{ borderBottom: "1px solid var(--line-hairline)" }}
                   >
-                    <span className="u-caption sm:col-span-3">{e.period}</span>
-                    <div className="sm:col-span-9 grid gap-1">
-                      <span className="u-h3">{e.qualification}</span>
-                      <span style={{ color: "var(--ink-secondary)" }}>
-                        {e.institution}
-                      </span>
-                    </div>
+                    <span className="u-caption education-row__period">
+                      {e.period}
+                    </span>
+                    <span className="u-h3 education-row__qualification">
+                      {e.qualification}
+                    </span>
+                    <span
+                      className="education-row__institution"
+                      style={{ color: "var(--ink-secondary)" }}
+                    >
+                      {e.institution}
+                    </span>
                   </div>
                 </Reveal>
               ))}
