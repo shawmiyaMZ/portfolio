@@ -225,6 +225,178 @@
   }
 }
 
+/* ---------- mobile navigation ----------
+   Below 640 the inline slab gives way to a button and a panel. See
+   MobileNav.tsx for why: four links cannot be composed in the ~37px of
+   slack a 390px viewport leaves once the monogram is placed.
+
+   Everything here is the chrome's existing vocabulary — the same frosted
+   porcelain, the same 16px corner, the same interior lip catching the key
+   light — so the panel reads as this object family opening rather than as
+   a mobile menu grafted on. */
+
+.nav-mobile {
+  position: relative;
+  justify-self: end;
+}
+
+@media (min-width: 640px) {
+  .nav-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .nav-slab {
+    display: none;
+  }
+
+  /* A `display: none` element is not a grid item at all, so hiding the slab
+     leaves two children rather than three and the menu button inherits the
+     middle `auto` column — landing mid-header instead of at the right edge.
+     The mobile composition therefore declares its own two-column track:
+     monogram at its natural width, button pushed to the far end. */
+  .site-chrome__inner {
+    grid-template-columns: auto 1fr;
+  }
+}
+
+.nav-mobile__button {
+  display: grid;
+  place-items: center;
+  /* Square, matching the monogram, so the two objects read as a pair with
+     the page between them rather than as a mark and a control. */
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border: 0;
+  border-radius: 13px;
+  cursor: pointer;
+  background: linear-gradient(
+    155deg,
+    rgba(251, 248, 243, 0.84) 0%,
+    rgba(246, 243, 238, 0.78) 52%,
+    rgba(239, 233, 224, 0.82) 100%
+  );
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  box-shadow:
+    0 1px 1px rgba(60, 45, 35, 0.07),
+    0 5px 14px rgba(60, 45, 35, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  transition: box-shadow var(--duration-ui) var(--ease-entrance);
+}
+
+/* The mark: three rules, the middle one short. Perfectly equal lines read
+   as an icon borrowed from somewhere else; the shortened middle gives it
+   the same considered asymmetry the rest of the site works in. */
+.nav-mobile__mark {
+  display: grid;
+  gap: 4px;
+  inline-size: 17px;
+}
+
+.nav-mobile__mark span {
+  display: block;
+  block-size: 1.5px;
+  border-radius: 1px;
+  background: var(--ink-primary);
+  transition: transform var(--duration-ui) var(--ease-entrance);
+}
+
+.nav-mobile__mark span:nth-child(2) {
+  inline-size: 68%;
+  justify-self: end;
+}
+
+/* Open: the outer rules meet and cross. Translating them together without
+   the rotation left a single dash, which reads as "minus" rather than
+   "close" — the cross is what makes the state unambiguous. Transform only,
+   so it stays on the compositor. */
+.nav-mobile__button[aria-expanded="true"] .nav-mobile__mark span:nth-child(1) {
+  transform: translateY(5.5px) rotate(45deg);
+}
+
+.nav-mobile__button[aria-expanded="true"] .nav-mobile__mark span:nth-child(3) {
+  transform: translateY(-5.5px) rotate(-45deg);
+}
+
+.nav-mobile__button[aria-expanded="true"] .nav-mobile__mark span:nth-child(2) {
+  transform: scaleX(0);
+}
+
+.nav-mobile__panel {
+  position: absolute;
+  inset-block-start: calc(100% + 0.625rem);
+  inset-inline-end: 0;
+  min-inline-size: 11rem;
+  padding: 0.5rem;
+  border-radius: 16px;
+  /* Near-opaque, unlike the nav slab. The slab floats over whitespace and
+     can afford to be translucent; this panel opens directly over the hero
+     headline, and at the slab's 0.72 the display type read straight through
+     the menu items. A control that is hard to read is not calm, it is
+     careless — legibility wins over the material effect here. */
+  background: rgba(247, 244, 240, 0.97);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  box-shadow:
+    inset 0 0 0 1px rgba(26, 25, 23, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 2px 4px rgba(60, 45, 35, 0.06),
+    0 18px 44px rgba(60, 45, 35, 0.13);
+  animation: nav-panel-in var(--duration-ui) var(--ease-entrance) both;
+}
+
+/* Opens from the corner it is anchored to, so it reads as unfolding from
+   the button rather than arriving from off-screen. */
+@keyframes nav-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+}
+
+.nav-mobile__list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-mobile__link {
+  display: flex;
+  align-items: center;
+  min-block-size: 44px;
+  padding-inline: 0.875rem;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--ink-primary);
+  transition: background-color var(--duration-micro) var(--ease-entrance);
+}
+
+.nav-mobile__link:active {
+  background: rgba(26, 25, 23, 0.05);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .nav-mobile__button,
+  .nav-mobile__panel {
+    background: var(--color-porcelain);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-mobile__panel {
+    animation: none;
+  }
+
+  .nav-mobile__mark span {
+    transition: none;
+  }
+}
+
 /* ---------- chapter rail ---------- */
 
 /*

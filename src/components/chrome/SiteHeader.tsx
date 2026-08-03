@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MobileNav } from "@/components/chrome/MobileNav";
 import { Monogram } from "@/components/chrome/Monogram";
 import { NAV_CHAPTERS } from "@/lib/chapters";
 
@@ -36,9 +37,12 @@ export function SiteHeader({ name }: { name?: string }) {
           </ul>
         </nav>
 
-        {/* Balances the grid so the slab is centred against the content
-            column rather than against the space left over by the monogram. */}
-        <div aria-hidden="true" />
+        {/* Holds the third grid column, which balances the slab so it centres
+            against the content column rather than against the space left over
+            by the monogram. Below 640 the slab is hidden and this column
+            carries the menu button instead — so the same three columns serve
+            both compositions. */}
+        <MobileNav />
       </div>
     </div>
   );
