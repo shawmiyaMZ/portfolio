@@ -1,0 +1,460 @@
+/* ============================================================
+   SITE CHROME — monogram, sticky header, chapter rail
+
+   All of it secondary by design. The header is a way to skip;
+   the rail is a way to know where you are. Neither should ever
+   compete with the content for attention.
+   ============================================================ */
+
+/* ---------- monogram ---------- */
+
+.monogram {
+  display: inline-flex;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+}
+
+.monogram__chip {
+  display: grid;
+  place-items: center;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-radius: 13px;
+  /* A shallow porcelain surface lifted barely off the page. The gradient is
+     the same upper-left key light that lights the avatar — two stops, no
+     glass, no ring. Anything stronger reads as a button. */
+  background: linear-gradient(
+    155deg,
+    #fbf8f3 0%,
+    var(--color-porcelain) 52%,
+    #efe9e0 100%
+  );
+  box-shadow:
+    /* contact */
+    0 1px 1px rgba(60, 45, 35, 0.07),
+    /* ambient */ 0 5px 14px rgba(60, 45, 35, 0.07),
+    /* the faintest interior lip, catching the key light */
+      inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  transition:
+    transform var(--duration-ui) var(--ease-entrance),
+    box-shadow var(--duration-ui) var(--ease-entrance);
+}
+
+.monogram__mark {
+  font-family: var(--font-display);
+  font-variation-settings:
+    "SOFT" 40,
+    "WONK" 0,
+    "opsz" 24;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ink-primary);
+  /* Optical centring: SZ sits marginally high in its em box. */
+  transform: translateY(-0.02em);
+}
+
+@media (hover: hover) {
+  .monogram:hover .monogram__chip {
+    /* One pixel. Enough to confirm it is a surface, not enough to animate. */
+    transform: translateY(-1px);
+    box-shadow:
+      0 1px 1px rgba(60, 45, 35, 0.07),
+      0 8px 20px rgba(60, 45, 35, 0.09),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+}
+
+/* ---------- floating chrome ---------- */
+
+/*
+ * A fixed layer holding two small objects, not a bar.
+ *
+ * The layer itself spans the viewport only so the slab can be centred
+ * against it; it is transparent and pointer-transparent, so the page beneath
+ * scrolls and clicks through everywhere except on the objects themselves.
+ */
+.site-chrome {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 50;
+  padding-block: clamp(0.875rem, 2vw, 1.5rem);
+  pointer-events: none;
+}
+
+/* Constrained to the same measure as the page body.
+   Pinned to the viewport edge instead, the monogram sits alone in the outer
+   margin and reads as a browser affordance rather than part of the
+   composition. Aligned to the content column it belongs to the page. */
+.site-chrome__inner {
+  /* Exactly the rules .u-wrap uses, so the monogram's left edge lands on the
+     same optical line as the headline beneath it. */
+  inline-size: 100%;
+  max-inline-size: var(--layout-max);
+  margin-inline: auto;
+  padding-inline: var(--layout-gutter);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-chrome__inner > * {
+  pointer-events: auto;
+}
+
+/*
+ * The nav slab.
+ *
+ * Soft-cornered, NOT a capsule. The radii scale on this site tops out at
+ * 20px precisely because clay is rounded rather than pill-shaped, and a
+ * 999px capsule would be the one element breaking the material rule — while
+ * also being the single most common navigation shape on the web. A slab with
+ * the monogram's corner treatment reads as the same object family, cut from
+ * the same block.
+ */
+.nav-slab {
+  border-radius: 16px;
+  /* Padding moved onto the links so their hit areas can reach 44px without
+     inflating the slab. The slab keeps its compact look; the targets stop
+     being 26px tall. */
+  padding-inline: clamp(0.375rem, 0.9vw, 0.625rem);
+  padding-block: 0;
+  background: rgba(246, 243, 238, 0.72);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  box-shadow:
+    /* fine hairline, drawn inside so it never adds to the box */
+    inset 0 0 0 1px rgba(26, 25, 23, 0.07),
+    /* the same interior lip the monogram carries, catching the key light
+       along the top edge — what makes both read as objects rather than
+       rectangles */
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    /* the warm two-layer shadow every other surface uses */
+      0 1px 2px rgba(60, 45, 35, 0.05),
+    0 10px 28px rgba(60, 45, 35, 0.07);
+}
+
+/* Where backdrop-filter is unavailable the translucency would leave the
+   links sitting on whatever is behind them. Fall back to an opaque slab. */
+@supports not (backdrop-filter: blur(1px)) {
+  .nav-slab {
+    background: var(--color-porcelain);
+  }
+}
+
+.nav-slab__list {
+  display: flex;
+  align-items: center;
+  /* Gap is between the padded hit areas, so it can be small without the
+     targets crowding — 14px of dead space between 26px targets was the real
+     mis-tap risk, not the gap itself. */
+  gap: clamp(0.125rem, 0.6vw, 0.75rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-slab__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  /* 44px minimum, from the link itself. Anything smaller is a mis-tap
+     waiting to happen on the surface people navigate with most. */
+  min-block-size: 44px;
+  padding-inline: clamp(0.5rem, 1.1vw, 0.875rem);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--ink-primary);
+  transition: color var(--duration-ui) var(--ease-entrance);
+}
+
+/* The same left-wiping underline used everywhere else, tightened to suit
+   the smaller type. */
+.nav-slab__link::after {
+  content: "";
+  position: absolute;
+  /* Inset to the text, not the enlarged hit area. */
+  inset-inline: clamp(0.5rem, 1.1vw, 0.875rem);
+  inset-block-end: 12px;
+  block-size: 1.5px;
+  background: var(--color-madder);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-ui) var(--ease-entrance);
+}
+
+.nav-slab__link:hover::after,
+.nav-slab__link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* The slab is translucent and small; a 3px outset ring would bleed past its
+   edge. Tightened here rather than globally. */
+.nav-slab__link:focus-visible {
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-slab__link::after {
+    transition: none;
+  }
+}
+
+/* ---------- chapter rail ---------- */
+
+/*
+ * The rail occupies the LEFT GUTTER and nothing else.
+ *
+ * Laying it out as a fixed strip and letting its contents grow rightward put
+ * the expanded chapter names straight through the content column. Instead the
+ * rail is exactly as wide as the gutter, its items are right-aligned against
+ * the content edge, and the names expand leftward into empty margin — where
+ * there is nothing to collide with.
+ */
+.chapter-rail {
+  position: fixed;
+  inset-inline-start: 0;
+  inline-size: calc((100vw - var(--layout-max)) / 2);
+  padding-inline-end: 1.25rem;
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  z-index: 40;
+  display: none;
+}
+
+/* Available from 1280 — most laptops sit between 1280 and 1440, and losing
+   the primary wayfinding device on the commonest desktop size while the
+   layout still has gutter to spare was a poor trade. Below 1280 the gutter
+   genuinely cannot hold it without stealing from the measure. */
+@media (min-width: 1280px) {
+  .chapter-rail {
+    display: block;
+  }
+}
+
+.chapter-rail__list {
+  display: grid;
+  gap: 0.875rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chapter-rail__link {
+  display: flex;
+  /* Reversed: tick sits nearest the content, the name grows away from it. */
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.625rem;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ash);
+  transition: color var(--duration-ui) var(--ease-entrance);
+}
+
+/* The tick is the graphic; the number is the label. The tick grows and
+   changes colour on the active chapter, so position is readable at a glance
+   without reading any digits at all. */
+.chapter-rail__tick {
+  display: block;
+  inline-size: 12px;
+  block-size: 1.5px;
+  border-radius: 1px;
+  background: currentColor;
+  flex: none;
+  transition:
+    inline-size var(--duration-ui) var(--ease-entrance),
+    background-color var(--duration-ui) var(--ease-entrance);
+}
+
+.chapter-rail__label {
+  opacity: 0;
+  transform: translateX(4px);
+  transition:
+    opacity var(--duration-ui) var(--ease-entrance),
+    transform var(--duration-ui) var(--ease-entrance);
+  white-space: nowrap;
+  order: 3;
+}
+
+.chapter-rail__link[aria-current="true"] {
+  color: var(--color-madder);
+}
+
+.chapter-rail__link[aria-current="true"] .chapter-rail__tick {
+  inline-size: 24px;
+  block-size: 2px;
+}
+
+/* Names only where the gutter can actually hold them. Between 1280 and
+   1600 the rail stays numbers-only rather than overlapping the text. */
+@media (min-width: 1600px) {
+  .chapter-rail:hover .chapter-rail__label,
+  .chapter-rail:focus-within .chapter-rail__label {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.chapter-rail__link:hover,
+.chapter-rail__link:focus-visible {
+  color: var(--ink-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chapter-rail__label {
+    transition: none;
+  }
+}
+
+/* The rail is fixed, so it passes over both porcelain and the Graphite
+   bands. Madder measures only 3.03:1 on Graphite and the numbers dim to
+   near-invisible; over a dark chapter the whole rail steps up in value. */
+.chapter-rail[data-over-dark="true"] .chapter-rail__link {
+  color: rgba(246, 243, 238, 0.55);
+}
+
+.chapter-rail[data-over-dark="true"] .chapter-rail__link[aria-current="true"] {
+  color: var(--color-madder-light);
+}
+
+.chapter-rail[data-over-dark="true"] .chapter-rail__link:hover,
+.chapter-rail[data-over-dark="true"] .chapter-rail__link:focus-visible {
+  color: var(--ink-primary-inverted);
+}
+
+/* ---------- project cover fallback ----------
+   Not every project has a screenshot worth showing, and an empty surface
+   reads as a broken image. This is a composed clay surface in the same
+   vocabulary as the Studio Field: a warm ground, two tinted solids lit from
+   the upper left, and the project's initial set in the display face. */
+
+.project-cover-fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(60% 70% at 22% 20%, rgba(178, 58, 82, 0.1), transparent 62%),
+    radial-gradient(52% 62% at 82% 78%, rgba(62, 92, 118, 0.09), transparent 64%),
+    var(--color-slip);
+}
+
+.project-cover-fallback::before,
+.project-cover-fallback::after {
+  content: "";
+  position: absolute;
+  border-radius: 24%;
+  background: rgba(140, 135, 127, 0.09);
+}
+
+.project-cover-fallback::before {
+  inline-size: 34%;
+  aspect-ratio: 1;
+  inset-inline-start: 9%;
+  inset-block-end: -8%;
+  border-radius: 50%;
+}
+
+.project-cover-fallback::after {
+  inline-size: 22%;
+  aspect-ratio: 1;
+  inset-inline-end: 12%;
+  inset-block-start: -6%;
+  box-shadow: 0 12px 28px rgba(60, 45, 35, 0.08);
+}
+
+.project-cover-fallback__mark {
+  position: relative;
+  font-family: var(--font-display);
+  font-variation-settings:
+    "SOFT" 40,
+    "WONK" 1,
+    "opsz" 144;
+  font-size: clamp(3rem, 9vw, 5.5rem);
+  line-height: 1;
+  color: rgba(26, 25, 23, 0.14);
+  user-select: none;
+}
+
+/* ============================================================
+   PROJECT ROW — the tablet composition
+
+   768–1023px is composed here, not inherited from either side.
+
+   The desktop row is a 7/5 side-by-side whose alternating asymmetry is the
+   editorial signature of the site. That gesture depends on two columns
+   genuinely sitting beside one another. At tablet width there is no honest
+   way to keep it: a five-column text well at 900px is ~340px of text next
+   to a ~500px image, and both read as compressed rather than composed.
+
+   So tablet stacks — and the asymmetry moves rather than disappearing. The
+   cover is inset on one edge, alternating row to row, so the page still
+   breathes left-to-right down its length. The image also trades height for
+   width, which is what demotes it from the subject of the row to the
+   support for it.
+
+   This is the reference pattern for the remaining sections: the tablet
+   layout keeps the *intent* of the desktop composition and rebuilds the
+   means, instead of scaling the means down.
+   ============================================================ */
+
+/* On a phone the row title is correctly .u-h3. From tablet up it takes the
+   h2 step — and the optical axes travel with the size. A title set at h2
+   size while still carrying h3's `opsz` 24 and WONK 0 is the optical size
+   axis being thrown away, which is the one thing that axis exists to
+   prevent. (The previous `sm:text-(length:--text-h2)` moved the size and
+   left the axes behind.) */
+@media (min-width: 768px) {
+  .project-row__title {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+    font-variation-settings:
+      "SOFT" 40,
+      "WONK" 1,
+      "opsz" 48;
+    letter-spacing: -0.018em;
+  }
+}
+
+/* Everything below is tablet-only and must not leak into the desktop grid,
+   hence the upper bound. At 1024px the row becomes two columns again and
+   every one of these rules would be actively wrong there. */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  /* The metadata becomes a rule-anchored band: date and tags at one end,
+     the case-study link at the other, divided by the same hairline the rest
+     of the site uses between editorial blocks. It needs two ends to work —
+     a phone has no width for them, and on desktop the text column is only
+     five columns wide — so this arrangement belongs to tablet alone. */
+  .project-row__meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-block-start: 0.5rem;
+    padding-block-start: 1rem;
+    border-block-start: 1px solid var(--line-hairline);
+  }
+
+  /* 7% ≈ one column of the twelve the desktop row is built on, so both
+     compositions are measured in the same units even though they share no
+     layout. The inset follows `flip`, so consecutive rows lean opposite
+     ways and the column of stacked rows never reads as a stack of slabs. */
+  .project-row__cover {
+    margin-inline-end: 7%;
+  }
+
+  .project-row[data-flip="true"] .project-row__cover {
+    margin-inline-end: 0;
+    margin-inline-start: 7%;
+  }
+}

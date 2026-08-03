@@ -1,0 +1,468 @@
+/* ============================================================
+   THE STUDIO FIELD
+
+   Four parallax depth layers of matte clay solids inside one
+   perspective context, behind a gradient mesh that drifts its
+   chroma over three minutes.
+
+   The hard constraint of a light ground: shapes cannot glow.
+   On charcoal a shape reads simply by being brighter than its
+   surroundings. On porcelain it has to read as a *tinted
+   shadowed form* — slightly darker than the ground, with a
+   contact shadow doing most of the work. That is why the fills
+   below are percentages rather than solid colours.
+
+   Everything here is transform and opacity only.
+   ============================================================ */
+
+.field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  perspective: 1200px;
+  pointer-events: none;
+  z-index: 0;
+  /* Decorative: never announced, never focusable, never a
+     scroll target. */
+  contain: paint;
+}
+
+.field__mesh {
+  position: absolute;
+  /* Overscanned so the drift never exposes an edge. */
+  inset: -20%;
+  animation: field-mesh 180s var(--ease-ambient) infinite;
+}
+
+.field--light .field__mesh {
+  background:
+    radial-gradient(
+      46% 50% at 18% 26%,
+      rgba(238, 220, 224, 0.80),
+      transparent 62%
+    ),
+    radial-gradient(
+      42% 46% at 82% 20%,
+      rgba(232, 236, 240, 0.75),
+      transparent 62%
+    ),
+    radial-gradient(
+      52% 54% at 66% 84%,
+      rgba(239, 234, 225, 0.9),
+      transparent 64%
+    );
+}
+
+/* Inverted: same geometry, same loops, opposite value. This is
+   what makes the two Graphite bands land. */
+.field--inverted .field__mesh {
+  background:
+    radial-gradient(
+      46% 50% at 20% 30%,
+      rgba(178, 58, 82, 0.15),
+      transparent 62%
+    ),
+    radial-gradient(
+      44% 48% at 80% 24%,
+      rgba(62, 92, 118, 0.2),
+      transparent 62%
+    ),
+    radial-gradient(
+      54% 56% at 62% 88%,
+      rgba(139, 150, 131, 0.12),
+      transparent 64%
+    );
+}
+
+/* Layers must fill the field and have real geometry.
+   Every solid inside them is absolutely positioned, so without this the
+   layer collapses to zero height — and a zero-height subject gives its
+   ViewTimeline a degenerate range, which pins progress at 100% and kills
+   the parallax before it starts. */
+.field__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.field__solid {
+  position: absolute;
+  transform-style: preserve-3d;
+  /* No `will-change` here.
+     These animate continuously, so the compositor promotes them anyway;
+     declaring it as well pins a layer per solid for the life of the page and
+     costs memory for nothing. Reserved for elements that are about to
+     animate, not ones already animating. */
+}
+
+/* ---------- shapes ----------
+   Rounded cube, sphere, capsule. Radii stay inside the system:
+   clay is rounded, never glassy, never pill-shaped by accident. */
+
+.field__solid[data-shape="cube"] {
+  border-radius: 24%;
+}
+
+.field__solid[data-shape="ball"] {
+  border-radius: 50%;
+}
+
+.field__solid[data-shape="capsule"] {
+  border-radius: 999px;
+}
+
+/* ---------- depth layers ----------
+   Blur increases and opacity falls with distance, which is what
+   actually sells depth on a flat ground — not scale alone. */
+
+/* Depth blur.
+   `filter: blur()` on a 190px element repaints a large surface every frame
+   and is by far the most expensive thing in the field. Halving the far
+   layer's radius and dropping the mid layer's to 3px is visually
+   indistinguishable at these opacities — the tint and scale carry the depth
+   — and cuts the per-frame cost substantially. */
+.field__layer[data-depth="2"] .field__solid {
+  filter: blur(9px);
+}
+
+.field__layer[data-depth="3"] .field__solid {
+  filter: blur(3px);
+}
+
+.field__layer[data-depth="4"] .field__solid {
+  box-shadow: 0 18px 36px rgba(60, 45, 35, 0.1);
+}
+
+.field--inverted .field__layer[data-depth="4"] .field__solid {
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+}
+
+/* ---------- scroll parallax ----------
+   Where scroll-driven animations are supported this costs no
+   JavaScript at all. Browsers without it simply keep the
+   ambient drift, which is a complete experience on its own —
+   the parallax is an enhancement, not the effect. */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .field__layer {
+      animation: field-parallax linear both;
+      /* `view()`, NOT `scroll(root block)`.
+         The root timeline spans the whole document, so every field on the
+         page shares one progress value: a field near the foot of the page
+         is already at ~100% before it is ever seen, arriving with its near
+         layer displaced by a third of the viewport. `view()` scopes the
+         timeline to each field's own pass through the viewport, so every
+         field animates through the same arc wherever it sits. */
+      animation-timeline: view(block);
+    }
+
+    /* Travel is symmetrical — see the keyframes. Each layer moves
+       ±shift, so the composed arrangement sits neutral when the field is
+       centred in the viewport, which is when it is most visible. */
+    .field__layer[data-depth="1"] {
+      --parallax-shift: 2vh;
+    }
+    .field__layer[data-depth="2"] {
+      --parallax-shift: 5vh;
+    }
+    .field__layer[data-depth="3"] {
+      --parallax-shift: 10vh;
+    }
+    .field__layer[data-depth="4"] {
+      --parallax-shift: 16vh;
+    }
+  }
+}
+
+@keyframes field-parallax {
+  from {
+    transform: translate3d(0, var(--parallax-shift, 0px), 0);
+  }
+  to {
+    transform: translate3d(0, calc(var(--parallax-shift, 0px) * -1), 0);
+  }
+}
+
+/* ============================================================
+   THE PLINTH  —  layered avatar stage
+
+   Four nested boxes, one transform each. Multiple CSS animations
+   on a single element's `transform` overwrite rather than
+   compose, so recede / settle / parallax / float each own their
+   own element. Everything below is transform and opacity only:
+   compositor work, no layout, no paint.
+   ============================================================ */
+
+.avatar-stage {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  isolation: isolate;
+  /*
+   * Optical centring, not box centring.
+   *
+   * The render is composed for the desktop split: the figure occupies the
+   * left ~64% of the frame and its shadow travels into the right margin.
+   * Measured from the render's own alpha bounds, the FIGURE's centre sits at
+   * 32.9% of the image width — so centring the box leaves the figure sitting
+   * left of centre with a pocket of empty shadow space beside it. That is
+   * what reads as "positioned by the layout" rather than composed.
+   *
+   * Stacked layouts shift the frame right so the figure lands on the column's
+   * true centre; the shadow keeps travelling right, which is exactly what a
+   * shadow thrown by an upper-left key light should do. The desktop split
+   * needs no shift — there, the trailing shadow IS the composition.
+   */
+  transform: translateX(var(--stage-shift, 0%));
+}
+
+/* ---- mobile: the figure is a focal point, not a footnote ---- */
+
+/* 360–479. Shifted to optical centre and given more height than the old
+   desktop-derived cap, because stacked it has the column to itself. */
+.avatar-stage {
+  --stage-shift: 10.5%;
+  --avatar-cap: min(38vh, 330px);
+  /* The pool of light must follow the figure, not the frame. */
+  --plinth-x: 33%;
+  --plinth-w: 44%;
+}
+
+@media (min-width: 390px) {
+  .avatar-stage {
+    --avatar-cap: min(40vh, 360px);
+  }
+}
+
+@media (min-width: 480px) {
+  .avatar-stage {
+    --avatar-cap: min(42vh, 390px);
+  }
+}
+
+/* Tablet portrait: stacked but roomy — the figure is the closing image of
+   the hero rather than a companion to the text. */
+@media (min-width: 768px) {
+  .avatar-stage {
+    --avatar-cap: min(46vh, 440px);
+  }
+}
+
+/* Split layout. The frame returns to its composed position: the figure sits
+   left with its shadow trailing into the right margin, which is the whole
+   reason the render was framed that way. */
+@media (min-width: 1024px) {
+  .avatar-stage {
+    --stage-shift: 0%;
+    --avatar-cap: min(58vh, 570px);
+    --plinth-x: 33%;
+    --plinth-w: 46%;
+  }
+}
+
+/* The portrait frame is a single composite image, straight-on, so its
+   figure sits nearer the centre and its shadow reaches less far. */
+.avatar-stage--portrait {
+  --avatar-ratio: 900 / 1009;
+  --plinth-x: 42%;
+  --plinth-w: 56%;
+}
+
+/* A pool of *light*, not a shadow.
+   The rendered shadow layer already carries a real contact shadow thrown to
+   the lower right by the key light. A second CSS shadow centred under the
+   figure would imply a second light source and break the one rule the whole
+   system rests on. This warms the ground the figure stands on instead. */
+.avatar-stage__plinth {
+  position: absolute;
+  bottom: 4%;
+  left: var(--plinth-x, 33%);
+  width: var(--plinth-w, 46%);
+  aspect-ratio: 5 / 2;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    rgba(255, 249, 240, 0.9),
+    rgba(250, 242, 232, 0.45) 58%,
+    transparent 76%
+  );
+  filter: blur(18px);
+  z-index: -1;
+}
+
+/* ---------- the stack ---------- */
+
+.avatar-stage__recede,
+.avatar-stage__settle,
+.avatar-stage__parallax {
+  display: block;
+}
+
+/* Layer 1 · recede — scroll-linked, owns the exit. */
+.avatar-stage__recede {
+  transform-origin: 33% 100%;
+}
+
+/* Layer 2 · settle — the one-shot arrival. */
+.avatar-stage__settle {
+  position: relative;
+}
+
+/* Layer 3 · parallax — pointer only, written from JS as two properties. */
+.avatar-stage__parallax {
+  transform: translate3d(var(--parallax-x, 0px), var(--parallax-y, 0px), 0);
+  /* Trails the cursor rather than tracking it rigidly. Rigid tracking reads
+     as a cheap gimmick; a little lag reads as weight. */
+  transition: transform 600ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ---------- the two rendered layers ---------- */
+
+.avatar-stage__shadow,
+.avatar-stage__figure {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  /* Reserves the box before the bytes arrive. `width/height: auto` discards
+     next/image's intrinsic ratio, and this is the LCP element — a shift here
+     is the most expensive one on the site. */
+  aspect-ratio: var(--avatar-ratio, 1400 / 1596);
+  /* Art-directed per breakpoint rather than one desktop number scaled down.
+     Stacked layouts give the figure the full column, so it needs a tighter
+     viewport cap to keep the hero inside the fold; the split layout can
+     afford more height because it sits beside the type rather than under
+     it. */
+  max-height: var(--avatar-cap, min(40vh, 300px));
+  margin-inline: auto;
+}
+
+/* The shadow sits underneath, occupying the same box exactly. Both layers
+   were cropped from one shared bounding box, so they align pixel-for-pixel
+   with no offset of any kind. */
+.avatar-stage__shadow {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 0;
+  transform-origin: 62% 88%;
+}
+
+.avatar-stage__figure {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   IDLE MOTION
+
+   Float and shadow are two halves of one physical fact and are
+   deliberately given the SAME duration and phase: as the figure
+   rises the shadow shrinks toward its contact point and lightens,
+   because less light is being blocked. Run them at different
+   speeds and the illusion collapses immediately.
+
+   6px of travel over 7 seconds. Slow enough that it reads as
+   breathing rather than bobbing.
+   ============================================================ */
+
+@keyframes avatar-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    /* The scale is the breath: 0.6% is under the threshold of being
+       consciously noticed and above the threshold of being felt. */
+    transform: translate3d(0, -6px, 0) scale(1.006);
+  }
+}
+
+@keyframes avatar-float-shadow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    /* Tightens toward the contact point and lightens. A shadow that floats
+       with its object is what makes the whole effect read as a sticker. */
+    transform: scale(0.955);
+    opacity: 0.82;
+  }
+}
+
+/* ---------- arrival ----------
+   The figure settles into place before it begins idling, so the first
+   thing a visitor sees is an object coming to rest rather than one
+   already in motion. */
+
+@keyframes avatar-settle {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .avatar-stage__settle {
+    animation: avatar-settle 900ms var(--ease-entrance) both;
+  }
+
+  /* Idle begins only once the settle has finished. */
+  .avatar-stage__figure {
+    animation: avatar-float 7s ease-in-out 900ms infinite;
+  }
+
+  .avatar-stage__shadow {
+    animation: avatar-float-shadow 7s ease-in-out 900ms infinite;
+  }
+}
+
+/* ---------- scroll recede ---------- */
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .avatar-stage__recede {
+      animation: avatar-recede linear both;
+      animation-timeline: view(block);
+      /* `exit 0%` → `exit 100%`: begins when the figure's top edge reaches
+         the top of the viewport, ends when its bottom edge passes it.
+
+         Do NOT write `exit-crossing 0% exit 100%` — both keywords resolve to
+         the SAME offset, giving a zero-length range. With `fill: both` the
+         figure then snaps to the end state instead of fading. */
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+@keyframes avatar-recede {
+  to {
+    /* Recedes, never disappears. At 0.28 it read as broken rather than
+       distant; 0.4 still clearly yields the stage. */
+    transform: translate3d(0, -4%, 0) scale(0.94);
+    opacity: 0.4;
+  }
+}
+
+/* Under reduced motion the figure simply is where it belongs: settled,
+   grounded, and still. Nothing is hidden, nothing waits on a timer. */
+@media (prefers-reduced-motion: reduce) {
+  .field__mesh,
+  .field__solid,
+  .field__layer,
+  .avatar-stage__recede,
+  .avatar-stage__settle,
+  .avatar-stage__parallax,
+  .avatar-stage__figure,
+  .avatar-stage__shadow {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1;
+  }
+}

@@ -1,0 +1,286 @@
+/* ============================================================
+   NOTHING HURRIES — handcrafted motion layer
+
+   Every animation here touches only `transform` and `opacity`,
+   so nothing leaves the compositor and nothing triggers layout.
+   Two easing curves total, both defined in tokens.css.
+
+   The reduced-motion block lives at the bottom of this file and
+   is global, so a new component cannot forget to honour it.
+   ============================================================ */
+
+/* ---------- ambient: the Studio Field ---------- */
+
+@keyframes field-drift-a {
+  0% {
+    transform: translate3d(0, 0, 0) rotate3d(1, 0.6, 0.2, 0deg);
+  }
+  50% {
+    transform: translate3d(2.5vw, -3.5vh, 0) rotate3d(1, 0.6, 0.2, 180deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate3d(1, 0.6, 0.2, 360deg);
+  }
+}
+
+@keyframes field-drift-b {
+  0% {
+    transform: translate3d(0, 0, 0) rotate3d(0.4, 1, 0.3, 0deg);
+  }
+  50% {
+    transform: translate3d(-3vw, 3vh, 0) rotate3d(0.4, 1, 0.3, -180deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate3d(0.4, 1, 0.3, -360deg);
+  }
+}
+
+/* Daylight moving across the room, over three minutes. */
+@keyframes field-mesh {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-3%, 2%, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/* ---------- entrance: staggered section reveals ---------- */
+
+/*
+ * Reveals.
+ *
+ * Distance and duration scale with the weight of what is moving. A project
+ * row and a single list item travelling the same 14px at the same 640ms is
+ * what makes staggered motion read as uniform rather than weighted — heavy
+ * things should take marginally longer to settle. The difference is small
+ * enough that nobody names it and large enough that everybody feels it.
+ *
+ * Opacity always leads the transform slightly, so an element is legible
+ * fractionally before it stops moving. Reading never waits on motion.
+ */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-distance), 0);
+  transition:
+    opacity calc(var(--duration-reveal) * 0.8) var(--ease-entrance),
+    transform var(--duration-reveal) var(--ease-entrance);
+}
+
+/* Large blocks — project rows, the About column. */
+.reveal[data-weight="heavy"] {
+  --reveal-distance: 20px;
+  --duration-reveal: 760ms;
+}
+
+/* Small repeating items — list rows, skill groups. */
+.reveal[data-weight="light"] {
+  --reveal-distance: 10px;
+  --duration-reveal: 520ms;
+}
+
+.reveal[data-revealed="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Content must never be hidden behind JavaScript.
+   `.reveal` starts at opacity 0 and is revealed by an IntersectionObserver.
+   If scripting is unavailable — disabled, blocked, or the chunk simply
+   failed to load — that observer never runs and every featured project and
+   journal entry stays invisible forever. The markup is still there for
+   crawlers, but a person sees an empty page. This restores it. */
+@media (scripting: none) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- micro-interactions ---------- */
+
+/* Hover tilt. 4 degrees, not the 12–15 most sites use — past
+   about 6 the card stops reading as a lit object and starts
+   reading as a toy. */
+.tilt-stage {
+  perspective: 900px;
+}
+
+.tilt-target {
+  /* Settling out is slower than engaging in. A card that snaps back to rest
+     as fast as it tilted reads as mechanical; real objects decelerate. */
+  transition:
+    transform 420ms var(--ease-entrance),
+    box-shadow 420ms var(--ease-entrance);
+  transform-style: preserve-3d;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tilt-stage:hover .tilt-target {
+    transform: rotateX(4deg) rotateY(-4deg) translateY(-2px);
+    box-shadow: var(--shadow-e3);
+    transition-duration: var(--duration-ui);
+    /* Promoted only while the pointer is actually over it — a permanent
+       `will-change` pins a compositor layer per card for the page's life. */
+    will-change: transform;
+  }
+}
+
+/* Magnetic button. Displacement is written to a custom property
+   by the pointer handler; the transform itself stays declarative
+   so it never fights the CSS transition. */
+.magnetic {
+  --magnet-x: 0px;
+  --magnet-y: 0px;
+  transform: translate3d(var(--magnet-x), var(--magnet-y), 0);
+  /* Slower on release than on pull, for the same reason as the tilt. */
+  transition: transform 340ms var(--ease-entrance);
+}
+
+.magnetic:hover {
+  transition-duration: var(--duration-micro);
+}
+
+/* Buttons settle out slower than they engage, like every other surface. */
+[data-variant] {
+  transition:
+    background-color var(--duration-ui) var(--ease-entrance),
+    box-shadow 320ms var(--ease-entrance),
+    transform 320ms var(--ease-entrance);
+}
+
+[data-variant]:hover {
+  transition-duration: var(--duration-micro);
+}
+
+/* Link underline, wiping from the left. */
+.link-underline {
+  position: relative;
+  text-decoration: none;
+}
+
+.link-underline::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -2px;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--duration-ui) var(--ease-entrance);
+}
+
+.link-underline:hover::after,
+.link-underline:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* ---------- reading progress ---------- */
+
+.reading-progress {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 2px;
+  background: var(--color-madder);
+  transform: scaleX(0);
+  transform-origin: left;
+  z-index: 100;
+}
+
+@supports (animation-timeline: scroll()) {
+  .reading-progress[data-native="true"] {
+    animation: reading-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+@keyframes reading-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ---------- syntax highlighting host ----------
+   Shiki emits its own inline colours; this owns only the frame. */
+
+.shiki-host pre {
+  margin: 0;
+  padding: 20px 22px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  overflow-x: auto;
+}
+
+.shiki-host code {
+  font-family: var(--font-mono);
+}
+
+/* ---------- page transitions ---------- */
+
+@keyframes vt-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes vt-exit {
+  to {
+    opacity: 0;
+  }
+}
+
+::view-transition-old(root) {
+  animation: vt-exit var(--duration-ui) var(--ease-entrance) both;
+}
+
+::view-transition-new(root) {
+  animation: vt-enter var(--duration-ui) var(--ease-entrance) both;
+}
+
+/* ============================================================
+   REDUCED MOTION
+
+   Not a dead page — a calm one. The Studio Field holds a single
+   composed frame, which is still a considered lit arrangement.
+   Anything that moved now simply is.
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .tilt-stage:hover .tilt-target {
+    transform: none;
+    box-shadow: var(--shadow-e2);
+  }
+
+  .magnetic {
+    transform: none;
+  }
+
+  .link-underline::after {
+    transform: scaleX(1);
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

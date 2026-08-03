@@ -1,0 +1,35 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+import { NextResponse } from "next/server";
+
+/**
+ * Build-time rig, not a product surface.
+ *
+ * Receives frames from the offline avatar render page and writes them to
+ * public/avatar. Refuses to run outside development so it can never become
+ * a write endpoint on the deployed site — this route and its page are both
+ * deleted once the frames exist.
+ */
+export async function POST(request: Request) {
+  if (process.env.NODE_ENV !== "development") {
+    return NextResponse.json({ error: "Not available" }, { status: 404 });
+  }
+
+  const { name, dataUrl } = (await request.json()) as {
+    name?: string;
+    dataUrl?: string;
+  };
+
+  if (!name || !dataUrl || !/^[a-z0-9-]+$/.test(name)) {
+    return NextResponse.json({ error: "Bad request" }, { status: 400 });
+  }
+
+  const base64 = dataUrl.replace(/^data:image\/png;base64,/, "");
+  const dir = path.join(process.cwd(), "public", "avatar");
+  await mkdir(dir, { recursive: true });
+
+  const file = path.join(dir, `${name}.png`);
+  await writeFile(file, Buffer.from(base64, "base64"));
+
+  return NextResponse.json({ ok: true, file: `public/avatar/${name}.png` });
+}

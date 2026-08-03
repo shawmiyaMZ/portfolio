@@ -1,0 +1,363 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+
+/**
+ * Avatar render rig — v2, art-directed.
+ *
+ * Renders from the full 57 MB source at 2× supersample. Not a product
+ * surface: this page and its API route are deleted once the frames exist.
+ *
+ * What changed from v1, and why:
+ *
+ * 1. IMAGE-BASED LIGHTING. v1 lit the model with three bare lights, which
+ *    is why the clay read flat and plasticky — real matte surfaces are lit
+ *    by their whole surroundings, not three points. A PMREM-filtered room
+ *    environment gives every facet a slightly different bounce, which is
+ *    what makes clay look like clay.
+ *
+ * 2. SUPERSAMPLING. Rendering at 2× and downsampling in sharp is real SSAA:
+ *    far cleaner edges than MSAA alone, especially on the glasses frames and
+ *    the hijab's folded silhouette.
+ *
+ * 3. SHADOW ROOM. v1 framed the figure centred, so its shadow ran off the
+ *    right edge of the canvas and was cut dead. The figure now sits left of
+ *    centre with the frame extended right, and the ground plane carries a
+ *    radial alpha falloff so the shadow dissolves instead of ending.
+ *
+ * 4. ANISOTROPY + higher shadow resolution for actual detail retention.
+ */
+
+/*
+ * The hero renders TWICE from an identical camera: once with only the
+ * figure, once with only its shadow.
+ *
+ * A baked-in shadow rises with the figure when the image floats, which is
+ * precisely what makes cheap float animations read as stickers. Split into
+ * two layers, the shadow can stay on the ground and tighten as the figure
+ * lifts — which is what actually happens.
+ */
+const FRAMES = [
+  { name: "avatar-hero-figure", yaw: -0.34, layer: "figure" as const },
+  { name: "avatar-hero-shadow", yaw: -0.34, layer: "shadow" as const },
+  { name: "avatar-portrait", yaw: 0, layer: "both" as const },
+];
+
+// Output canvas. Deliberately wider than tall-and-tight: the extra width to
+// the right of the figure is where the shadow lives.
+const W = 1500;
+const H = 1700;
+const SS = 3; // supersample factor — 4500×5100 down to 1400 is real SSAA
+
+export default function RenderAvatarPage() {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const [log, setLog] = useState<string[]>([]);
+  const started = useRef(false);
+
+  useEffect(() => {
+    if (started.current) return;
+    started.current = true;
+    const say = (m: string) => setLog((l) => [...l, m]);
+
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      preserveDrawingBuffer: true,
+      powerPreference: "high-performance",
+    });
+    renderer.setSize(W * SS, H * SS, false);
+    renderer.setPixelRatio(1);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    // Neutral tone mapping holds saturated crimson without the muddy
+    // desaturation ACES applies to strong reds.
+    renderer.toneMapping = THREE.NeutralToneMapping;
+    // 1.12 blew the midtones out and turned the crimson hijab magenta. The
+    // palette is sampled from this render, so its colour has to stay true.
+    renderer.toneMappingExposure = 0.98;
+
+    const canvas = renderer.domElement;
+    canvas.style.width = "300px";
+    canvas.style.height = "340px";
+    hostRef.current?.appendChild(canvas);
+
+    const scene = new THREE.Scene();
+
+    // ---- image-based lighting -------------------------------------------
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    pmrem.compileEquirectangularShader();
+    const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
+    scene.environment = envRT.texture;
+    // Environment supplies facet variation only — not overall brightness.
+    // At 0.85 it swamped the key light and the figure lost all form.
+    scene.environmentIntensity = 0.32;
+
+    const camera = new THREE.PerspectiveCamera(26, W / H, 0.01, 100);
+
+    // ---- key light: upper left, warm, soft --------------------------------
+    const key = new THREE.DirectionalLight(0xfff2e4, 3.2);
+    key.position.set(-2.2, 3.2, 2.4);
+    key.castShadow = true;
+    key.shadow.mapSize.set(8192, 8192);
+    // Tighter penumbra. A large blur radius softens the shadow uniformly,
+    // including where the figure meets the ground — which is exactly where a
+    // real shadow is sharpest, and why the old one read as detached. A small
+    // radius over a high-resolution map keeps the contact crisp and lets the
+    // distance falloff do the softening.
+    key.shadow.radius = 4;
+    key.shadow.blurSamples = 32;
+    key.shadow.bias = -0.0004;
+    key.shadow.normalBias = 0.012;
+    {
+      const c = key.shadow.camera;
+      // Wide enough that the cast shadow is fully inside the shadow map —
+      // a clipped shadow map is the other way this ends up with a hard edge.
+      c.left = -2.4;
+      c.right = 2.4;
+      c.top = 2.4;
+      c.bottom = -1.2;
+      c.near = 0.5;
+      c.far = 12;
+      c.updateProjectionMatrix();
+    }
+    scene.add(key);
+
+    // ---- fill and rim -----------------------------------------------------
+    // Fill is deliberately weak. Ambient light is what flattens clay; the
+    // key doing most of the work is what gives it volume.
+    scene.add(new THREE.HemisphereLight(0xf8f4ee, 0xd8c6b4, 0.26));
+
+    const rim = new THREE.DirectionalLight(0xe2ecf5, 0.7);
+    rim.position.set(2.8, 1.5, -2.4);
+    scene.add(rim);
+
+    // A weak bounce from below-front, standing in for light kicking off the
+    // porcelain surface. Keeps the underside of the chin and sleeves from
+    // going dead.
+    // Weak, and mostly frontal rather than from below. Aimed steeply upward
+    // it strikes the downward-facing hem edge-on and blows it to white,
+    // leaving bright slivers along the garment's bottom rim.
+    const bounce = new THREE.DirectionalLight(0xffeede, 0.12);
+    bounce.position.set(-0.5, -0.35, 2.6);
+    scene.add(bounce);
+
+    // ---- shadow catcher ---------------------------------------------------
+    // ShadowMaterial alone ends wherever the plane ends. The radial alpha
+    // map fades the plane out, so the shadow dissolves into the porcelain
+    // rather than terminating on an edge.
+    const fadeSize = 512;
+    const fadeCanvas = document.createElement("canvas");
+    fadeCanvas.width = fadeCanvas.height = fadeSize;
+    const ctx = fadeCanvas.getContext("2d")!;
+    const grad = ctx.createRadialGradient(
+      fadeSize / 2,
+      fadeSize / 2,
+      0,
+      fadeSize / 2,
+      fadeSize / 2,
+      fadeSize / 2,
+    );
+    grad.addColorStop(0, "#ffffff");
+    grad.addColorStop(0.62, "#ffffff");
+    grad.addColorStop(1, "#000000");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, fadeSize, fadeSize);
+    const fadeTex = new THREE.CanvasTexture(fadeCanvas);
+
+    const shadowMat = new THREE.ShadowMaterial({
+      opacity: 0.3,
+      transparent: true,
+      alphaMap: fadeTex,
+    });
+    shadowMat.color = new THREE.Color(0x4a3527);
+
+    /*
+     * Contact occlusion.
+     *
+     * A cast shadow alone leaves the figure looking placed rather than
+     * planted: light still reaches the crevice where the hem meets the
+     * ground, so the two read as separate objects. This is a tight, dark
+     * pool right at the base — ambient occlusion, not a second light — and
+     * it is what makes contact believable.
+     */
+    const aoSize = 256;
+    const aoCanvas = document.createElement("canvas");
+    aoCanvas.width = aoCanvas.height = aoSize;
+    const aoCtx = aoCanvas.getContext("2d")!;
+    const aoGrad = aoCtx.createRadialGradient(
+      aoSize / 2, aoSize / 2, 0,
+      aoSize / 2, aoSize / 2, aoSize / 2,
+    );
+    aoGrad.addColorStop(0, "rgba(58,40,28,0.55)");
+    aoGrad.addColorStop(0.45, "rgba(58,40,28,0.22)");
+    aoGrad.addColorStop(1, "rgba(58,40,28,0)");
+    aoCtx.fillStyle = aoGrad;
+    aoCtx.fillRect(0, 0, aoSize, aoSize);
+
+    const contact = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.62, 0.62),
+      new THREE.MeshBasicMaterial({
+        map: new THREE.CanvasTexture(aoCanvas),
+        transparent: true,
+        depthWrite: false,
+      }),
+    );
+    contact.rotation.x = -Math.PI / 2;
+    contact.position.y = -0.0015;
+    contact.renderOrder = 1;
+    scene.add(contact);
+
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(4.5, 4.5), shadowMat);
+    ground.rotation.x = -Math.PI / 2;
+    // Dropped just below the model's base. The figure's hem sits at exactly
+    // y=0; a coplanar shadow plane z-fights with it and produces white
+    // slivers along the garment edge.
+    ground.position.y = -0.0025;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    const pivot = new THREE.Group();
+    scene.add(pivot);
+
+    const maxAniso = renderer.capabilities.getMaxAnisotropy();
+    say(`Loading full-resolution source… (anisotropy ${maxAniso})`);
+
+    new GLTFLoader().load(
+      "/_tmp/avatar.glb",
+      async (gltf) => {
+        const model = gltf.scene;
+
+        model.traverse((o) => {
+          const mesh = o as THREE.Mesh;
+          if (!mesh.isMesh) return;
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+          const mat = mesh.material as THREE.MeshStandardMaterial;
+          if (!mat || !("roughness" in mat)) return;
+
+          // Matte clay, never plastic. Studio Light has no specular
+          // highlights anywhere and the avatar is not the exception — but
+          // roughness 0.92 (v1) killed all form-defining sheen. 0.78 with
+          // real environment light keeps it matte while letting the
+          // surface describe its own curvature.
+          mat.metalness = 0;
+          mat.metalnessMap = null;
+          // 0.72 rather than 0.78. Still unmistakably matte — no specular
+          // hotspots anywhere — but enough sheen that the curvature of the
+          // hijab folds and the glasses' bevels describe themselves instead
+          // of flattening into colour.
+          mat.roughness = 0.72;
+          mat.envMapIntensity = 1.0;
+          // Clay is dense, not translucent, but light does creep through a
+          // thin edge. A trace of sheen at grazing angles is what separates
+          // fired clay from painted plastic.
+          mat.sheen = 0.25;
+          mat.sheenRoughness = 0.85;
+          mat.sheenColor = new THREE.Color(0xfff2e6);
+
+          for (const key of ["map", "normalMap", "roughnessMap"] as const) {
+            const tex = mat[key];
+            if (tex) {
+              tex.anisotropy = maxAniso;
+              tex.needsUpdate = true;
+            }
+          }
+          // Lift the normal map slightly: it carries the fabric folds and
+          // the seam detail that make this read as a sculpted object.
+          // Fabric detail lives entirely in the normal map — the folds of
+          // the hijab, the seam at the hem, the bevel on the glasses frames.
+          if (mat.normalMap) mat.normalScale = new THREE.Vector2(1.4, 1.4);
+          mat.needsUpdate = true;
+        });
+
+        const meshes: THREE.Mesh[] = [];
+        model.traverse((o) => {
+          const m = o as THREE.Mesh;
+          if (m.isMesh) meshes.push(m);
+        });
+
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const centre = box.getCenter(new THREE.Vector3());
+        model.position.x -= centre.x;
+        model.position.z -= centre.z;
+        model.position.y -= box.min.y;
+        pivot.add(model);
+
+        const h = size.y;
+        say(`Loaded. Height ${h.toFixed(3)}u. Rendering ${W}×${H} @${SS}×…`);
+
+        for (const frame of FRAMES) {
+          pivot.rotation.y = frame.yaw;
+
+          // Layer isolation.
+          //
+          // For the shadow pass the model must still CAST but not DRAW.
+          // `colorWrite = false` silences its colour; `depthWrite = false`
+          // stops it occluding the very shadow it is casting. Shadow casting
+          // reads the depth pass, so it is unaffected by either.
+          const drawFigure = frame.layer !== "shadow";
+          const drawShadow = frame.layer !== "figure";
+          for (const mesh of meshes) {
+            const mat = mesh.material as THREE.Material;
+            mat.colorWrite = drawFigure;
+            mat.depthWrite = drawFigure;
+          }
+          ground.visible = drawShadow;
+          contact.visible = drawShadow;
+
+          // The figure sits LEFT of frame centre. Everything right of it is
+          // deliberate empty space for the shadow to travel into and fade.
+          //
+          // setViewOffset's offsetX moves the viewing WINDOW right, which
+          // moves the subject LEFT in the output — so this must be positive.
+          // Negative pushes the figure right and crushes the shadow against
+          // the frame edge, which is exactly the clipping being fixed here.
+          camera.position.set(0, h * 0.60, h * 2.75);
+          camera.lookAt(0, h * 0.50, 0);
+          camera.setViewOffset(W, H, W * 0.16, 0, W, H);
+          camera.updateProjectionMatrix();
+
+          renderer.render(scene, camera);
+
+          const dataUrl = canvas.toDataURL("image/png");
+          const res = await fetch("/api/render-avatar", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: frame.name, dataUrl }),
+          });
+          const json = await res.json();
+          say(`${frame.name}: ${json.ok ? json.file : JSON.stringify(json)}`);
+        }
+
+        say("DONE");
+      },
+      (p) =>
+        p.total
+          ? say(`… ${Math.round((p.loaded / p.total) * 100)}%`)
+          : undefined,
+      (err) => say(`ERROR: ${String(err)}`),
+    );
+
+    return () => {
+      renderer.dispose();
+      pmrem.dispose();
+    };
+  }, []);
+
+  return (
+    <main style={{ padding: 32, fontFamily: "monospace", fontSize: 13 }}>
+      <h1 style={{ fontFamily: "monospace", fontSize: 16, marginBottom: 16 }}>
+        Avatar render rig v2 (offline)
+      </h1>
+      <div ref={hostRef} style={{ marginBottom: 16 }} />
+      <pre id="render-log" style={{ lineHeight: 1.7 }}>
+        {log.join("\n")}
+      </pre>
+    </main>
+  );
+}

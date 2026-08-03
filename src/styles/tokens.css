@@ -1,0 +1,152 @@
+/* ============================================================
+   STUDIO LIGHT — design tokens
+   Layer 1: primitives · Layer 2: semantic · Layer 3: component
+
+   One rule governs everything here: every surface is a matte
+   physical object lit by a single soft key light from the upper
+   left. Shadows are warm, two-layer, and always fall the same way.
+   ============================================================ */
+
+@theme {
+  /* ---------- Layer 1 · primitive colour ----------
+     Named for the ceramics firing sequence, and sampled from the
+     avatar itself: Madder is the hijab, Sage the under-cap, Plum
+     the top. The system is built around the avatar literally, not
+     just in spirit — which is why an orange accent had to go. It
+     sat 25° from the hijab crimson at the same value, close
+     enough to read as a mistake rather than a choice.
+
+     Measured contrast against Porcelain is recorded beside each. */
+  --color-porcelain: #f6f3ee; /* ground */
+  --color-slip: #efeae1; /* raised surface */
+  --color-graphite: #1a1917; /* 15.87:1 — body text, inverted bands */
+  --color-madder: #b23a52; /*  5.24:1 — primary accent AND links */
+  --color-madder-deep: #8f2c42; /*  7.28:1 — hover, active, pressed */
+  --color-madder-light: #d96e86; /*  5.45:1 ON GRAPHITE — dark grounds only */
+  --color-cobalt: #3e5c76; /*  6.33:1 — technical accent */
+  --color-plum: #7c4565; /*  deep accent, inverted bands */
+  --color-sage: #8b9683; /*  2.80:1 — fills and rules ONLY */
+  --color-ash: #8c877f; /*  3.22:1 — hairlines and borders ONLY */
+  --color-ash-ink: #6e6963; /*  4.91:1 — captions, metadata */
+
+  /* ---------- typography ---------- */
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+
+  /* Fluid scale, 360px → 1440px viewport. 1.200 mobile → 1.333 desktop. */
+  --text-display: clamp(2.5rem, 1.75rem + 3.333vw, 4.75rem);
+  --text-display--line-height: 1.04;
+  --text-h1: clamp(2rem, 1.5833rem + 1.8519vw, 3.25rem);
+  --text-h1--line-height: 1.08;
+  --text-h2: clamp(1.5625rem, 1.375rem + 0.8333vw, 2.125rem);
+  --text-h2--line-height: 1.14;
+  --text-h3: clamp(1.25rem, 1.1667rem + 0.3704vw, 1.5rem);
+  --text-h3--line-height: 1.25;
+  --text-body: clamp(1.0625rem, 1.0417rem + 0.0926vw, 1.125rem);
+  --text-body--line-height: 1.6;
+  --text-prose: clamp(1.125rem, 1.1042rem + 0.0926vw, 1.1875rem);
+  --text-prose--line-height: 1.75;
+  /* The step the scale was missing, between prose and h3. A lede is not
+     body copy and not a heading: it carries an argument at a size that
+     asks to be read first, without competing for the headline slot. 19px
+     → 25px, and leading well below prose because a short block set loose
+     reads as a paragraph rather than as a statement. */
+  --text-lede: clamp(1.1875rem, 1.0625rem + 0.5556vw, 1.5625rem);
+  --text-lede--line-height: 1.4;
+  --text-caption: 0.875rem;
+  --text-caption--line-height: 1.5;
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.4;
+
+  /* ---------- spacing · 4px base ---------- */
+  --spacing: 0.25rem;
+
+  /* ---------- radii ----------
+     Clay is rounded, not pill-shaped. Nothing exceeds 20px
+     except the avatar plinth. */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* ---------- elevation ----------
+     Two layers each: a tight contact shadow plus a wide ambient
+     one, both warm-tinted. Never pure black — black shadow on a
+     warm ground reads as a different light source. */
+  --shadow-e1: 0 1px 2px rgba(60, 45, 35, 0.06);
+  --shadow-e2:
+    0 1px 2px rgba(60, 45, 35, 0.06), 0 8px 20px rgba(60, 45, 35, 0.07);
+  --shadow-e3:
+    0 2px 4px rgba(60, 45, 35, 0.06), 0 16px 40px rgba(60, 45, 35, 0.09);
+  --shadow-e4:
+    0 4px 8px rgba(60, 45, 35, 0.07), 0 28px 64px rgba(60, 45, 35, 0.11);
+
+  /* ---------- motion ----------
+     Two curves for the entire site. That constraint is the
+     whole reason the motion reads as one system. */
+  --ease-entrance: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-ambient: linear;
+}
+
+/* ---------- Layer 2 · semantic ----------
+   Kept out of @theme deliberately: these describe intent, not
+   utilities, and should be referenced by component CSS only. */
+:root {
+  color-scheme: light;
+
+  --surface-ground: var(--color-porcelain);
+  --surface-raised: var(--color-slip);
+  --surface-inverted: var(--color-graphite);
+
+  --ink-primary: var(--color-graphite);
+  --ink-secondary: var(--color-ash-ink);
+  /* Madder clears AA on Porcelain at 5.24:1, so the accent and the link
+     colour are the same value. One fewer token, one fewer way to drift. */
+  --ink-link: var(--color-madder);
+  --ink-link-hover: var(--color-madder-deep);
+  --ink-technical: var(--color-cobalt);
+
+  --ink-primary-inverted: var(--color-porcelain);
+  --ink-secondary-inverted: #b6afa5;
+
+  --line-hairline: rgba(26, 25, 23, 0.11);
+  --line-hairline-inverted: rgba(246, 243, 238, 0.14);
+
+  --focus-ring: var(--color-cobalt);
+
+  /* Durations. Calm is a function of duration and amplitude,
+     not of having less motion. */
+  --duration-micro: 160ms;
+  --duration-ui: 240ms;
+  --duration-reveal: 640ms;
+
+  /* Reveal amplitude. 12–16px reads confident; 60px reads as
+     trying hard. This is a token so it cannot drift per-component. */
+  --reveal-distance: 14px;
+  --stagger-step: 60ms;
+
+  /* Measure */
+  --measure-prose: 68ch;
+  --measure-default: 60ch;
+
+  /* Layout */
+  --layout-max: 1240px;
+  --layout-gutter: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --layout-gutter: 2rem;
+  }
+}
+
+/* The portfolio is single-theme by design, not by omission.
+   Studio Light is a lit porcelain surface; inverting it would
+   describe a different physical space. The two Graphite bands
+   provide the dark, as a material rather than a mode.
+   Pinned so a viewer's OS preference cannot half-apply it. */
+:root[data-theme="dark"],
+:root[data-theme="light"] {
+  color-scheme: light;
+}

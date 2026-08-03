@@ -1,0 +1,385 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/motion.css";
+@import "../styles/field.css";
+@import "../styles/chrome.css";
+
+/* ============================================================
+   BASE
+   ============================================================ */
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Nav clearance for in-page anchors and the journal TOC. */
+    scroll-padding-top: 6rem;
+    /* `clip`, never `hidden`. On <body>, overflow-x:hidden silently promotes
+       the body to its own scroll container: position:sticky stops working,
+       scroll(root block) timelines never advance, and window.scrollY freezes.
+       `clip` suppresses the horizontal scrollbar without creating a scroller. */
+    overflow-x: clip;
+  }
+
+  body {
+    background: var(--surface-ground);
+    color: var(--ink-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    /* The Studio Field extends past the viewport by design;
+       it must never produce a horizontal scrollbar. See the note on <html>
+       for why this is `clip` and not `hidden`. */
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-synthesis: none;
+    /* SOFT 40 softens the terminals toward the clay solids.
+       WONK is enabled here and disabled below 24px in .u-h3 —
+       at small sizes its splayed forms stop reading as intent
+       and start reading as a rendering error. */
+    font-variation-settings:
+      "SOFT" 40,
+      "WONK" 1,
+      "opsz" 100;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    /* `pretty` over `balance`: balance evens every line and is wrong for
+       body copy; pretty only prevents the orphan on the last line. */
+    text-wrap: pretty;
+  }
+
+  a {
+    color: var(--ink-link);
+    text-underline-offset: 0.2em;
+  }
+
+  code,
+  pre,
+  kbd {
+    font-family: var(--font-mono);
+  }
+
+  /* Visible keyboard focus everywhere, on one ring. */
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 3px;
+    border-radius: var(--radius-xs);
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-madder) 24%, transparent);
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+/* ============================================================
+   TYPE + LAYOUT UTILITIES
+   Sizes come from @theme; these bundle the variation settings
+   and structural rules that must travel with each step.
+   ============================================================ */
+
+@layer components {
+  /* ---------- display type ----------
+     Every step carries its own family, weight and axes so the class works on
+     a <span> as readily as an <h2>. Three places were setting .u-h3 on a
+     span and silently falling back to the body face.
+
+     `opsz` genuinely tracks the rendered size rather than sitting at 144
+     everywhere. That is the entire purpose of an optical size axis: large
+     settings thin the strokes and sharpen the serifs for headline sizes,
+     small settings thicken and open them so they survive at text sizes.
+     Pinning one value throws the axis away.
+
+     Letter-spacing tightens as size grows, for the same reason: tracking
+     that reads as comfortable at 20px reads as loose at 64px. */
+
+  .u-display,
+  .u-hero,
+  .u-h1,
+  .u-h2,
+  .u-h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-wrap: balance;
+    /* Never let the browser fake a weight Fraunces already has. */
+    font-synthesis: none;
+  }
+
+  .u-display {
+    font-size: var(--text-display);
+    line-height: var(--text-display--line-height);
+    font-variation-settings:
+      "SOFT" 40,
+      "WONK" 1,
+      "opsz" 144;
+    letter-spacing: -0.028em;
+  }
+
+  /* The hero sits a step below --text-display.
+     A statement is a sentence, not a word; at full display size even a short
+     one runs to four lines and pushes the fold past the viewport. */
+  .u-hero {
+    font-size: clamp(2.25rem, 1.55rem + 3.1vw, 4rem);
+    line-height: 1.08;
+    font-variation-settings:
+      "SOFT" 40,
+      "WONK" 1,
+      "opsz" 120;
+    letter-spacing: -0.026em;
+  }
+
+  .u-h1 {
+    font-size: var(--text-h1);
+    line-height: var(--text-h1--line-height);
+    font-variation-settings:
+      "SOFT" 40,
+      "WONK" 1,
+      "opsz" 96;
+    letter-spacing: -0.022em;
+  }
+
+  .u-h2 {
+    font-size: var(--text-h2);
+    line-height: var(--text-h2--line-height);
+    font-variation-settings:
+      "SOFT" 40,
+      "WONK" 1,
+      "opsz" 48;
+    letter-spacing: -0.018em;
+  }
+
+  .u-h3 {
+    font-size: var(--text-h3);
+    line-height: var(--text-h3--line-height);
+    /* WONK off below 24px — its splayed forms stop reading as intent and
+       start reading as a rendering error. */
+    font-variation-settings:
+      "SOFT" 40,
+      "WONK" 0,
+      "opsz" 24;
+    letter-spacing: -0.012em;
+  }
+
+  /* ---------- lede ----------
+     The brief asks the hero to act as a thesis statement about me. The name
+     stays the h1 — on a personal portfolio identity has to land first, and a
+     recruiter should not have to parse a sentence to learn whose site this
+     is. So the thesis carries that weight without becoming a second headline.
+
+     Four changes do the promotion, and none of them is decoration: a size
+     step above prose, primary ink instead of secondary, leading pulled from
+     1.75 down to 1.4, and a measure short enough that the text reads as a
+     block rather than as a paragraph. Set loose at body size it was copy;
+     set tight at this size it is a statement.
+
+     It stays in the body face on purpose. The name already owns the display
+     voice in this hero, and a second Fraunces block at half its size reads as
+     a competing headline rather than as support — which is exactly the
+     hierarchy problem this treatment exists to avoid. */
+  .u-lede {
+    font-size: var(--text-lede);
+    line-height: var(--text-lede--line-height);
+    color: var(--ink-primary);
+    /* Large text needs its tracking pulled in, on the same principle the
+       display steps follow — just gentler, because this is still a text
+       face rather than a display one. */
+    letter-spacing: -0.006em;
+    text-wrap: balance;
+    max-inline-size: 32ch;
+  }
+
+  /* Tightened once there is room for the block to hold its own shape. On a
+     phone the column is already narrow enough to do this by itself. */
+  @media (min-width: 768px) {
+    .u-lede {
+      max-inline-size: 27ch;
+    }
+  }
+
+  .u-caption {
+    font-size: var(--text-caption);
+    line-height: var(--text-caption--line-height);
+    color: var(--ink-secondary);
+    letter-spacing: 0.02em;
+  }
+
+  .u-eyebrow {
+    font-size: var(--text-eyebrow);
+    line-height: var(--text-eyebrow--line-height);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    color: var(--ink-secondary);
+  }
+
+  /* ---------- layout ---------- */
+
+  .u-wrap {
+    width: 100%;
+    max-width: var(--layout-max);
+    margin-inline: auto;
+    padding-inline: var(--layout-gutter);
+  }
+
+  .u-section {
+    padding-block: clamp(4rem, 9vw, 10rem);
+  }
+
+  /* Clearance for the floating chrome.
+     The nav is fixed, so it takes no layout space — the first section of
+     every page has to make room for it deliberately. Content flows *under*
+     the slab rather than starting after it, which is what lets the Studio
+     Field run full-bleed to the very top of the viewport. */
+  .u-top-clear {
+    /* The floating slab is ~72px tall on phones including its own offset.
+       6.75rem leaves a full 36px of air beneath it, so the nav reads as
+       hovering above the content rather than sitting on it. */
+    padding-block-start: clamp(6.75rem, 8vw, 7.5rem);
+  }
+
+  /* Long-form reading surface.
+     Hanging punctuation pulls opening quotes and bullets into the margin so
+     the text edge stays optically straight — one of the few things that
+     separates set type from placed type. Progressive: unsupported browsers
+     simply keep the flush edge. */
+  .u-prose {
+    max-inline-size: var(--measure-prose);
+    hanging-punctuation: first last;
+  }
+
+  /* Below 640px the measure is narrow enough that unbroken technical terms
+     force a ragged edge or a horizontal scroll. Hyphenation only here — at
+     full measure it would be noise. */
+  @media (max-width: 639px) {
+    .u-prose,
+    .u-measure {
+      hyphens: auto;
+      -webkit-hyphens: auto;
+    }
+  }
+
+  /* Wide content scrolls inside its own container so the page
+     body never scrolls sideways. */
+  .u-scroll-x {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  /* ---------- touch targets ----------
+     Inline links inside prose are fine at their natural height, but a link
+     that acts as a control — "All projects", the footer links — is a tap
+     target and needs 44px like any other. Scoped to `pointer: coarse` rather
+     than to a width: it is the input device that makes this necessary, not
+     the screen size, and a touchscreen laptop needs it just as much as a
+     phone. On a mouse it would only add dead space. */
+  @media (pointer: coarse) {
+    .u-tap {
+      display: inline-flex;
+      align-items: center;
+      min-block-size: 44px;
+    }
+  }
+
+  /* ---------- buttons ----------
+     The one interactive surface that had not been given the material
+     treatment: flat fill, flat hover. These are objects like everything
+     else — lit from the upper left, with a contact shadow and an interior
+     lip along the top edge. */
+
+  [data-variant="primary"] {
+    /* Optical centring: cap-height sits high in the em box, so equal padding
+       reads bottom-heavy. One extra pixel below settles it. */
+    padding-block: 13px 14px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      0 1px 2px rgba(60, 45, 35, 0.1),
+      0 6px 16px rgba(178, 58, 82, 0.16) !important;
+  }
+
+  [data-variant="primary"]:hover {
+    background: var(--color-madder-deep) !important;
+    /* Lifts 1px and the shadow spreads — the same restraint as the
+       monogram. Enough to confirm a surface, not enough to animate. */
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      0 2px 4px rgba(60, 45, 35, 0.1),
+      0 10px 24px rgba(143, 44, 66, 0.22) !important;
+  }
+
+  [data-variant="primary"]:active {
+    transform: translateY(0);
+  }
+
+  [data-variant="ghost"] {
+    padding-block: 13px 14px;
+  }
+
+  [data-variant="ghost"]:hover {
+    box-shadow:
+      inset 0 0 0 1px var(--color-ash),
+      0 1px 2px rgba(60, 45, 35, 0.05) !important;
+  }
+
+  .u-band [data-variant="ghost"] {
+    color: var(--ink-primary-inverted) !important;
+    box-shadow: inset 0 0 0 1px var(--line-hairline-inverted) !important;
+  }
+
+  .u-band [data-variant="ghost"]:hover {
+    box-shadow: inset 0 0 0 1px rgba(246, 243, 238, 0.32) !important;
+  }
+
+  /* The magnetic transform is written to a custom property, so a hover
+     `translateY` here would overwrite it. Combine them instead. */
+  .magnetic[data-variant="primary"]:hover {
+    transform: translate3d(var(--magnet-x), calc(var(--magnet-y) - 1px), 0);
+  }
+
+  /* ---------- inverted band ---------- */
+
+  .u-band {
+    position: relative;
+    background: var(--surface-inverted);
+    color: var(--ink-primary-inverted);
+    overflow: hidden;
+  }
+
+  .u-band :is(h1, h2, h3, h4) {
+    color: var(--ink-primary-inverted);
+  }
+
+  .u-band .u-eyebrow,
+  .u-band .u-caption {
+    color: var(--ink-secondary-inverted);
+  }
+
+  .u-band :focus-visible {
+    outline-color: var(--color-sage);
+  }
+}
