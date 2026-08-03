@@ -38,7 +38,8 @@ export type Profile = {
   }>;
   skillGroups?: Array<{
     category: string;
-    skills: Array<{ name: string; level: SkillLevel }>;
+    /** Proficiency is optional: a technology may simply be listed. */
+    skills: Array<{ name: string; level?: SkillLevel }>;
   }>;
   milestones?: Array<{ year: string; event: string; detail?: string }>;
 };

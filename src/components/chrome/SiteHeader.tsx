@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { MobileNav } from "@/components/chrome/MobileNav";
 import { Monogram } from "@/components/chrome/Monogram";
-import { NAV_CHAPTERS } from "@/lib/chapters";
+import { NAV_CHAPTERS, scrollToChapter } from "@/lib/chapters";
 
 /**
  * Floating chrome — two small objects resting above the page, not a bar
@@ -20,6 +23,9 @@ import { NAV_CHAPTERS } from "@/lib/chapters";
  * Journal and About pages are reached from inside each chapter instead.
  */
 export function SiteHeader({ name }: { name?: string }) {
+  const pathname = usePathname();
+  const onHome = pathname === "/";
+
   return (
     <div className="site-chrome">
       <div className="site-chrome__inner">
@@ -29,9 +35,29 @@ export function SiteHeader({ name }: { name?: string }) {
           <ul className="nav-slab__list">
             {NAV_CHAPTERS.map((chapter) => (
               <li key={chapter.id}>
-                <Link href={`/#${chapter.id}`} className="nav-slab__link">
-                  {chapter.nav}
-                </Link>
+                {/* On home these must be bare fragments. Next's <Link>
+                    treats `/#about` as a navigation to `/`, runs its
+                    scroll-to-top and discards the fragment — the hash
+                    lands in the URL and the page stays at the top. A
+                    plain anchor lets the browser scroll natively, which
+                    is what the chapter rail has always done. Off home,
+                    <Link> keeps the client-side transition. */}
+                {onHome ? (
+                  <a
+                    href={`#${chapter.id}`}
+                    className="nav-slab__link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      scrollToChapter(chapter.id);
+                    }}
+                  >
+                    {chapter.nav}
+                  </a>
+                ) : (
+                  <Link href={`/#${chapter.id}`} className="nav-slab__link">
+                    {chapter.nav}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

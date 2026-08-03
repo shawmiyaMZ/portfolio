@@ -30,3 +30,23 @@ export const CHAPTERS: Chapter[] = [
 
 /** The four that appear in the header. */
 export const NAV_CHAPTERS = CHAPTERS.filter((c) => c.nav);
+
+/**
+ * Scroll to a chapter without going through the router.
+ *
+ * Next's App Router resets scroll on history changes, which swallows hash
+ * navigation: measured on the home page, setting `location.hash` left
+ * scrollY at 0 while the target sat at 3411 — `scrollIntoView` reached it
+ * fine. A plain anchor cannot win that race, so chapter links move the page
+ * themselves and write the hash afterwards.
+ *
+ * `scrollIntoView` inherits `scroll-behavior: smooth` and the 96px
+ * `scroll-padding-top` from the root, so this stays consistent with the
+ * chapter rail and still flattens under prefers-reduced-motion.
+ */
+export function scrollToChapter(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ block: "start" });
+  history.replaceState(null, "", `#${id}`);
+}

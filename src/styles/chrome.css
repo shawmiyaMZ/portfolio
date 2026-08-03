@@ -541,6 +541,86 @@
 }
 
 /* ============================================================
+   TECH ROW — a technology, its mark, and how well it is known
+
+   The marks are monochrome at rest. Twelve brand palettes at once would
+   read as a sticker sheet against a system built on porcelain and two
+   accents, and the row is a list of what someone works with, not a wall of
+   logos. Recognition comes from the silhouette; the brand colour arrives
+   on hover, where it is a reward rather than noise.
+
+   Each row is its own surface rather than a hairline-separated line, so the
+   section reads as a set of objects — the same clay vocabulary as
+   everything else — instead of a table.
+   ============================================================ */
+
+.tech-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  margin-inline: -0.75rem;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--duration-ui) var(--ease-entrance);
+}
+
+@media (hover: hover) {
+  .tech-row:hover {
+    background: rgba(26, 25, 23, 0.035);
+  }
+}
+
+.tech-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+
+.tech-icon svg {
+  inline-size: 100%;
+  block-size: 100%;
+  /* `fill` rather than a colour utility: Simple Icons paths carry no fill
+     of their own, so the row's ink flows straight through. */
+  fill: var(--ink-secondary);
+  transition: fill var(--duration-ui) var(--ease-entrance);
+}
+
+@media (hover: hover) {
+  .tech-row:hover .tech-icon svg {
+    fill: var(--tech-brand, var(--ink-primary));
+  }
+}
+
+/* No mark exists for every technology — OpenAI is absent from the set
+   entirely. A clay chip carrying the initial, in the same vocabulary as the
+   project covers, so the gap reads as a considered state and the row height
+   never changes. */
+.tech-icon--fallback {
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--ink-secondary);
+  background: rgba(140, 135, 127, 0.14);
+  border-radius: var(--radius-xs);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.tech-row__name {
+  font-weight: 500;
+  /* Takes the slack so the tier is driven to the far edge. */
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.tech-row__tier {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* ============================================================
    ABOUT MOVEMENTS — one composition, not five sections
 
    The page felt white and flat for three compounding reasons, and only one

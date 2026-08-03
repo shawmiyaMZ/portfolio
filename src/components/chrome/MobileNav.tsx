@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { NAV_CHAPTERS } from "@/lib/chapters";
+import { NAV_CHAPTERS, scrollToChapter } from "@/lib/chapters";
 
 /**
  * The phone's navigation — a control, not a compressed desktop bar.
@@ -30,6 +31,7 @@ export function MobileNav() {
   const panelId = useId();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  const onHome = usePathname() === "/";
 
   useEffect(() => {
     if (!open) return;
@@ -85,13 +87,29 @@ export function MobileNav() {
           <ul className="nav-mobile__list">
             {NAV_CHAPTERS.map((chapter) => (
               <li key={chapter.id}>
-                <Link
-                  href={`/#${chapter.id}`}
-                  className="nav-mobile__link"
-                  onClick={() => setOpen(false)}
-                >
-                  {chapter.nav}
-                </Link>
+                {/* Same reason as the header: a bare fragment on home so
+                    the browser scrolls natively. */}
+                {onHome ? (
+                  <a
+                    href={`#${chapter.id}`}
+                    className="nav-mobile__link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setOpen(false);
+                      scrollToChapter(chapter.id);
+                    }}
+                  >
+                    {chapter.nav}
+                  </a>
+                ) : (
+                  <Link
+                    href={`/#${chapter.id}`}
+                    className="nav-mobile__link"
+                    onClick={() => setOpen(false)}
+                  >
+                    {chapter.nav}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

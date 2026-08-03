@@ -14,6 +14,7 @@ import {
   getLatestPosts,
   getProfile,
 } from "@/sanity/lib/content";
+import { TechIcon } from "@/lib/tech-icons";
 import type { SkillLevel } from "@/sanity/lib/types";
 
 /**
@@ -235,19 +236,16 @@ export default async function HomePage() {
                     >
                       {group.category}
                     </h4>
-                    <ul className="list-none m-0 p-0 grid gap-3">
+                    <ul className="list-none m-0 p-0 grid gap-1">
                       {group.skills?.map((skill) => (
-                        <li
-                          key={skill.name}
-                          className="flex items-baseline justify-between gap-4 pb-3"
-                          style={{
-                            borderBottom: "1px solid var(--line-hairline)",
-                          }}
-                        >
-                          <span className="font-medium">{skill.name}</span>
-                          <span className="u-caption whitespace-nowrap">
-                            {LEVEL[skill.level] ?? LEVEL.comfortable}
-                          </span>
+                        <li key={skill.name} className="tech-row">
+                          <TechIcon name={skill.name} />
+                          <span className="tech-row__name">{skill.name}</span>
+                          {skill.level && (
+                            <span className="tech-row__tier u-caption">
+                              {LEVEL[skill.level] ?? LEVEL.comfortable}
+                            </span>
+                          )}
                         </li>
                       ))}
                     </ul>
