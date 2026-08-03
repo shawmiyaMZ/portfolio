@@ -20,10 +20,23 @@ export function Monogram({
   initials?: string;
 }) {
   return (
-    <Link href="/" className="monogram" aria-label={`${name} — home`}>
-      <span className="monogram__chip" aria-hidden="true">
+    /*
+     * The accessible name has to contain the visible text.
+     *
+     * With `aria-label="Shawmiya Zarook — home"` over a mark reading "SZ",
+     * the two disagreed: a screen-reader user heard one thing, and a voice
+     * control user saying "click SZ" — the only label they can see — matched
+     * nothing. Lighthouse flags this as label-content-name-mismatch.
+     *
+     * Building the name from the visible initials plus screen-reader-only
+     * text keeps both audiences pointing at the same control, and the chip
+     * stays decorative because the text inside it is now the real label.
+     */
+    <Link href="/" className="monogram">
+      <span className="monogram__chip">
         <span className="monogram__mark">{initials}</span>
       </span>
+      <span className="sr-only">{`, ${name} — home`}</span>
     </Link>
   );
 }
