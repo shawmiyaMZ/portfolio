@@ -74,7 +74,7 @@ export default async function PostPage({ params }: Params) {
       />
 
       <article>
-        <header className="relative u-top-clear">
+        <header data-chapter="journal" className="relative u-top-clear">
           <StudioField />
           <div className="u-wrap relative z-10">
             <Link

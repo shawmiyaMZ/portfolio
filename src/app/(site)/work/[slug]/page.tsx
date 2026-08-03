@@ -48,7 +48,7 @@ export default async function CaseStudyPage({ params }: Params) {
 
   return (
     <>
-      <section className="relative u-top-clear">
+      <section data-chapter="work" className="relative u-top-clear">
         <StudioField />
         <div className="u-wrap relative z-10">
           <Link

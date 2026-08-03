@@ -63,6 +63,7 @@ export default async function HomePage() {
       {/* ============ 01 · HERO ============ */}
       <section
         id="hero"
+        data-chapter="hero"
         className="relative pb-[clamp(3rem,7vw,6rem)] u-top-clear scroll-mt-24"
       >
         <StudioField />
@@ -82,9 +83,11 @@ export default async function HomePage() {
                 voices, one hierarchy — see `.u-lede` in globals.css. */}
             <h1 className="u-hero max-w-[13ch]">{name}</h1>
 
+            {/* The chapter accent, not the technical ink — Chapter 01's
+                signature is Madder, and the role line is where it lands. */}
             <p
               className="u-eyebrow mt-4"
-              style={{ color: "var(--ink-technical)" }}
+              style={{ color: "var(--chapter-accent-ink)" }}
             >
               {role}
             </p>
@@ -114,7 +117,7 @@ export default async function HomePage() {
       </section>
 
       {/* ============ 02 · SELECTED WORK ============ */}
-      <section id="work" className="u-section scroll-mt-24">
+      <section id="work" data-chapter="work" className="u-section scroll-mt-24">
         <div className="u-wrap">
           <SectionHead
             eyebrow="Chapter 02 · Selected work"
@@ -142,7 +145,7 @@ export default async function HomePage() {
       </section>
 
       {/* ============ 03 · JOURNAL ============ */}
-      <section id="journal" className="u-section u-ground-raised scroll-mt-24">
+      <section id="journal" data-chapter="journal" className="u-section u-ground-raised scroll-mt-24">
         <div className="u-wrap">
           <SectionHead
             eyebrow="Chapter 03 · Journal"
@@ -182,7 +185,7 @@ export default async function HomePage() {
           alternate between the two surfaces the system already defines, so
           a chapter this long has something to measure progress against
           instead of running as one flat wall of Porcelain. */}
-      <section id="about" className="u-section pt-0 scroll-mt-24">
+      <section id="about" data-chapter="about" className="u-section pt-0 scroll-mt-24">
         <div className="u-wrap grid lg:grid-cols-12 gap-x-12 gap-y-10 items-center">
           <div className="lg:col-span-7">
             <SectionHead
@@ -223,7 +226,7 @@ export default async function HomePage() {
       </section>
 
       {profile?.skillGroups && profile.skillGroups.length > 0 && (
-        <section className="about-movement about-movement--raised">
+        <section data-chapter="about" className="about-movement about-movement--raised">
           <div className="u-wrap">
             <h3 className="about-movement__title">Toolkit</h3>
             <div className="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -258,7 +261,7 @@ export default async function HomePage() {
       )}
 
       {profile?.education && profile.education.length > 0 && (
-        <section className="about-movement">
+        <section data-chapter="about" className="about-movement">
           <div className="u-wrap">
             <h3 className="about-movement__title">Education</h3>
             <ul className="list-none m-0 p-0 grid gap-6">
@@ -292,7 +295,7 @@ export default async function HomePage() {
       )}
 
       {profile?.milestones && profile.milestones.length > 0 && (
-        <section className="about-movement about-movement--raised">
+        <section data-chapter="about" className="about-movement about-movement--raised">
           <div className="u-wrap">
             <h3 className="about-movement__title">How I got here</h3>
             <ul className="list-none m-0 p-0 max-w-[var(--measure-prose)]">

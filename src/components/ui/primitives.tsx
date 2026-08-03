@@ -16,7 +16,17 @@ export function SectionHead({
   return (
     <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5 mb-[clamp(2rem,5vw,3.5rem)]">
       <div className="grid gap-4">
-        {eyebrow && <span className="u-eyebrow">{eyebrow}</span>}
+        {/* The chapter's accent, inherited from the section's data-chapter.
+            Falls back to the ordinary eyebrow ink outside a chapter, so this
+            component still works anywhere. */}
+        {eyebrow && (
+          <span
+            className="u-eyebrow section-head__eyebrow"
+            style={{ color: "var(--chapter-accent-ink, var(--ink-secondary))" }}
+          >
+            {eyebrow}
+          </span>
+        )}
         <h2 className="u-h2 max-w-[20ch]">{title}</h2>
         {lede && (
           <p

@@ -20,7 +20,7 @@ export default async function JournalPage() {
 
   return (
     <>
-      <section className="relative u-top-clear pb-[clamp(2rem,5vw,3.5rem)]">
+      <section data-chapter="journal" className="relative u-top-clear pb-[clamp(2rem,5vw,3.5rem)]">
         <StudioField />
         <div className="u-wrap relative z-10">
           <span className="u-eyebrow block mb-4">Journal</span>

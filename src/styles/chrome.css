@@ -679,6 +679,20 @@
   padding-block-end: clamp(1.25rem, 2.5vw, 2rem);
   margin-block-end: clamp(2rem, 4vw, 3rem);
   border-block-end: 1px solid var(--line-hairline);
+  position: relative;
+}
+
+/* The chapter accent as a short rule riding on the hairline — the one place
+   a movement announces which chapter it belongs to. Kept to 3rem so it
+   reads as a mark rather than a coloured border. */
+.about-movement__title::after {
+  content: "";
+  position: absolute;
+  inset-block-end: -1px;
+  inset-inline-start: 0;
+  inline-size: 3rem;
+  block-size: 2px;
+  background: var(--chapter-accent, var(--color-madder));
 }
 
 /* ============================================================

@@ -141,6 +141,53 @@
   }
 }
 
+/* ---------- chapter signatures ----------
+   One studio, five light settings — not five designs.
+
+   The assignments are not arbitrary. Every one of these accents already
+   carried this role before chapters had identities: Cobalt numbers the
+   case-study beats and marks the timeline dots, Sage is the journal's tag
+   tone, Madder is identity and links, Plum is the deep accent of the
+   inverted bands. And the palette was sampled from the avatar — Madder is
+   the hijab, Sage the under-cap, Plum the top. This surfaces a structure
+   the system already had rather than bolting one on.
+
+   Two values per chapter, because they are not interchangeable. `accent`
+   is for rules, marks and field tints. `accent-ink` is for the text that
+   carries the accent, and must clear AA. Sage is 2.80:1 and is documented
+   above as fills and rules ONLY — so the Journal's eyebrow takes the
+   darker sage its tag chips already use, not the fill value.
+
+   Accents appear on the chapter eyebrow, the rule beneath the title, small
+   marks, and the field at very low opacity. Never body text, never links —
+   Madder owns those globally — and never large fills. */
+[data-chapter] {
+  --chapter-accent: var(--color-madder);
+  --chapter-accent-ink: var(--color-madder);
+}
+
+[data-chapter="work"] {
+  --chapter-accent: var(--color-cobalt);
+  --chapter-accent-ink: var(--color-cobalt);
+}
+
+[data-chapter="journal"] {
+  --chapter-accent: var(--color-sage);
+  /* 6.02:1 — the tone the sage tag chips already use. */
+  --chapter-accent-ink: #4e5647;
+}
+
+[data-chapter="about"] {
+  --chapter-accent: var(--color-plum);
+  --chapter-accent-ink: var(--color-plum);
+}
+
+/* Sits on Graphite, so the light value is the readable one here. */
+[data-chapter="connect"] {
+  --chapter-accent: var(--color-madder-light);
+  --chapter-accent-ink: var(--color-madder-light);
+}
+
 /* The portfolio is single-theme by design, not by omission.
    Studio Light is a lit porcelain surface; inverting it would
    describe a different physical space. The two Graphite bands
