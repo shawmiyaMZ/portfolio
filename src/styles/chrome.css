@@ -593,6 +593,18 @@
   }
 }
 
+/* Touch has no hover, so a reveal-on-hover mark is simply a mark that never
+   reveals — the colour was unreachable on the device this section is most
+   read on. There the brand colour is the resting state instead.
+   It costs less here than it would on a pointer device: the toolkit is a
+   single column on a phone, so the marks arrive one at a time down the page
+   rather than as a grid of competing logos. */
+@media (hover: none) {
+  .tech-icon svg {
+    fill: var(--tech-brand, var(--ink-secondary));
+  }
+}
+
 /* No mark exists for every technology — OpenAI is absent from the set
    entirely. A clay chip carrying the initial, in the same vocabulary as the
    project covers, so the gap reads as a considered state and the row height
