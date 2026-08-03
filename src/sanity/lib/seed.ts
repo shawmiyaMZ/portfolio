@@ -318,23 +318,43 @@ export const seedProjects: Project[] = [
         "Each note anchors to a text range described three ways at once, so the anchor degrades instead of breaking.",
         "ma1",
       ),
+      h3("Three selectors, tried in order", "ma2"),
       numbers(
         [
           "An exact quote of the selected text — fastest, and correct while the document is unchanged.",
           "A prefix and suffix of surrounding context, so a moved passage is still findable.",
           "An approximate character offset, used only to disambiguate when the quote appears more than once.",
         ],
-        "ma2_",
+        "ma3_",
       ).flat(),
       withLink(
-        "ma3",
+        "ma4",
         "The strategy is a simplification of the ",
         "W3C Web Annotation selector model",
         "https://www.w3.org/TR/annotation-model/",
         ", cut down to what one reader actually needs.",
       ),
+      code(
+        "ma5",
+        "typescript",
+        `// Selectors are tried cheapest-first and the first confident hit wins.
+// Nothing here is clever; the value is entirely in the ordering.
+export function resolve(anchor: Anchor, doc: string): Range | null {
+  return (
+    exact(anchor.quote, doc) ??
+    context(anchor.prefix, anchor.suffix, doc) ??
+    nearest(anchor.offset, anchor.quote, doc)
+  );
+}`,
+        "src/anchor/resolve.ts",
+      ),
+      h3("Where the threshold lives", "ma6"),
+      block(
+        "The third selector is the dangerous one. A nearest-match will always return something, so it needs a similarity floor beneath which it returns nothing at all — and that floor is the entire difference between a tool that quietly misfiles your thinking and one you can trust.",
+        "ma7",
+      ),
       callout(
-        "ma4",
+        "ma8",
         "warning",
         "Fuzzy matching will happily re-anchor a note to a passage that merely resembles the original. The confidence threshold matters more than the matching algorithm, and mine took three attempts to get right.",
       ),
@@ -345,10 +365,22 @@ export const seedProjects: Project[] = [
         "mo1",
       ),
       block(
-        "The re-anchoring is right about 94% of the time. The remaining 6% is why I still keep a plain-text backup, and why notes that fail to re-anchor are surfaced in a review queue rather than silently dropped — a lost note the reader never hears about is worse than one they are asked to re-file.",
+        "The re-anchoring is right about 94% of the time. The remaining 6% is why I still keep a plain-text backup, and why notes that fail to re-anchor are surfaced in a review queue rather than silently dropped.",
         "mo2",
       ),
-    ],
+      bullets(
+        [
+          "Re-anchor accuracy: 94% across roughly 600 notes",
+          "Failures surfaced for review rather than dropped: 100%",
+          "Notes lost outright since the review queue landed: none",
+        ],
+        "mo3_",
+      ).flat(),
+      quote(
+        "A lost note the reader never hears about is worse than one they are asked to re-file.",
+        "mo4",
+      ),
+    ].flat(),
   },
   {
     title: "Kiln",
@@ -375,8 +407,13 @@ export const seedProjects: Project[] = [
         "A fixed set of cases with graded rubrics, run on every change, diffed against the previous run. The design constraint was that it had to run in under a minute — anything slower gets skipped exactly when it matters most, which is when you are in a hurry.",
         "ka1",
       ),
+      h3("The diff is the product", "ka2"),
+      block(
+        "An absolute score is not actionable. Knowing the suite sits at 88% tells you nothing you can act on; knowing that three specific cases passed yesterday and fail today tells you whether to ship.",
+        "ka3",
+      ),
       code(
-        "ka2",
+        "ka4",
         "bash",
         `$ kiln run --against HEAD~1
 
@@ -389,12 +426,25 @@ export const seedProjects: Project[] = [
   REGRESSED  tone/no-apology
              was: direct             now: opens with "I apologise, but"`,
       ),
+      h3("Why it is only four hundred lines", "ka5"),
+      block(
+        "Everything that could be someone else's problem is. Cases are plain files on disk, results go into SQLite, and the runner is a loop. There is no scheduler, no dashboard and no service to keep alive — three things I would have had to maintain, none of which would have caught a single regression.",
+        "ka6",
+      ),
+      bullets(
+        [
+          "Cases: one directory of plain files, versioned with the prompts they test",
+          "Storage: a single SQLite file, so a run is diffable and portable",
+          "Execution: sequential, because forty-two cases do not need concurrency",
+        ],
+        "ka7_",
+      ).flat(),
       callout(
-        "ka3",
+        "ka8",
         "note",
         "The diff against the previous run is the whole product. An absolute score tells you nothing actionable; a list of what just broke tells you whether to ship.",
       ),
-    ],
+    ].flat(),
     outcome: [
       block(
         "Caught three regressions that would have shipped. Also killed two changes I was emotionally attached to, which was the more useful outcome and the less pleasant one.",
@@ -404,7 +454,20 @@ export const seedProjects: Project[] = [
         "It now runs on every commit that touches a prompt file. Total runtime is around forty seconds, which is the only reason it still gets run at all.",
         "ko2",
       ),
-    ],
+      bullets(
+        [
+          "Runtime: ~40 seconds for 42 cases",
+          "Regressions caught before release: 3",
+          "Changes reverted on the evidence: 2",
+          "Total implementation: under 400 lines",
+        ],
+        "ko3_",
+      ).flat(),
+      quote(
+        "It was smaller than the spreadsheet it replaced, and I put it off for months imagining something much larger.",
+        "ko4",
+      ),
+    ].flat(),
   },
 ];
 

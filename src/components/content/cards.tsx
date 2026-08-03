@@ -1,6 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
-import { imageUrl } from "@/sanity/lib/image";
+import { ProjectCover } from "@/components/content/ProjectCover";
 import type { PostSummary, ProjectSummary } from "@/sanity/lib/types";
 import { Tag, formatDate } from "@/components/ui/primitives";
 
@@ -24,8 +23,6 @@ export function ProjectRow({
   project: ProjectSummary;
   flip: boolean;
 }) {
-  const cover = imageUrl(project.coverImage, 1000, 700);
-
   return (
     <article
       className="tilt-stage project-row"
@@ -120,25 +117,12 @@ export function ProjectRow({
               boxShadow: "var(--shadow-e2)",
             }}
           >
-            {cover ? (
-              <Image
-                src={cover}
-                alt={project.coverImage?.alt ?? ""}
-                fill
-                sizes="(max-width: 767px) 100vw, (max-width: 1023px) 93vw, 58vw"
-                className="object-cover"
-              />
-            ) : (
-              /* A project without a screenshot still deserves a composed
-                 surface. Same clay vocabulary as the Studio Field — two
-                 tinted solids under one upper-left light — so a missing
-                 cover reads as restraint rather than as an error. */
-              <div className="project-cover-fallback" aria-hidden="true">
-                <span className="project-cover-fallback__mark">
-                  {project.title.trim().charAt(0)}
-                </span>
-              </div>
-            )}
+            <ProjectCover
+              project={project}
+              width={1000}
+              height={700}
+              sizes="(max-width: 767px) 100vw, (max-width: 1023px) 93vw, 58vw"
+            />
           </div>
         </div>
       </Link>
@@ -148,8 +132,6 @@ export function ProjectRow({
 
 /** The projects index uses a real grid — there, comparability beats emphasis. */
 export function ProjectCard({ project }: { project: ProjectSummary }) {
-  const cover = imageUrl(project.coverImage, 800, 560);
-
   return (
     <article className="tilt-stage h-full">
       <Link
@@ -170,15 +152,12 @@ export function ProjectCard({ project }: { project: ProjectSummary }) {
           className="aspect-[16/9] sm:aspect-[10/7] relative"
           style={{ background: "var(--surface-raised)" }}
         >
-          {cover && (
-            <Image
-              src={cover}
-              alt={project.coverImage?.alt ?? ""}
-              fill
-              sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
-              className="object-cover"
-            />
-          )}
+          <ProjectCover
+            project={project}
+            width={800}
+            height={560}
+            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
+          />
         </div>
         <div className="p-6 md:p-7 lg:p-6 grid gap-2.5 flex-1 content-start">
           <h3 className="u-h3">{project.title}</h3>

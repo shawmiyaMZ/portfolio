@@ -332,57 +332,190 @@
   color: var(--ink-primary-inverted);
 }
 
-/* ---------- project cover fallback ----------
-   Not every project has a screenshot worth showing, and an empty surface
-   reads as a broken image. This is a composed clay surface in the same
-   vocabulary as the Studio Field: a warm ground, two tinted solids lit from
-   the upper left, and the project's initial set in the display face. */
+/* ============================================================
+   PROJECT COVER — a made cover, not a missing one
 
-.project-cover-fallback {
+   A project without a photograph still gets a designed cover. Same physics
+   as everything else here: a warm clay ground, one soft key light from the
+   upper left, warm two-layer contact shadows, and an interior lip along each
+   solid's top edge where the light catches it.
+
+   Four still lifes rather than one. A grid of three identical tiles reads as
+   a placeholder no matter how well each tile is drawn — variation is what
+   makes it read as chosen. Each variant pairs two accents at opposite
+   temperatures and arranges three solids so nothing sits dead centre and
+   nothing collides with the monogram.
+
+   Sizes are percentages of the frame and shapes hold their own aspect ratio,
+   so one composition survives a 10:7 card, a 16:9 tablet row and a 16:10
+   case-study plate without being re-tuned per surface.
+   ============================================================ */
+
+.project-cover {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  overflow: hidden;
+  /* The monogram scales with the frame rather than the viewport, so a small
+     index card and a wide featured row read as the same design at two
+     sizes instead of two different designs. */
+  container-type: inline-size;
   background:
-    radial-gradient(60% 70% at 22% 20%, rgba(178, 58, 82, 0.1), transparent 62%),
-    radial-gradient(52% 62% at 82% 78%, rgba(62, 92, 118, 0.09), transparent 64%),
+    /* The key light itself, from the same upper-left as every shadow on the
+       site. Without it the tinted washes below read as flat colour. */
+    radial-gradient(115% 92% at 10% 2%, rgba(255, 255, 255, 0.5), transparent 56%),
+    radial-gradient(72% 82% at 22% 20%, var(--cover-a), transparent 66%),
+    radial-gradient(62% 74% at 84% 82%, var(--cover-b), transparent 68%),
     var(--color-slip);
 }
 
-.project-cover-fallback::before,
-.project-cover-fallback::after {
-  content: "";
+/* ---------- accent pairings ----------
+   Two temperatures per variant, never two neighbours on the wheel. */
+
+.project-cover[data-variant="0"] {
+  --cover-a: rgba(178, 58, 82, 0.11);
+  --cover-b: rgba(62, 92, 118, 0.1);
+}
+
+.project-cover[data-variant="1"] {
+  --cover-a: rgba(62, 92, 118, 0.12);
+  --cover-b: rgba(124, 69, 101, 0.1);
+}
+
+.project-cover[data-variant="2"] {
+  --cover-a: rgba(124, 69, 101, 0.1);
+  --cover-b: rgba(139, 150, 131, 0.16);
+}
+
+.project-cover[data-variant="3"] {
+  --cover-a: rgba(139, 150, 131, 0.15);
+  --cover-b: rgba(178, 58, 82, 0.1);
+}
+
+/* ---------- the solids ---------- */
+
+.project-cover__solid {
   position: absolute;
-  border-radius: 24%;
-  background: rgba(140, 135, 127, 0.09);
+  background: rgba(140, 135, 127, 0.1);
+  box-shadow:
+    0 1px 2px rgba(60, 45, 35, 0.05),
+    0 10px 24px rgba(60, 45, 35, 0.07),
+    /* The lit top edge. Same lip the buttons carry. */ inset 0 1px 0
+      rgba(255, 255, 255, 0.42);
 }
 
-.project-cover-fallback::before {
-  inline-size: 34%;
-  aspect-ratio: 1;
-  inset-inline-start: 9%;
-  inset-block-end: -8%;
+/* Shapes come from the Studio Field's vocabulary: ball, cube, capsule.
+   Clay is rounded — never glassy, never accidentally pill-shaped. */
+.project-cover__solid[data-solid="1"] {
   border-radius: 50%;
-}
-
-.project-cover-fallback::after {
-  inline-size: 22%;
   aspect-ratio: 1;
-  inset-inline-end: 12%;
-  inset-block-start: -6%;
-  box-shadow: 0 12px 28px rgba(60, 45, 35, 0.08);
 }
 
-.project-cover-fallback__mark {
-  position: relative;
+.project-cover__solid[data-solid="2"] {
+  border-radius: 24%;
+  aspect-ratio: 1;
+}
+
+.project-cover__solid[data-solid="3"] {
+  border-radius: 999px;
+}
+
+/* ---------- the four arrangements ---------- */
+
+.project-cover[data-variant="0"] .project-cover__solid[data-solid="1"] {
+  inline-size: 38%;
+  inset-inline-start: 6%;
+  inset-block-end: -12%;
+}
+.project-cover[data-variant="0"] .project-cover__solid[data-solid="2"] {
+  inline-size: 19%;
+  inset-inline-end: 13%;
+  inset-block-start: -7%;
+  rotate: 12deg;
+}
+.project-cover[data-variant="0"] .project-cover__solid[data-solid="3"] {
+  inline-size: 27%;
+  block-size: 11%;
+  inset-inline-end: 7%;
+  inset-block-end: 21%;
+  rotate: -8deg;
+}
+
+.project-cover[data-variant="1"] .project-cover__solid[data-solid="1"] {
+  inline-size: 25%;
+  inset-inline-end: 11%;
+  inset-block-end: -9%;
+}
+.project-cover[data-variant="1"] .project-cover__solid[data-solid="2"] {
+  inline-size: 31%;
+  inset-inline-start: -7%;
+  inset-block-start: 13%;
+  rotate: -14deg;
+}
+.project-cover[data-variant="1"] .project-cover__solid[data-solid="3"] {
+  inline-size: 23%;
+  block-size: 10%;
+  inset-inline-start: 29%;
+  inset-block-end: 15%;
+  rotate: 6deg;
+}
+
+.project-cover[data-variant="2"] .project-cover__solid[data-solid="1"] {
+  inline-size: 28%;
+  inset-inline-end: -8%;
+  inset-block-start: 28%;
+}
+.project-cover[data-variant="2"] .project-cover__solid[data-solid="2"] {
+  inline-size: 18%;
+  inset-inline-start: 24%;
+  inset-block-end: -7%;
+  rotate: 18deg;
+}
+.project-cover[data-variant="2"] .project-cover__solid[data-solid="3"] {
+  inline-size: 38%;
+  block-size: 13%;
+  inset-inline-start: 8%;
+  inset-block-start: 15%;
+  rotate: -5deg;
+}
+
+.project-cover[data-variant="3"] .project-cover__solid[data-solid="1"] {
+  inline-size: 30%;
+  inset-inline-start: 15%;
+  inset-block-start: -10%;
+}
+.project-cover[data-variant="3"] .project-cover__solid[data-solid="2"] {
+  inline-size: 25%;
+  inset-inline-end: 7%;
+  inset-block-end: 9%;
+  rotate: -10deg;
+}
+.project-cover[data-variant="3"] .project-cover__solid[data-solid="3"] {
+  inline-size: 21%;
+  block-size: 9%;
+  inset-inline-start: 4%;
+  inset-block-end: 25%;
+  rotate: 9deg;
+}
+
+/* ---------- the monogram ----------
+   Pressed into the ground rather than sitting on it: the fill is barely
+   darker than the clay, and a single white edge below sells the depression.
+   Set low-left so it anchors the composition instead of centring it, which
+   is what made the previous version read as a watermark. */
+
+.project-cover__mark {
+  position: absolute;
+  inset-inline-start: 6%;
+  inset-block-end: 2%;
   font-family: var(--font-display);
   font-variation-settings:
     "SOFT" 40,
     "WONK" 1,
     "opsz" 144;
-  font-size: clamp(3rem, 9vw, 5.5rem);
-  line-height: 1;
-  color: rgba(26, 25, 23, 0.14);
+  font-size: 30cqw;
+  line-height: 0.86;
+  color: rgba(26, 25, 23, 0.09);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   user-select: none;
 }
 

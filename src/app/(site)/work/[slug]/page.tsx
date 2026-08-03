@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ConnectBand } from "@/components/content/ConnectBand";
+import { ProjectCover } from "@/components/content/ProjectCover";
 import { Prose } from "@/components/content/Prose";
 import { StudioField } from "@/components/field/StudioField";
 import { Button } from "@/components/ui/Button";
@@ -45,8 +46,6 @@ export default async function CaseStudyPage({ params }: Params) {
 
   if (!project) notFound();
 
-  const cover = imageUrl(project.coverImage, 1600, 1000);
-
   return (
     <>
       <section className="relative u-top-clear">
@@ -87,27 +86,29 @@ export default async function CaseStudyPage({ params }: Params) {
         </div>
       </section>
 
-      {cover && (
-        <div className="u-wrap mt-[clamp(2.5rem,6vw,4.5rem)]">
-          <div
-            className="rounded-lg overflow-hidden relative aspect-[16/10]"
-            style={{
-              boxShadow: "var(--shadow-e3)",
-              background: "var(--surface-raised)",
-              viewTransitionName: `project-${project.slug}`,
-            }}
-          >
-            <Image
-              src={cover}
-              alt={project.coverImage?.alt ?? ""}
-              fill
-              priority
-              sizes="(max-width: 1240px) 100vw, 1240px"
-              className="object-cover"
-            />
-          </div>
+      {/* Always rendered. The cover is the plate this page opens on, and a
+          project without a photograph still has one — the view transition
+          from the index needs a shape to land in either way, and a page whose
+          layout depends on whether an image exists shifts the moment one is
+          added in the Studio. */}
+      <div className="u-wrap mt-[clamp(2.5rem,6vw,4.5rem)]">
+        <div
+          className="rounded-lg overflow-hidden relative aspect-[16/10]"
+          style={{
+            boxShadow: "var(--shadow-e3)",
+            background: "var(--surface-raised)",
+            viewTransitionName: `project-${project.slug}`,
+          }}
+        >
+          <ProjectCover
+            project={project}
+            width={1600}
+            height={1000}
+            sizes="(max-width: 1240px) 100vw, 1240px"
+            priority
+          />
         </div>
-      )}
+      </div>
 
       {/* ---------- meta rail ---------- */}
       <section className="u-section">
