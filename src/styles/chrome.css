@@ -369,6 +369,49 @@
 }
 
 /* ============================================================
+   FILTER STRIP — chips that scale to the number of filters
+
+   Wrapping is correct when there is width to wrap into. On a phone it is
+   not: /work emits one chip per unique tech tag, and eleven of them wrap
+   into four rows — roughly 200px, which pushed the first project card's
+   title below the fold on a 390px device. The page then read as a heading
+   followed by nothing, which is exactly what it was.
+
+   Below 640 the chips become a single swipeable row instead. It costs one
+   row of height regardless of how many filters exist, so the list stays
+   above the fold whether there are four tags or forty. The strip bleeds to
+   both screen edges rather than stopping at the gutter — that is what
+   signals it continues, without adding a gradient or an arrow to say so.
+   ============================================================ */
+
+@media (max-width: 639px) {
+  .filter-strip {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    /* Out to the screen edges, then padded back in, so the first chip still
+       lines up with the text above it while the row itself runs full-bleed. */
+    margin-inline: calc(var(--layout-gutter) * -1);
+    padding-inline: var(--layout-gutter);
+    /* Room for the focus ring, which would otherwise be clipped by the
+       scroll container on the block axis. */
+    padding-block: 3px;
+    scrollbar-width: none;
+  }
+
+  .filter-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-strip > * {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+}
+
+/* ============================================================
    JOURNAL CONTROLS — search and tags as one bar
 
    On a phone these stack, because one column is all there is.

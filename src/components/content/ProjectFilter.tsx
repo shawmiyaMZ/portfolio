@@ -41,7 +41,7 @@ export function ProjectFilter({ projects }: { projects: ProjectSummary[] }) {
     <>
       {tech.length > 0 && (
         <div
-          className="flex flex-wrap gap-2 mb-10"
+          className="filter-strip flex flex-wrap gap-2 mb-10"
           role="group"
           aria-label="Filter projects by technology"
         >

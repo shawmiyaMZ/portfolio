@@ -72,7 +72,7 @@ export function JournalIndex({
 
         {tags.length > 0 && (
           <div
-            className="journal-controls__tags flex flex-wrap gap-2"
+            className="journal-controls__tags filter-strip flex flex-wrap gap-2"
             role="group"
             aria-label="Filter posts by tag"
           >
