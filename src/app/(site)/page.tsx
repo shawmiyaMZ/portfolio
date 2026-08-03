@@ -14,6 +14,19 @@ import {
   getLatestPosts,
   getProfile,
 } from "@/sanity/lib/content";
+import type { SkillLevel } from "@/sanity/lib/types";
+
+/**
+ * Named tiers, never percentage bars.
+ *
+ * "React 72%" asserts a precision nobody can justify and everybody
+ * discounts. A named tier says something falsifiable about how you work.
+ */
+const LEVEL: Record<SkillLevel, string> = {
+  daily: "Working with daily",
+  comfortable: "Comfortable",
+  learning: "Learning",
+};
 
 /**
  * Home is the primary text, not a summary of it.
@@ -156,21 +169,31 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ============ 04 · ABOUT ============ */}
+      {/* ============ 04 · ABOUT ============
+          The whole profile lives here now. There is no /about route: this
+          chapter *is* the About page, so a reader never leaves the narrative
+          to learn who wrote it.
+
+          It reads as one composition rather than four stacked sections. Each
+          movement is announced by a title on a hairline instead of a full
+          section head — Education is a single degree, and a three-part head
+          above it weighed more than the content it introduced. The grounds
+          alternate between the two surfaces the system already defines, so
+          a chapter this long has something to measure progress against
+          instead of running as one flat wall of Porcelain. */}
       <section id="about" className="u-section pt-0 scroll-mt-24">
         <div className="u-wrap grid lg:grid-cols-12 gap-x-12 gap-y-10 items-center">
           <div className="lg:col-span-7">
             <SectionHead
               eyebrow="Chapter 04 · About"
               title="Who is behind all this"
-              action={<ChapterLink href="/about">Full profile</ChapterLink>}
             />
             {profile?.bio ? (
               <Prose value={profile.bio} />
             ) : (
               <EmptyState
                 title="No bio yet"
-                body="Add your professional bio in the Studio and it will appear here. Education, skills and your timeline live on the full About page."
+                body="Add your professional bio in the Studio and it will appear here, along with your education, toolkit and timeline."
                 href="/studio"
                 cta="Open the Studio"
               />
@@ -197,6 +220,114 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {profile?.skillGroups && profile.skillGroups.length > 0 && (
+        <section className="about-movement about-movement--raised">
+          <div className="u-wrap">
+            <h3 className="about-movement__title">Toolkit</h3>
+            <div className="grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+              {profile.skillGroups.map((group, i) => (
+                <Reveal key={group.category} index={i} weight="light">
+                  <div className="grid gap-4">
+                    <h4
+                      className="u-eyebrow"
+                      style={{ color: "var(--ink-technical)" }}
+                    >
+                      {group.category}
+                    </h4>
+                    <ul className="list-none m-0 p-0 grid gap-3">
+                      {group.skills?.map((skill) => (
+                        <li
+                          key={skill.name}
+                          className="flex items-baseline justify-between gap-4 pb-3"
+                          style={{
+                            borderBottom: "1px solid var(--line-hairline)",
+                          }}
+                        >
+                          <span className="font-medium">{skill.name}</span>
+                          <span className="u-caption whitespace-nowrap">
+                            {LEVEL[skill.level] ?? LEVEL.comfortable}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {profile?.education && profile.education.length > 0 && (
+        <section className="about-movement">
+          <div className="u-wrap">
+            <h3 className="about-movement__title">Education</h3>
+            <ul className="list-none m-0 p-0 grid gap-6">
+              {profile.education.map((e, i) => (
+                <Reveal key={`${e.qualification}-${i}`} index={i} as="li">
+                  {/* Anchored at both ends from 768. A hairline spanning the
+                      full measure has to divide something at each end, or it
+                      reads as an unfinished table. */}
+                  <div
+                    className="education-row grid gap-x-8 gap-y-1 pb-6"
+                    style={{ borderBottom: "1px solid var(--line-hairline)" }}
+                  >
+                    <span className="u-caption education-row__period">
+                      {e.period}
+                    </span>
+                    <span className="u-h3 education-row__qualification">
+                      {e.qualification}
+                    </span>
+                    <span
+                      className="education-row__institution"
+                      style={{ color: "var(--ink-secondary)" }}
+                    >
+                      {e.institution}
+                    </span>
+                  </div>
+                </Reveal>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      {profile?.milestones && profile.milestones.length > 0 && (
+        <section className="about-movement about-movement--raised">
+          <div className="u-wrap">
+            <h3 className="about-movement__title">How I got here</h3>
+            <ul className="list-none m-0 p-0 max-w-[var(--measure-prose)]">
+              {profile.milestones.map((m, i) => (
+                <Reveal key={`${m.year}-${i}`} index={i} as="li" weight="light">
+                  <div
+                    className="relative pl-8 pb-9"
+                    style={{
+                      borderLeft:
+                        i === profile.milestones!.length - 1
+                          ? "1px solid transparent"
+                          : "1px solid var(--line-hairline)",
+                    }}
+                  >
+                    <span
+                      className="absolute left-0 top-1.5 size-2 rounded-full -translate-x-1/2"
+                      style={{ background: "var(--color-cobalt)" }}
+                      aria-hidden="true"
+                    />
+                    <span className="u-caption block mb-1">{m.year}</span>
+                    <span className="u-h3 block mb-1.5">{m.event}</span>
+                    {m.detail && (
+                      <p style={{ color: "var(--ink-secondary)" }}>
+                        {m.detail}
+                      </p>
+                    )}
+                  </div>
+                </Reveal>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* ============ 05 · CONNECT ============ */}
       <ConnectBand linkedinUrl={profile?.linkedinUrl} />

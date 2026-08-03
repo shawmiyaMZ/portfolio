@@ -541,6 +541,55 @@
 }
 
 /* ============================================================
+   ABOUT MOVEMENTS — one composition, not five sections
+
+   The page felt white and flat for three compounding reasons, and only one
+   of them was colour:
+
+     1. every section sat on the same ground, so nothing marked progress
+     2. spacing was a uniform 138px regardless of how much content earned it
+     3. each movement carried a full section head, so scaffolding outweighed
+        content — Education's header was half its total height
+
+   All three are answered here without introducing anything new. The grounds
+   alternate between the two surfaces the system already defines, Porcelain
+   and Slip. The tonal step is deliberately small — these are two lit
+   surfaces in one room, not two rooms — but it is enough that the eye can
+   measure where it is. Spacing now follows weight rather than rule. And the
+   section head is reduced to a rule and a title, which is all a movement
+   inside a single composition needs.
+   ============================================================ */
+
+.about-movement {
+  padding-block: clamp(3rem, 6vw, 5.5rem);
+}
+
+/* The alternating ground. Slip is one step up from Porcelain — the same
+   relationship the raised card surfaces already use, so it reads as the
+   same material catching slightly more of the key light. */
+.about-movement--raised {
+  background: var(--surface-raised);
+}
+
+/* A rule the full width of the measure, with the title sitting on it. Says
+   "new movement" at a fraction of the vertical cost of an eyebrow, a
+   heading and a lede stacked. */
+.about-movement__title {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  line-height: var(--text-h2--line-height);
+  font-variation-settings:
+    "SOFT" 40,
+    "WONK" 1,
+    "opsz" 48;
+  letter-spacing: -0.018em;
+  font-weight: 600;
+  padding-block-end: clamp(1.25rem, 2.5vw, 2rem);
+  margin-block-end: clamp(2rem, 4vw, 3rem);
+  border-block-end: 1px solid var(--line-hairline);
+}
+
+/* ============================================================
    SITE FOOTER
 
    Composed twice rather than wrapped once. On a phone the links lead and

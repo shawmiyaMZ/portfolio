@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getAllProjects(),
   ]);
 
-  const staticRoutes = ["", "/work", "/journal", "/about", "/connect"].map(
+  const staticRoutes = ["", "/work", "/journal", "/connect"].map(
     (path) => ({
       url: `${siteUrl}${path}`,
       lastModified: new Date(),
