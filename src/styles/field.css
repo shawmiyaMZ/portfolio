@@ -34,6 +34,72 @@
   animation: field-mesh 180s var(--ease-ambient) infinite;
 }
 
+/* ============================================================
+   CHAPTER ATMOSPHERES
+
+   The same field, composed differently per chapter. No extra colour, no
+   extra saturation, no new shapes — only which solids are present, how far
+   back they sit, and how much of the mesh reads. Atmosphere from density
+   and depth rather than decoration, so a reader feels the room change
+   without being able to point at what changed.
+
+   The hero keeps the full arrangement; it is the only chapter that should
+   feel fully furnished. Everything after it is quieter, because content is
+   doing the work by then.
+   ============================================================ */
+
+/* Work — sparse and far. The near layer is dropped entirely so nothing
+   competes with the project artwork, and what remains sits deeper and
+   larger: a big room with few objects, which is how the work should read. */
+[data-chapter="work"] .field__mesh {
+  opacity: 0.5;
+}
+
+[data-chapter="work"] .field__layer[data-depth="4"] {
+  display: none;
+}
+
+[data-chapter="work"] .field__layer[data-depth="2"] .field__solid {
+  scale: 1.35;
+  opacity: 0.7;
+}
+
+/* Journal — minimal and high. Only the farthest layer survives, lifted
+   toward the top of the section, so the page feels like open air above a
+   column of text. A reading chapter should feel emptier, not busier. */
+[data-chapter="journal"] .field__mesh {
+  opacity: 0.34;
+}
+
+[data-chapter="journal"] .field__layer[data-depth="3"],
+[data-chapter="journal"] .field__layer[data-depth="4"] {
+  display: none;
+}
+
+[data-chapter="journal"] .field__layer[data-depth="2"] {
+  translate: 0 -12%;
+}
+
+[data-chapter="journal"] .field__layer[data-depth="2"] .field__solid {
+  opacity: 0.6;
+}
+
+/* About — soft and mid-depth. Everything present but pulled back and
+   slightly closer together, which reads as intimate rather than open.
+   The personal chapter should feel like a smaller room. */
+[data-chapter="about"] .field__mesh {
+  opacity: 0.62;
+}
+
+[data-chapter="about"] .field__layer[data-depth="4"] .field__solid {
+  opacity: 0.45;
+  scale: 0.85;
+}
+
+[data-chapter="about"] .field__layer[data-depth="3"] .field__solid {
+  opacity: 0.7;
+}
+
 .field--light .field__mesh {
   background:
     radial-gradient(

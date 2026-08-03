@@ -117,8 +117,13 @@ export default async function HomePage() {
       </section>
 
       {/* ============ 02 · SELECTED WORK ============ */}
-      <section id="work" data-chapter="work" className="u-section scroll-mt-24">
-        <div className="u-wrap">
+      <section
+        id="work"
+        data-chapter="work"
+        className="relative u-section scroll-mt-24"
+      >
+        <StudioField />
+        <div className="u-wrap relative z-10">
           <SectionHead
             eyebrow="Chapter 02 · Selected work"
             title="Things I have built, and what they taught me"
@@ -126,7 +131,7 @@ export default async function HomePage() {
           />
 
           {projects.length > 0 ? (
-            <div className="grid gap-[clamp(3rem,6vw,5rem)]">
+            <div className="work-rows grid gap-[clamp(3rem,6vw,5rem)]">
               {projects.map((project, i) => (
                 <Reveal key={project.slug} index={i} weight="heavy">
                   <ProjectRow project={project} flip={i % 2 === 1} />
@@ -145,8 +150,13 @@ export default async function HomePage() {
       </section>
 
       {/* ============ 03 · JOURNAL ============ */}
-      <section id="journal" data-chapter="journal" className="u-section u-ground-raised scroll-mt-24">
-        <div className="u-wrap">
+      <section
+        id="journal"
+        data-chapter="journal"
+        className="relative u-section u-ground-raised scroll-mt-24"
+      >
+        <StudioField />
+        <div className="u-wrap relative z-10">
           <SectionHead
             eyebrow="Chapter 03 · Journal"
             title="Learning in public"
@@ -185,8 +195,13 @@ export default async function HomePage() {
           alternate between the two surfaces the system already defines, so
           a chapter this long has something to measure progress against
           instead of running as one flat wall of Porcelain. */}
-      <section id="about" data-chapter="about" className="u-section pt-0 scroll-mt-24">
-        <div className="u-wrap grid lg:grid-cols-12 gap-x-12 gap-y-10 items-center">
+      <section
+        id="about"
+        data-chapter="about"
+        className="relative u-section pt-0 scroll-mt-24"
+      >
+        <StudioField />
+        <div className="u-wrap relative z-10 grid lg:grid-cols-12 gap-x-12 gap-y-10 items-center">
           <div className="lg:col-span-7">
             <SectionHead
               eyebrow="Chapter 04 · About"
