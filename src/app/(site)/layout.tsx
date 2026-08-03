@@ -16,8 +16,18 @@ export const metadata: Metadata = {
   description:
     "Software engineer working on AI-powered systems. Projects, case studies, and a journal about learning in public.",
   openGraph: { type: "website", siteName: "Shawmiya Zarook", locale: "en" },
+  /* `summary_large_image` so the generated 1200x630 card renders full-width
+     rather than as a thumbnail. Without a twitter block X falls back to the
+     Open Graph tags but still defaults to the small card. */
+  twitter: {
+    card: "summary_large_image",
+    title: "Shawmiya Zarook — Software Engineer",
+    description:
+      "Software engineer working on AI-powered systems. Projects, case studies, and a journal about learning in public.",
+  },
   robots: { index: true, follow: true },
   alternates: {
+    canonical: siteUrl,
     types: { "application/rss+xml": `${siteUrl}/rss.xml` },
   },
 };

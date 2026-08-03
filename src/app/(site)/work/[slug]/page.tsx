@@ -12,6 +12,8 @@ import { Tag, formatDate } from "@/components/ui/primitives";
 import { getProfile, getProject, getProjectSlugs } from "@/sanity/lib/content";
 import { imageUrl } from "@/sanity/lib/image";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 type Params = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
@@ -32,8 +34,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title: project.title,
       description: project.summary,
       type: "article",
-      images: cover ? [{ url: cover, width: 1200, height: 630 }] : undefined,
+      /* Spread rather than `images: undefined`. An explicit key overrides
+         the file-based default even when its value is undefined, so a
+         project without a cover was opting out of the site card and
+         shipping no og:image at all. Omitting the key lets the default
+         apply. */
+      ...(cover
+        ? { images: [{ url: cover, width: 1200, height: 630 }] }
+        : {}),
     },
+    alternates: { canonical: `${siteUrl}/work/${slug}` },
   };
 }
 

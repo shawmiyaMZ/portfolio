@@ -7,10 +7,13 @@ import { StudioField } from "@/components/field/StudioField";
 import { EmptyState } from "@/components/ui/primitives";
 import { getAllProjects, getProfile } from "@/sanity/lib/content";
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
   title: "Work",
   description:
     "Projects and case studies — the problem, the approach, the stack, and what actually came out of it.",
+  alternates: { canonical: `${siteUrl}/work` }
 };
 
 export default async function WorkPage() {
