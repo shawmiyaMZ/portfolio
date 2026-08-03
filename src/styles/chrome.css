@@ -22,13 +22,23 @@
   border-radius: 13px;
   /* A shallow porcelain surface lifted barely off the page. The gradient is
      the same upper-left key light that lights the avatar — two stops, no
-     glass, no ring. Anything stronger reads as a button. */
+     glass, no ring. Anything stronger reads as a button.
+
+     Translucent, and frosted like the nav slab beside it. Both objects are
+     fixed over scrolling content, so both have to answer the same question:
+     what happens when a heading passes underneath. Opaque, this one sliced
+     straight through — "SZ" landing on top of a project title with a hard
+     edge, which reads as a bug rather than as chrome. The slab already
+     blurred what passed behind it; now the two members of the same object
+     family behave the same way. */
   background: linear-gradient(
     155deg,
-    #fbf8f3 0%,
-    var(--color-porcelain) 52%,
-    #efe9e0 100%
+    rgba(251, 248, 243, 0.84) 0%,
+    rgba(246, 243, 238, 0.78) 52%,
+    rgba(239, 233, 224, 0.82) 100%
   );
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
   box-shadow:
     /* contact */
     0 1px 1px rgba(60, 45, 35, 0.07),
@@ -137,10 +147,20 @@
 }
 
 /* Where backdrop-filter is unavailable the translucency would leave the
-   links sitting on whatever is behind them. Fall back to an opaque slab. */
+   links sitting on whatever is behind them. Fall back to opaque surfaces —
+   a hard edge over passing content is still better than unreadable text. */
 @supports not (backdrop-filter: blur(1px)) {
   .nav-slab {
     background: var(--color-porcelain);
+  }
+
+  .monogram__chip {
+    background: linear-gradient(
+      155deg,
+      #fbf8f3 0%,
+      var(--color-porcelain) 52%,
+      #efe9e0 100%
+    );
   }
 }
 
@@ -220,7 +240,10 @@
   position: fixed;
   inset-inline-start: 0;
   inline-size: calc((100vw - var(--layout-max)) / 2);
-  padding-inline-end: 1.25rem;
+  /* Clearance between the ticks and the first character of body text. The
+     rail is deliberately peripheral, and peripheral things need air to stay
+     peripheral — at 16px it read as part of the paragraph beside it. */
+  padding-inline-end: 1.75rem;
   inset-block-start: 50%;
   translate: 0 -50%;
   z-index: 40;
@@ -277,6 +300,13 @@
 }
 
 .chapter-rail__label {
+  /* Out of the layout entirely below 1600, not merely invisible.
+     `opacity: 0` still reserves the label's width, and "Selected work" is
+     ~90px of it — which made every rail link 156px wide inside a 104px
+     gutter. The links overflowed rightward and pushed the ticks to within
+     16px of the body text, so the rail read as part of the paragraph. The
+     label is only ever *shown* at 1600+, so below that it should not exist. */
+  display: none;
   opacity: 0;
   transform: translateX(4px);
   transition:
@@ -298,6 +328,12 @@
 /* Names only where the gutter can actually hold them. Between 1280 and
    1600 the rail stays numbers-only rather than overlapping the text. */
 @media (min-width: 1600px) {
+  /* Now there is gutter enough to hold a name, so it rejoins the layout —
+     still invisible until the rail is hovered or focused. */
+  .chapter-rail__label {
+    display: inline;
+  }
+
   .chapter-rail:hover .chapter-rail__label,
   .chapter-rail:focus-within .chapter-rail__label {
     opacity: 1;
