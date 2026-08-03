@@ -113,8 +113,8 @@
   /* Settling out is slower than engaging in. A card that snaps back to rest
      as fast as it tilted reads as mechanical; real objects decelerate. */
   transition:
-    transform 420ms var(--ease-entrance),
-    box-shadow 420ms var(--ease-entrance);
+    transform var(--duration-settle) var(--ease-entrance),
+    box-shadow var(--duration-settle) var(--ease-entrance);
   transform-style: preserve-3d;
 }
 
@@ -137,7 +137,7 @@
   --magnet-y: 0px;
   transform: translate3d(var(--magnet-x), var(--magnet-y), 0);
   /* Slower on release than on pull, for the same reason as the tilt. */
-  transition: transform 340ms var(--ease-entrance);
+  transition: transform var(--duration-settle) var(--ease-entrance);
 }
 
 .magnetic:hover {
@@ -148,8 +148,8 @@
 [data-variant] {
   transition:
     background-color var(--duration-ui) var(--ease-entrance),
-    box-shadow 320ms var(--ease-entrance),
-    transform 320ms var(--ease-entrance);
+    box-shadow var(--duration-settle) var(--ease-entrance),
+    transform var(--duration-settle) var(--ease-entrance);
 }
 
 [data-variant]:hover {

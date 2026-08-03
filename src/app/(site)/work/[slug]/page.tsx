@@ -114,7 +114,12 @@ export default async function CaseStudyPage({ params }: Params) {
       <section className="u-section u-ground-raised">
         <div className="u-wrap grid lg:grid-cols-12 gap-x-10 gap-y-12">
           <aside className="lg:col-span-3">
-            <div className="lg:sticky lg:top-28 grid gap-7">
+            {/* A column at desktop, a band at tablet. Stacked below 1024 the
+                three meta items ran as a tall list above the beats, which
+                pushed the first beat most of a screen down and read as a
+                second header rather than as supporting detail. Between 768
+                and 1023 they sit side by side instead. */}
+            <div className="case-meta lg:sticky lg:top-28">
               <MetaItem label="Date" value={formatDate(project.date)} />
               {project.role && (
                 <MetaItem label="My role" value={project.role} />

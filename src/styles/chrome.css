@@ -541,6 +541,29 @@
 }
 
 /* ============================================================
+   CASE STUDY META — a column at desktop, a band at tablet
+
+   Date, role and stack stack vertically at every width below 1024, which
+   at tablet put a tall list between the cover and the first beat. Read as
+   a second header. Between 768 and 1023 they share a row and divide the
+   page instead of delaying it.
+   ============================================================ */
+
+.case-meta {
+  display: grid;
+  gap: 1.75rem;
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .case-meta {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-md);
+    padding-block-end: var(--space-md);
+    border-block-end: 1px solid var(--line-hairline);
+  }
+}
+
+/* ============================================================
    WORK CHAPTER — closing the gap before the artwork
 
    The chapter opened with the section's own top padding, then a section

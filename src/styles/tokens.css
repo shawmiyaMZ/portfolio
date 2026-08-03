@@ -120,6 +120,11 @@
   --duration-micro: 160ms;
   --duration-ui: 240ms;
   --duration-reveal: 640ms;
+  /* Surfaces settle out slower than they engage — a card that snaps back as
+     fast as it tilted reads as mechanical. That principle was already in the
+     design but expressed as 420ms, 340ms and 320ms in three places; one
+     value makes it a rule rather than three approximations. */
+  --duration-settle: 400ms;
 
   /* Reveal amplitude. 12–16px reads confident; 60px reads as
      trying hard. This is a token so it cannot drift per-component. */
