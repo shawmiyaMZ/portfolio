@@ -207,7 +207,17 @@ export function PostListItem({
 
         <div className="md:col-span-7 grid gap-2">
           <h3 className="u-h3">{post.title}</h3>
-          <p className="text-[15px]" style={{ color: "var(--ink-secondary)" }}>
+          {/* Seven of twelve columns is 673px at desktop, which at 15px is
+              75 characters a line — against a system that calls 60ch the
+              comfortable measure. The column earns its width from the
+              title; the excerpt should not inherit it. */}
+          <p
+            className="text-[15px]"
+            style={{
+              color: "var(--ink-secondary)",
+              maxWidth: "var(--measure-default)",
+            }}
+          >
             {post.excerpt}
           </p>
         </div>

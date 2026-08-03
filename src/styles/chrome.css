@@ -369,6 +369,41 @@
 }
 
 /* ============================================================
+   JOURNAL CONTROLS — search and tags as one bar
+
+   On a phone these stack, because one column is all there is.
+
+   Above 768 they share a line and sit on a common baseline at opposite
+   ends of the measure. Stacked at desktop the two controls formed a tall
+   left-hand tower with two-thirds of the width empty beside it — the
+   layout was adapting rather than composing. On one line they read as a
+   single instrument above the list, and the hairline beneath the result
+   count closes the bar.
+   ============================================================ */
+
+.journal-controls {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .journal-controls {
+    grid-template-columns: minmax(16rem, 22rem) 1fr;
+    align-items: end;
+    column-gap: 2.5rem;
+  }
+
+  /* Tags settle against the right edge of the measure, so the bar is
+     anchored at both ends rather than trailing off. */
+  .journal-controls__tags {
+    justify-content: flex-end;
+    /* Aligns the chip row's optical baseline with the input's, rather than
+       with the label sitting above it. */
+    padding-block-end: 0.375rem;
+  }
+}
+
+/* ============================================================
    PROJECT COVER — a made cover, not a missing one
 
    A project without a photograph still gets a designed cover. Same physics

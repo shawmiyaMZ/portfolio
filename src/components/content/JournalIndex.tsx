@@ -48,8 +48,13 @@ export function JournalIndex({
 
   return (
     <>
-      <div className="grid gap-5 mb-10">
-        <label className="grid gap-2 max-w-md">
+      {/* Stacked on a phone, where there is only one column to have. From
+          768 the field and the tags share a line, sitting on a common
+          baseline at opposite ends — which turns a tall stack of controls
+          stranded in a wide margin into a single composed bar above the
+          list. See `.journal-controls` in chrome.css. */}
+      <div className="journal-controls mb-10">
+        <label className="journal-controls__search grid gap-2">
           <span className="u-eyebrow">Search the journal</span>
           <input
             type="search"
@@ -67,7 +72,7 @@ export function JournalIndex({
 
         {tags.length > 0 && (
           <div
-            className="flex flex-wrap gap-2"
+            className="journal-controls__tags flex flex-wrap gap-2"
             role="group"
             aria-label="Filter posts by tag"
           >
