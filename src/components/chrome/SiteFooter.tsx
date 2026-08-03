@@ -14,12 +14,18 @@ export function SiteFooter({
 }) {
   return (
     <footer style={{ borderTop: "1px solid var(--line-hairline)" }}>
-      <div className="u-wrap py-12 flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
-        <span className="u-caption">
-          © {new Date().getFullYear()} {name}
-        </span>
+      {/* Two compositions, not one that wraps.
 
-        <div className="flex items-center gap-6">
+          A single flex row with `justify-between` collapses on a phone into
+          two left-aligned lines with the copyright leading — which puts the
+          quietest thing in the page's last, most prominent position and
+          leaves the links looking like an afterthought beneath it.
+
+          So below 768 the order is deliberate: links first as a proper row,
+          copyright beneath as a footnote, with a hairline between them. From
+          768 it becomes the two-ended bar it should be. */}
+      <div className="site-footer u-wrap">
+        <div className="site-footer__links">
           <Link
             href="/journal"
             className="u-tap link-underline text-sm no-underline"
@@ -46,6 +52,10 @@ export function SiteFooter({
             </a>
           )}
         </div>
+
+        <span className="u-caption site-footer__mark">
+          © {new Date().getFullYear()} {name}
+        </span>
       </div>
     </footer>
   );

@@ -541,6 +541,56 @@
 }
 
 /* ============================================================
+   SITE FOOTER
+
+   Composed twice rather than wrapped once. On a phone the links lead and
+   the copyright sits beneath them as a footnote, divided by a hairline —
+   the last thing on the page should be something a reader can act on, not
+   a legal line. From 768 it becomes a two-ended bar with the copyright
+   back on the left, where the eye expects it once there is width for both.
+   ============================================================ */
+
+.site-footer {
+  display: grid;
+  gap: 1.5rem;
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+}
+
+.site-footer__links {
+  display: flex;
+  align-items: center;
+  /* Wide enough that three 44px touch targets never crowd on a phone. */
+  gap: clamp(1.5rem, 6vw, 2rem);
+}
+
+.site-footer__mark {
+  padding-block-start: 1.25rem;
+  border-block-start: 1px solid var(--line-hairline);
+}
+
+@media (min-width: 768px) {
+  .site-footer {
+    /* Copyright first in the visual order, links driven to the far end.
+       `order` rather than reordering the DOM: the links stay first in the
+       markup, which is the correct reading and tab order at every width. */
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .site-footer__links {
+    order: 2;
+    gap: 1.75rem;
+  }
+
+  .site-footer__mark {
+    order: 1;
+    padding-block-start: 0;
+    border-block-start: 0;
+  }
+}
+
+/* ============================================================
    EDUCATION ROW
 
    Stacked on a phone: period, qualification, institution, in reading
