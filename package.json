@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "migrate": "tsx scripts/migrate-seed.ts"
+    "migrate": "tsx --env-file=.env.local scripts/migrate-seed.ts"
   },
   "dependencies": {
     "@portabletext/react": "^7.0.1",
