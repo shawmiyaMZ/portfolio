@@ -14,7 +14,7 @@ export function SectionHead({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5 mb-[clamp(2rem,5vw,3.5rem)]">
+    <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5 mb-[var(--space-md)]">
       <div className="grid gap-4">
         {/* The chapter's accent, inherited from the section's data-chapter.
             Falls back to the ordinary eyebrow ink outside a chapter, so this

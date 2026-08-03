@@ -64,7 +64,7 @@ export default async function HomePage() {
       <section
         id="hero"
         data-chapter="hero"
-        className="relative pb-[clamp(3rem,7vw,6rem)] u-top-clear scroll-mt-24"
+        className="relative pb-[var(--space-lg)] u-top-clear scroll-mt-24"
       >
         <StudioField />
 
@@ -131,7 +131,7 @@ export default async function HomePage() {
           />
 
           {projects.length > 0 ? (
-            <div className="work-rows grid gap-[clamp(3rem,6vw,5rem)]">
+            <div className="work-rows grid gap-[var(--space-lg)]">
               {projects.map((project, i) => (
                 <Reveal key={project.slug} index={i} weight="heavy">
                   <ProjectRow project={project} flip={i % 2 === 1} />

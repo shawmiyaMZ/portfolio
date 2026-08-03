@@ -126,6 +126,25 @@
   --reveal-distance: 14px;
   --stagger-step: 60ms;
 
+  /* ---------- spacing scale ----------
+     Six fluid steps, each roughly 1.5× the last, replacing 21 distinct
+     one-off clamps that accumulated a commit at a time. Nobody could
+     perceive the difference between a 5rem cap and a 5.5rem cap — they
+     were not design decisions, they were separate things to maintain and
+     to drift apart.
+
+     Vertical spacing is chosen from this scale and nowhere else. A section
+     that needs "a bit more air" takes the next step up; it does not invent
+     a value. That constraint is what makes the rhythm read as composed
+     rather than adjusted. */
+  --space-xs: clamp(1rem, 2vw, 1.5rem);
+  --space-sm: clamp(1.5rem, 3vw, 2.25rem);
+  --space-md: clamp(2rem, 4vw, 3rem);
+  --space-lg: clamp(3rem, 6vw, 4.5rem);
+  --space-xl: clamp(4rem, 7vw, 6.5rem);
+  /* The section rhythm — the largest interval the page ever uses. */
+  --space-2xl: clamp(4rem, 9vw, 9rem);
+
   /* Measure */
   --measure-prose: 68ch;
   --measure-default: 60ch;

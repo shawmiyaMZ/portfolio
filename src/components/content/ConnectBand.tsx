@@ -11,7 +11,7 @@ export function ConnectBand({ linkedinUrl }: { linkedinUrl?: string }) {
   return (
     <section id="connect" data-chapter="connect" className="u-band scroll-mt-24">
       <StudioField variant="inverted" />
-      <div className="u-wrap relative z-10 py-[clamp(4.5rem,10vw,8rem)]">
+      <div className="u-wrap relative z-10 py-[var(--space-2xl)]">
         <span className="u-eyebrow block mb-4">Connect</span>
         <h2 className="u-h2 max-w-[18ch]">
           If any of this is useful to you, I would like to hear about it

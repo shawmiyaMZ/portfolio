@@ -106,7 +106,7 @@ export default async function PostPage({ params }: Params) {
         </header>
 
         {cover && (
-          <div className="u-wrap mt-[clamp(2rem,5vw,3.5rem)]">
+          <div className="u-wrap mt-[var(--space-md)]">
             <div
               className="rounded-lg overflow-hidden relative aspect-[16/9]"
               style={{
@@ -143,7 +143,7 @@ export default async function PostPage({ params }: Params) {
         </div>
 
         <nav
-          className="u-wrap pb-[clamp(4rem,8vw,7rem)] grid sm:grid-cols-2 gap-6"
+          className="u-wrap pb-[var(--space-xl)] grid sm:grid-cols-2 gap-6"
           aria-label="More posts"
         >
           <PostLink post={nav.previous} direction="previous" />

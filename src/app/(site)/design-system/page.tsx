@@ -76,7 +76,7 @@ export default function DesignSystemPage() {
   return (
     <main>
       {/* ---------- hero ---------- */}
-      <header className="relative u-top-clear pb-[clamp(3rem,8vw,6rem)]">
+      <header className="relative u-top-clear pb-[var(--space-xl)]">
         <StudioField />
         <div className="u-wrap relative z-10">
           <span className="u-eyebrow block mb-3.5">
@@ -177,7 +177,7 @@ export default function DesignSystemPage() {
         lede="Fraunces has real SOFT and WONK axes, so the face is dialled toward the material rather than merely chosen. The site settles at SOFT 40 with WONK on — and WONK off below 24px, where its splayed forms stop reading as intent."
       >
         <div
-          className="rounded-md p-[clamp(1.25rem,3.5vw,2.25rem)] grid gap-6"
+          className="rounded-md p-[var(--space-sm)] grid gap-6"
           style={{
             background: "var(--surface-ground)",
             boxShadow: "var(--shadow-e2)",
@@ -205,7 +205,7 @@ export default function DesignSystemPage() {
         </div>
 
         <div
-          className="mt-6 rounded-md p-[clamp(1.25rem,3.5vw,2.25rem)]"
+          className="mt-6 rounded-md p-[var(--space-sm)]"
           style={{
             background: "var(--surface-ground)",
             boxShadow: "var(--shadow-e2)",
@@ -258,7 +258,7 @@ export default function DesignSystemPage() {
         </div>
 
         <div
-          className="mt-6 rounded-md p-[clamp(1.25rem,3.5vw,2.25rem)]"
+          className="mt-6 rounded-md p-[var(--space-sm)]"
           style={{
             background: "var(--surface-ground)",
             boxShadow: "var(--shadow-e2)",
@@ -314,7 +314,7 @@ export default function DesignSystemPage() {
       {/* ---------- inverted band ---------- */}
       <div className="u-band">
         <StudioField variant="inverted" />
-        <div className="u-wrap relative z-10 py-[clamp(4rem,9vw,6.5rem)]">
+        <div className="u-wrap relative z-10 py-[var(--space-xl)]">
           <span className="u-eyebrow block mb-3.5">Rhythm</span>
           <h2 className="u-h2 max-w-[22ch]">
             Dark appears twice, as a material — not as a mode
@@ -397,7 +397,7 @@ function Section({
   return (
     <section className="u-section">
       <div className="u-wrap">
-        <div className="grid gap-4 mb-[clamp(2rem,5vw,3.5rem)]">
+        <div className="grid gap-4 mb-[var(--space-md)]">
           <span className="u-eyebrow">{eyebrow}</span>
           <h2 className="u-h2 max-w-[20ch]">{title}</h2>
           {lede && (

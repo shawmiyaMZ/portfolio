@@ -89,7 +89,7 @@
   inset-block-start: 0;
   inset-inline: 0;
   z-index: 50;
-  padding-block: clamp(0.875rem, 2vw, 1.5rem);
+  padding-block: var(--space-xs);
   pointer-events: none;
 }
 
@@ -555,8 +555,11 @@
    putting the air in the wrong place.
    ============================================================ */
 
+/* The head-to-artwork gap is closed by the head's own margin now, on the
+   scale, rather than by pulling the rows up with a negative margin — that
+   was a patch that had to be re-tuned whenever the head changed. */
 .work-rows {
-  margin-block-start: clamp(-1.25rem, -2vw, -0.5rem);
+  margin-block-start: 0;
 }
 
 /* On the widest screens the cover is tall enough that a centred text column
@@ -681,7 +684,7 @@
    ============================================================ */
 
 .about-movement {
-  padding-block: clamp(3rem, 6vw, 5.5rem);
+  padding-block: var(--space-lg);
 }
 
 /* The alternating ground. Slip is one step up from Porcelain — the same
@@ -704,8 +707,8 @@
     "opsz" 48;
   letter-spacing: -0.018em;
   font-weight: 600;
-  padding-block-end: clamp(1.25rem, 2.5vw, 2rem);
-  margin-block-end: clamp(2rem, 4vw, 3rem);
+  padding-block-end: var(--space-sm);
+  margin-block-end: var(--space-md);
   border-block-end: 1px solid var(--line-hairline);
   position: relative;
 }
@@ -736,14 +739,14 @@
 .site-footer {
   display: grid;
   gap: 1.5rem;
-  padding-block: clamp(2.5rem, 5vw, 4rem);
+  padding-block: var(--space-md);
 }
 
 .site-footer__links {
   display: flex;
   align-items: center;
   /* Wide enough that three 44px touch targets never crowd on a phone. */
-  gap: clamp(1.5rem, 6vw, 2rem);
+  gap: var(--space-sm);
 }
 
 .site-footer__mark {

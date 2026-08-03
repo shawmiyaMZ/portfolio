@@ -247,7 +247,7 @@
   }
 
   .u-section {
-    padding-block: clamp(4rem, 9vw, 10rem);
+    padding-block: var(--space-2xl);
   }
 
   /* Clearance for the floating chrome.

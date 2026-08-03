@@ -91,7 +91,7 @@ export default async function CaseStudyPage({ params }: Params) {
           from the index needs a shape to land in either way, and a page whose
           layout depends on whether an image exists shifts the moment one is
           added in the Studio. */}
-      <div className="u-wrap mt-[clamp(2.5rem,6vw,4.5rem)]">
+      <div className="u-wrap mt-[var(--space-lg)]">
         <div
           className="rounded-lg overflow-hidden relative aspect-[16/10]"
           style={{
@@ -132,7 +132,7 @@ export default async function CaseStudyPage({ params }: Params) {
             </div>
           </aside>
 
-          <div className="lg:col-span-9 grid gap-[clamp(2.5rem,5vw,4rem)]">
+          <div className="lg:col-span-9 grid gap-[var(--space-md)]">
             <Beat n="01" title="The problem" body={project.problem} />
             <Beat n="02" title="My approach" body={project.approach} />
             <Beat n="03" title="The outcome" body={project.outcome} />
