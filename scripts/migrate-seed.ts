@@ -34,7 +34,7 @@
  */
 
 import { createClient } from "next-sanity";
-import { seedProfile, seedProjects, seedTags } from "../src/sanity/lib/seed";
+import { seedProfile, seedTags } from "../src/sanity/lib/seed";
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
@@ -103,38 +103,25 @@ async function migrate() {
     })),
   });
 
-  for (const p of seedProjects) {
-    docs.push({
-      _id: `project-${p.slug}`,
-      _type: "project",
-      title: p.title,
-      slug: slugField(p.slug),
-      summary: p.summary,
-      date: p.date,
-      featured: p.featured ?? false,
-      role: p.role,
-      techTags: p.techTags,
-      githubUrl: p.githubUrl,
-      liveUrl: p.liveUrl,
-      problem: p.problem,
-      approach: p.approach,
-      outcome: p.outcome,
-    });
-  }
-
+  // `createIfNotExists`, never `createOrReplace`.
+  //
+  // This script seeds an empty dataset. Once real content exists it must not
+  // touch it — the profile in particular, which now carries a real education
+  // record and a real skill list that the seed's invented values would
+  // silently overwrite. Seeding is a first-run convenience, not a reset.
   const tx = docs.reduce(
-    (t, doc) => t.createOrReplace(doc as never),
+    (t, doc) => t.createIfNotExists(doc as never),
     client.transaction(),
   );
 
   await tx.commit();
 
   console.log(
-    `Migrated ${docs.length} documents to ${projectId}/${dataset}:\n` +
+    `Seeded ${projectId}/${dataset} with up to ${docs.length} documents:\n` +
       `  ${seedTags.length} tags\n` +
-      `  1 profile\n` +
-      `  ${seedProjects.length} projects\n\n` +
-      `Journal posts are not migrated — write those in the Studio.\n` +
+      `  1 profile\n\n` +
+      `Anything that already existed was left untouched.\n` +
+      `Projects and journal posts are written in the Studio, not seeded.\n` +
       `Open /studio to confirm.`,
   );
 }
