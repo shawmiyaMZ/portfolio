@@ -101,7 +101,10 @@ export const profile = defineType({
     defineField({
       name: "skillGroups",
       type: "array",
-      title: "Skills",
+      // Labelled "Toolkit" because that is the heading the site prints. The
+      // field `name` stays `skillGroups` — that is the key the content is
+      // stored under, and renaming it would orphan the live document.
+      title: "Toolkit",
       description: "Grouped by category. Named tiers — never percentages.",
       of: [
         {
