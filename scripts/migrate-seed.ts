@@ -3,15 +3,20 @@
  *
  * The seed was written to be migrated: its bodies are already portable text
  * in the shape the Studio emits, so this is a transcription rather than a
- * transformation. Only three things genuinely differ between the local shape
- * and the CMS shape, and each is handled below:
+ * transformation. Two things genuinely differ between the local shape and
+ * the CMS shape, and each is handled below:
  *
- *   1. slugs        — a plain string locally, a { _type: "slug", current }
- *                     object in Sanity
- *   2. post tags    — embedded objects locally, references to real tag
- *                     documents in Sanity
- *   3. identity     — documents need stable _ids so re-running this updates
- *                     rather than duplicating
+ *   1. slugs     — a plain string locally, a { _type: "slug", current }
+ *                  object in Sanity
+ *   2. identity  — documents need stable _ids so re-running this updates
+ *                  rather than duplicating
+ *
+ * Journal posts are deliberately excluded. The seed posts were scaffolding
+ * for designing the journal against real copy; the real journal is written
+ * in the Studio. They remain in seed.ts because they are still the
+ * before-Sanity-is-configured fallback a fresh clone renders — but pushing
+ * them into a dataset that now holds genuine posts would resurrect content
+ * that was intentionally deleted.
  *
  * Idempotent by design. `createOrReplace` keyed on a deterministic _id means
  * running it twice leaves the dataset identical, so a failed run can simply
@@ -29,12 +34,7 @@
  */
 
 import { createClient } from "next-sanity";
-import {
-  seedPosts,
-  seedProfile,
-  seedProjects,
-  seedTags,
-} from "../src/sanity/lib/seed";
+import { seedProfile, seedProjects, seedTags } from "../src/sanity/lib/seed";
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
@@ -122,25 +122,6 @@ async function migrate() {
     });
   }
 
-  for (const post of seedPosts) {
-    docs.push({
-      _id: `post-${post.slug}`,
-      _type: "post",
-      title: post.title,
-      slug: slugField(post.slug),
-      excerpt: post.excerpt,
-      publishedAt: post.publishedAt,
-      body: post.body,
-      // Embedded objects locally; real references in the CMS, so the tag
-      // pages and filters resolve against one canonical tag document.
-      tags: post.tags?.map((t) => ({
-        _key: t.slug,
-        _type: "reference",
-        _ref: tagId(t.slug),
-      })),
-    });
-  }
-
   const tx = docs.reduce(
     (t, doc) => t.createOrReplace(doc as never),
     client.transaction(),
@@ -152,10 +133,9 @@ async function migrate() {
     `Migrated ${docs.length} documents to ${projectId}/${dataset}:\n` +
       `  ${seedTags.length} tags\n` +
       `  1 profile\n` +
-      `  ${seedProjects.length} projects\n` +
-      `  ${seedPosts.length} posts\n\n` +
-      `Reading time is computed in GROQ from the body, so it will match what\n` +
-      `the site showed from seed. Open /studio to confirm.`,
+      `  ${seedProjects.length} projects\n\n` +
+      `Journal posts are not migrated — write those in the Studio.\n` +
+      `Open /studio to confirm.`,
   );
 }
 
