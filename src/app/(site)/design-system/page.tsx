@@ -271,22 +271,28 @@ export default function DesignSystemPage() {
             className="text-(length:--text-prose)/[1.75] grid gap-[1.15em]"
             style={{ maxWidth: "var(--measure-prose)" }}
           >
+            {/* Specimen text, not an anecdote. This panel exists to test the
+                measure, the leading and the link treatment at reading size, so
+                it is written about typography rather than pretending to be a
+                journal entry — a design reference page should not be a place
+                where claims about the author appear. */}
             <p>
-              The first thing that surprised me about retrieval-augmented
-              generation was how little of the work is the model. You spend a
-              day wiring the pipeline and then three weeks on the boring part:
-              what counts as a chunk, how you decide two passages say the same
-              thing, and what the system should do when it genuinely does not
-              know.
+              A measure is the length of a line of text, and it is the setting
+              that decides whether long-form reading is comfortable or merely
+              possible. Too wide and the eye loses its place returning to the
+              left edge; too narrow and the rhythm breaks every few words. This
+              column is set to sixty-eight characters.
             </p>
             <p>
-              That last one turned out to be the whole problem. An assistant
-              that answers everything is easy to build and impossible to trust,
-              so I started treating{" "}
+              Leading has to move with it. A wide measure needs more space
+              between lines to keep the return sweep accurate, which is why the
+              two are set together here rather than chosen separately. The{" "}
               <a href="#" className="link-underline">
-                refusal as a feature
+                link treatment
               </a>{" "}
-              rather than a failure state, and the evaluation scores followed.
+              is included in the specimen because an underline that sits too
+              close to the baseline is the fastest way to make set type look
+              accidental.
             </p>
           </div>
         </div>

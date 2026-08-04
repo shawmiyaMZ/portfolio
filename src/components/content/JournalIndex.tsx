@@ -60,7 +60,7 @@ export function JournalIndex({
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Retrieval, evaluation, prompts…"
+            placeholder="Prompting, tooling, what broke…"
             className="px-4 py-3 rounded-sm text-[15px] w-full"
             style={{
               background: "var(--surface-ground)",
