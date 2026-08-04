@@ -10,6 +10,8 @@ not require a developer or a redeploy.
 
 **Live site:** not yet deployed
 **CMS:** Sanity Studio, embedded at `/studio`
+**Publishing:** see [`docs/publishing.md`](docs/publishing.md) for how to write and
+publish without touching code
 
 ---
 
@@ -188,6 +190,9 @@ publishing a journal post does not rebuild the project pages.
 **Until the webhook is connected**, content changes will not appear locally until
 you delete the `.next` folder and restart. Restarting alone is not enough, because
 that folder holds a cache which survives it.
+
+Day-to-day publishing is covered separately in
+[`docs/publishing.md`](docs/publishing.md).
 
 ---
 
