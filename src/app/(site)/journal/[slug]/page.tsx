@@ -134,7 +134,10 @@ export default async function PostPage({ params }: Params) {
                 started 102px further in. An editorial page has one left
                 edge; the TOC sits in the gutter it was always meant to
                 occupy. */}
-            <div className="xl:col-span-8">
+            {/* `min-w-0` is load-bearing. This is a grid item, so its default
+                `min-width: auto` lets the code block's minimum width inflate
+                the whole column past the viewport on a phone. */}
+            <div className="min-w-0 xl:col-span-8">
               <Prose value={post.body} />
             </div>
 

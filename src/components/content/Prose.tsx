@@ -192,10 +192,11 @@ export function Prose({
 }) {
   if (!value?.length) return null;
   return (
-    <div
-      className={`text-(length:--text-prose)/[1.75] ${className}`}
-      style={{ maxWidth: "var(--measure-prose)" }}
-    >
+    // `u-prose` rather than an inline max-width. The class carries the same
+    // measure but clamped to the column, plus the hanging punctuation and the
+    // sub-640px hyphenation that were written for long-form reading and which
+    // an inline style quietly excluded every post from.
+    <div className={`u-prose text-(length:--text-prose)/[1.75] ${className}`}>
       <PortableText value={value} components={components} />
     </div>
   );

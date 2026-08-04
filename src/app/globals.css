@@ -273,7 +273,15 @@
      separates set type from placed type. Progressive: unsupported browsers
      simply keep the flush edge. */
   .u-prose {
-    max-inline-size: var(--measure-prose);
+    /* `min()`, not the bare measure. 68ch is ~673px, so on a phone the
+       measure is wider than the screen — and as a grid item this box will
+       happily take that width, because grid items default to
+       `min-width: auto` and refuse to shrink below their content. The page
+       then clips the overflow rather than scrolling it (see <html>), so
+       lines get cut mid-word instead of wrapping. Clamping to 100% here
+       means the measure can never exceed the column it sits in. */
+    max-inline-size: min(var(--measure-prose), 100%);
+    min-inline-size: 0;
     hanging-punctuation: first last;
   }
 
@@ -308,6 +316,11 @@
      body never scrolls sideways. */
   .u-scroll-x {
     overflow-x: auto;
+    /* A scroll container still contributes its content's minimum width to a
+       grid or flex parent unless it is told it may shrink. Without these two
+       the code block silently widens the whole prose column on a phone. */
+    max-width: 100%;
+    min-width: 0;
     overscroll-behavior-x: contain;
   }
 
