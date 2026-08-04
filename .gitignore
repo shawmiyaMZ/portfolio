@@ -39,6 +39,11 @@ yarn-error.log*
 # vercel
 .vercel
 
+# The assignment brief. It stays on disk — it is the document this project
+# answers to, and every decision here should be checkable against it — but it
+# belongs to the course, not to this repository, so it is not published.
+docs/brief.md
+
 # agent tooling
 # Local development aids, not part of the portfolio. Kept out so the repo
 # reads as the project rather than as the toolchain used to build it.

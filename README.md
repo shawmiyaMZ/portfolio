@@ -1,7 +1,7 @@
 # Portfolio with AI Engineering Journal
 
-A personal portfolio and writing site for **Shawmiya Zarook**, built to the brief in
-[`docs/brief.md`](docs/brief.md).
+A personal portfolio and writing site for **Shawmiya Zarook**, built to a supplied
+project brief.
 
 The site presents three things: who I am, the projects I have built, and a journal
 where I write about learning AI-powered engineering. Every piece of content is
