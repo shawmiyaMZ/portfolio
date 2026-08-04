@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { PageTransition } from "@/components/chrome/PageTransition";
 import { SiteFooter } from "@/components/chrome/SiteFooter";
 import { SiteHeader } from "@/components/chrome/SiteHeader";
 import { fontVariables } from "@/lib/fonts";
@@ -57,7 +58,7 @@ export default async function SiteLayout({
 
         <SiteHeader name={profile?.name} />
         <main id="main" className="flex-1">
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
         <SiteFooter name={profile?.name} linkedinUrl={profile?.linkedinUrl} />
       </body>

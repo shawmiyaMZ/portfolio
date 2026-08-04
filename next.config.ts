@@ -9,6 +9,17 @@ const nextConfig: NextConfig = {
      * white Next page, which belongs to no design system at all.
      */
     globalNotFound: true,
+
+    /**
+     * Turns route navigations into React Transitions, which is what actually
+     * fires the browser's View Transitions API. Without it the
+     * `::view-transition-old(root)` and `::view-transition-new(root)`
+     * animations in motion.css are inert — the CSS was written and never ran.
+     *
+     * Unsupported browsers navigate normally; there is nothing to fall back
+     * to because nothing is added to the page.
+     */
+    viewTransition: true,
   },
 
   images: {
