@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    /**
+     * Two root layouts — `(site)` and `(studio)` — mean Next has no single
+     * layout to build a 404 from for unmatched URLs, which is the documented
+     * reason this flag exists. Without it those URLs fall back to the stock
+     * white Next page, which belongs to no design system at all.
+     */
+    globalNotFound: true,
+  },
+
   images: {
     /**
      * Next 16 allowlists quality values. Anything not listed is ignored and
