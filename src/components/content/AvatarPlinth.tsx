@@ -27,6 +27,10 @@ export function AvatarPlinth({ alt }: { alt: string }) {
         <div className="avatar-stage__settle">
           {/* Ground plane. Never parallaxes and never floats — it is the
               thing everything else is measured against. */}
+          {/* `priority` stays. Swapping it for `fetchPriority="high"` was
+              measured on 2026-08-05: it removes the preload, the layers arrive
+              after first layout, and cumulative layout shift goes from 0 to
+              0.477. The preload is buying a stable page, not a faster image. */}
           <Image
             src="/avatar/avatar-hero-shadow.webp"
             alt=""

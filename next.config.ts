@@ -20,6 +20,14 @@ const nextConfig: NextConfig = {
      * to because nothing is added to the page.
      */
     viewTransition: true,
+
+    /**
+     * `inlineCss` is deliberately NOT enabled. It looks like the obvious fix
+     * for the one render-blocking stylesheet, and the Next docs recommend it
+     * for exactly this case — small Tailwind CSS, first-time visitors. It was
+     * measured on 2026-08-05 and made things worse: 86 to 64, LCP 4.1s to
+     * 4.4s, blocking time 50ms to 210ms, and layout shift 0 to 0.354.
+     */
   },
 
   images: {
