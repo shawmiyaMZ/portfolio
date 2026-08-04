@@ -31,27 +31,39 @@ Result: **57,438 KB → 122 KB, a 469× reduction.**
 
    57.4 MB → 5.2 MB, which a browser can load comfortably.
 
-2. **Stage it and restore the rig.** Copy `avatar.glb` to `public/_tmp/`, then
+2. **Reinstall the renderer.** Three.js is not a dependency of the site — the
+   site ships no WebGL — so it is not in `package.json`. Add it back only for
+   as long as you are regenerating:
+
+   ```bash
+   npm i -D three @types/three
+   ```
+
+3. **Stage it and restore the rig.** Copy `avatar.glb` to `public/_tmp/`, then
    copy `render-page.tsx.txt` to `src/app/(site)/render-avatar/page.tsx` and
    `api-route.ts.txt` to `src/app/api/render-avatar/route.ts`.
 
    Note: the folders must **not** start with `_` — the App Router treats
    underscore-prefixed directories as private and will not route them.
 
-3. **Run it.** Start `npm run dev`, visit `/render-avatar`, and wait for the
+4. **Run it.** Start `npm run dev`, visit `/render-avatar`, and wait for the
    log to print `DONE`. Frames land in `public/avatar/` as PNG.
 
-4. **Convert to WebP**, trimming the transparent margin:
+5. **Convert to WebP**, trimming the transparent margin:
 
    ```js
    await sharp(src).trim({ threshold: 1 }).resize({ width: 900 })
      .webp({ quality: 82, effort: 6 }).toFile(out);
    ```
 
-5. **Delete the two rig routes again.** They must never exist in a deployed
-   build — the API route writes files to disk, and although it refuses to run
-   outside development, the safest version of that endpoint is one that isn't
-   there.
+6. **Delete the two rig routes again, and uninstall Three.js.** The routes must
+   never exist in a deployed build — the API route writes files to disk, and
+   although it refuses to run outside development, the safest version of that
+   endpoint is one that isn't there.
+
+   ```bash
+   npm uninstall three @types/three
+   ```
 
 ## The lighting rig is the design system
 
