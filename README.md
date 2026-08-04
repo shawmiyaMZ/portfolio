@@ -216,10 +216,17 @@ src/
   styles/            design tokens, chrome, motion, the 3D field
   lib/               fonts, chapter definitions, small helpers
 
-docs/                the project brief this was built to
-scripts/             one-off content migration
+docs/                the publishing guide
+scripts/             one-off content seeding
 tools/avatar-render/ the offline rig that produced the avatar images
 ```
+
+**One page is not in the brief and is there on purpose.** `/design-system`
+documents the design tokens — the palette with its measured contrast ratios,
+the type scale, the shadow system, and a reading-measure specimen. It exists so
+the system stays consistent across pages instead of being eyeballed each time,
+and it is marked `noindex` because it is a working reference rather than
+something a visitor should find.
 
 ---
 
