@@ -22,11 +22,18 @@ const nextConfig: NextConfig = {
     viewTransition: true,
 
     /**
-     * `inlineCss` is deliberately NOT enabled. It looks like the obvious fix
-     * for the one render-blocking stylesheet, and the Next docs recommend it
-     * for exactly this case — small Tailwind CSS, first-time visitors. It was
-     * measured on 2026-08-05 and made things worse: 86 to 64, LCP 4.1s to
-     * 4.4s, blocking time 50ms to 210ms, and layout shift 0 to 0.354.
+     * `inlineCss` is deliberately NOT enabled, though not for the reason
+     * first recorded here. Re-measured on 2026-08-05 with three warm runs
+     * per configuration: cumulative layout shift stays at exactly 0, so the
+     * 0.354 originally blamed on it was a cold-run artifact. What it really
+     * costs is the two metrics either side of it — LCP 3695ms to 3842ms and
+     * blocking time 68ms to 157ms, from parsing 60 KB of CSS inline on every
+     * page load. Score 89 to 87.
+     *
+     * The Next docs do recommend it for this shape of site (small Tailwind
+     * CSS, first-time visitors). It simply does not win here: the stylesheet
+     * is already served over one warm connection, so removing the request
+     * saves less than parsing it inline costs.
      */
   },
 

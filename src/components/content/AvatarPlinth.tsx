@@ -27,10 +27,14 @@ export function AvatarPlinth({ alt }: { alt: string }) {
         <div className="avatar-stage__settle">
           {/* Ground plane. Never parallaxes and never floats — it is the
               thing everything else is measured against. */}
-          {/* `priority` stays. Swapping it for `fetchPriority="high"` was
-              measured on 2026-08-05: it removes the preload, the layers arrive
-              after first layout, and cumulative layout shift goes from 0 to
-              0.477. The preload is buying a stable page, not a faster image. */}
+          {/* `priority` stays, and this is the best-evidenced of the three.
+              Removing it was re-measured on 2026-08-05 with three warm runs:
+              cumulative layout shift is 0.354 in every one of them — not the
+              cold-run artifact the other two reverts turned out to be — and
+              LCP goes 3695ms to 3844ms, score 89 to 71. Lighthouse puts the
+              shift on `.field__mesh`, which moves once the hero's height
+              settles. The preload is buying a stable page, not a faster
+              image. */}
           <Image
             src="/avatar/avatar-hero-shadow.webp"
             alt=""
