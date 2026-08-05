@@ -197,10 +197,27 @@ export const project = defineType({
       description: "One or two sentences. Shown in the grid and on the home page.",
       validation: (rule) => rule.required().max(240),
     }),
+    /**
+     * Compose at 16:9, and keep everything that matters inside the middle 80%.
+     *
+     * The cards art-direct their crop per breakpoint — 16:9 where the card is
+     * full-width, 10:7 where it is one of two or three columns — because a
+     * 10:7 picture at full width is a 630px tower with a lid. A 10:7 centre
+     * crop of a 16:9 canvas keeps only the middle 80.4% of the width, so
+     * anything outside that is cut on both sides at once, which no hotspot
+     * can rescue.
+     *
+     * The first Kandy Cycle cover ran to 4.8%–95.3% and lost ~81px from each
+     * edge: the route title read "ndy to / radeniya / tanical / ardens" on
+     * every card. It was re-fitted to 11.2%–88.8%. Fit Pat survived only
+     * because it happened to sit at 10.1%–89.9% — five pixels of margin.
+     */
     defineField({
       name: "coverImage",
       type: "image",
       title: "Cover image",
+      description:
+        "16:9. Keep the subject within the middle 80% of the width — the cards crop to 10:7 at some breakpoints, which cuts both edges.",
       options: { hotspot: true },
       fields: [
         defineField({
