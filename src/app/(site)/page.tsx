@@ -24,7 +24,11 @@ import type { SkillLevel } from "@/sanity/lib/types";
  * discounts. A named tier says something falsifiable about how you work.
  */
 const LEVEL: Record<SkillLevel, string> = {
-  daily: "Working with daily",
+  /* "Daily", not "Working with daily". The three labels sit in one right-aligned
+     column, so they read as a set — and a verb phrase beside two single words
+     broke the parallel and read as an unfinished sentence. "Daily" makes the
+     same falsifiable claim about frequency in the register of its neighbours. */
+  daily: "Daily",
   comfortable: "Comfortable",
   learning: "Learning",
 };

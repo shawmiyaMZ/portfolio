@@ -124,7 +124,11 @@ export const profile = defineType({
                       type: "string",
                       options: {
                         list: [
-                          { title: "Working with daily", value: "daily" },
+                          /* Titles match what the site renders, so the radio
+                             you pick in the Studio reads as the label that
+                             will appear. Values are untouched — they are
+                             stored on every skill already. */
+                          { title: "Daily", value: "daily" },
                           { title: "Comfortable", value: "comfortable" },
                           { title: "Learning", value: "learning" },
                         ],
