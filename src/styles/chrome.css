@@ -10,6 +10,23 @@
 
 .monogram {
   display: inline-flex;
+  /*
+   * Only the mark is clickable.
+   *
+   * `.site-chrome` is `pointer-events: none` so the fixed bar never blocks
+   * the page, and `.site-chrome__inner > *` hands the pointer back to each
+   * object. But the inner is a `1fr auto 1fr` grid, and a grid item stretches
+   * by default — so this anchor filled its whole column: 404px wide behind a
+   * 40px mark, ten times its visible area, and `inline-flex` was blockified
+   * into `flex` on the way.
+   *
+   * The cost was not cosmetic. Anything passing under that column became
+   * unclickable, and clicking it navigated home instead: measured on /work,
+   * all three filter chips returned `.monogram` from `elementFromPoint`
+   * through a 40px band of scroll. `.nav-mobile` already carried the
+   * equivalent `justify-self: end`; this is the same rule it was missing.
+   */
+  justify-self: start;
   text-decoration: none;
   border-radius: var(--radius-md);
 }
