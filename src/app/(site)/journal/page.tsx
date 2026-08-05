@@ -3,7 +3,7 @@ import { ConnectBand } from "@/components/content/ConnectBand";
 import { JournalIndex } from "@/components/content/JournalIndex";
 import { StudioField } from "@/components/field/StudioField";
 import { EmptyState } from "@/components/ui/primitives";
-import { getAllPosts, getProfile, getTags } from "@/sanity/lib/content";
+import { getAllPosts, getPostTags, getProfile } from "@/sanity/lib/content";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 export default async function JournalPage() {
   const [posts, tags, profile] = await Promise.all([
     getAllPosts(),
-    getTags(),
+    getPostTags(),
     getProfile(),
   ]);
 

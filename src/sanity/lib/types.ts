@@ -54,6 +54,9 @@ export type ProjectSummary = {
   slug: string;
   summary: string;
   coverImage?: SanityImage;
+  /** Broad categories, shared with posts. What the Work grid filters on. */
+  tags?: Tag[];
+  /** Everything it was built with. Displayed, never filtered on. */
   techTags?: string[];
   featured?: boolean;
   date: string;

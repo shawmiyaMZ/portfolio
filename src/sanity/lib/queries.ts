@@ -39,6 +39,7 @@ const PROJECT_SUMMARY = groq`
   "slug": slug.current,
   summary,
   coverImage,
+  "tags": tags[]->{ title, "slug": slug.current },
   techTags,
   featured,
   date
@@ -110,7 +111,19 @@ export const postNavigationQuery = groq`{
     | order(publishedAt asc)[0]{ title, "slug": slug.current }
 }`;
 
-export const allTagsQuery = groq`
+/**
+ * Tags that at least one *post* uses.
+ *
+ * Scoped by usage rather than listing every tag document, so the journal
+ * filter can never offer a tag that returns nothing. Now that projects share
+ * the same `tag` vocabulary this scoping is what keeps the two filters
+ * separate: a tag used only by a project never reaches the journal.
+ *
+ * The Work grid needs no equivalent query — `PROJECT_SUMMARY` already carries
+ * each project's tags, so its chips are derived from the projects on screen
+ * and are usage-scoped by construction.
+ */
+export const postTagsQuery = groq`
   *[_type == "tag" && count(*[_type == "post" && references(^._id)]) > 0]
     | order(title asc){ title, "slug": slug.current }
 `;

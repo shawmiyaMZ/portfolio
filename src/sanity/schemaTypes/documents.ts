@@ -230,10 +230,32 @@ export const project = defineType({
         },
       ],
     }),
+    /**
+     * What kind of thing this is — the axis the Work grid filters on.
+     *
+     * References the same `tag` documents the journal uses, rather than a
+     * second private vocabulary. A tag is only ever offered as a filter on
+     * the surface that actually uses it, so project tags never appear in the
+     * journal's filter or the reverse.
+     *
+     * This is deliberately NOT `techTags`. Filtering on tech was tried and
+     * produced 18 chips for 2 projects, every one of which isolated a single
+     * item: tech is a description of one project, not a grouping across many.
+     */
+    defineField({
+      name: "tags",
+      type: "array",
+      title: "Tags",
+      description:
+        "Broad categories the Work grid filters by — keep the vocabulary small.",
+      of: [{ type: "reference", to: [{ type: "tag" }] }],
+    }),
     defineField({
       name: "techTags",
       type: "array",
       title: "Tech",
+      description:
+        "Everything this was built with. Shown on the card and the case study; not used for filtering.",
       of: [{ type: "string" }],
       options: { layout: "tags" },
     }),

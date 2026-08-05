@@ -9,48 +9,69 @@ import type { ProjectSummary } from "@/sanity/lib/types";
  * Filtering runs on an already-statically-generated list, and writes the
  * active filter to the URL so a filtered view can be linked and shared.
  * Nothing is fetched; nothing hits the network.
+ *
+ * Filters on `tags` — the curated vocabulary shared with the journal — and
+ * deliberately not on `techTags`. Tech was the original axis and it does not
+ * group: because the two projects share no stack, it produced 18 chips for 2
+ * projects, each isolating a single item, and pushed the work below the fold.
+ * A tag says what kind of thing a project is; tech says what it was built
+ * with, which is a fact about one project rather than a category across many.
+ *
+ * The chips are derived from the projects on screen rather than fetched, so a
+ * chip can never be offered that matches nothing.
  */
 export function ProjectFilter({ projects }: { projects: ProjectSummary[] }) {
   const router = useRouter();
   const params = useSearchParams();
-  const active = params.get("tech");
+  const active = params.get("tag");
 
-  const tech = useMemo(() => {
-    const counts = new Map<string, number>();
+  const tags = useMemo(() => {
+    const bySlug = new Map<string, { slug: string; title: string; n: number }>();
     for (const p of projects)
-      for (const t of p.techTags ?? [])
-        counts.set(t, (counts.get(t) ?? 0) + 1);
-    return [...counts.entries()]
-      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-      .map(([name]) => name);
+      for (const t of p.tags ?? []) {
+        const seen = bySlug.get(t.slug);
+        if (seen) seen.n += 1;
+        else bySlug.set(t.slug, { slug: t.slug, title: t.title, n: 1 });
+      }
+    return [...bySlug.values()].sort(
+      (a, b) => b.n - a.n || a.title.localeCompare(b.title),
+    );
   }, [projects]);
 
   const visible = active
-    ? projects.filter((p) => p.techTags?.includes(active))
+    ? projects.filter((p) => p.tags?.some((t) => t.slug === active))
     : projects;
 
   const select = (value: string | null) => {
     const next = new URLSearchParams(params.toString());
-    if (value) next.set("tech", value);
-    else next.delete("tech");
+    if (value) next.set("tag", value);
+    else next.delete("tag");
     const qs = next.toString();
     router.replace(qs ? `/work?${qs}` : "/work", { scroll: false });
   };
 
+  /* One category is not a choice — it filters nothing and only adds noise.
+     The strip earns its place from two upwards. */
+  const worthShowing = tags.length > 1;
+
   return (
     <>
-      {tech.length > 0 && (
+      {worthShowing && (
         <div
           className="filter-strip flex flex-wrap gap-2 mb-10"
           role="group"
-          aria-label="Filter projects by technology"
+          aria-label="Filter projects by category"
         >
           <FilterChip on={!active} onClick={() => select(null)}>
             All ({projects.length})
           </FilterChip>
-          {tech.map((t) => (
-            <FilterChip key={t} on={active === t} onClick={() => select(t)}>
-              {t}
+          {tags.map((t) => (
+            <FilterChip
+              key={t.slug}
+              on={active === t.slug}
+              onClick={() => select(active === t.slug ? null : t.slug)}
+            >
+              {t.title}
             </FilterChip>
           ))}
         </div>
@@ -60,7 +81,7 @@ export function ProjectFilter({ projects }: { projects: ProjectSummary[] }) {
         <ProjectGrid projects={visible} />
       ) : (
         <p style={{ color: "var(--ink-secondary)" }}>
-          No projects use {active} yet.
+          No projects in {tags.find((t) => t.slug === active)?.title ?? "that category"} yet.
         </p>
       )}
     </>

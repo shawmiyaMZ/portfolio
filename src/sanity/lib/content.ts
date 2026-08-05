@@ -99,8 +99,13 @@ export const getPostNavigation = (publishedAt: string) =>
     tags: [q.TAGS.post],
   });
 
-export const getTags = () =>
-  sanityFetch<Tag[]>(q.allTagsQuery, {
+/**
+ * Tags used by posts. Named for the surface it serves, because projects now
+ * share the same `tag` vocabulary and a bare `getTags` would not say which
+ * filter it feeds.
+ */
+export const getPostTags = () =>
+  sanityFetch<Tag[]>(q.postTagsQuery, {
     fallback: seeded(seedTags, []),
     tags: [q.TAGS.tag, q.TAGS.post],
   });
