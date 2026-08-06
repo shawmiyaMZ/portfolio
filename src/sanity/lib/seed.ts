@@ -1,5 +1,6 @@
 import type { PortableTextBlock } from "@portabletext/react";
 import type {
+  BodyObject,
   Post,
   PostSummary,
   PortableText,
@@ -99,6 +100,20 @@ const callout = (
   tone: "note" | "insight" | "warning",
   body: string,
 ) => ({ _type: "callout", _key: key, tone, body });
+
+const image = (
+  key: string,
+  alt: string,
+  caption?: string,
+): BodyObject =>
+  ({
+    _type: "image",
+    _key: key,
+    // A placeholder asset; swapped for a real upload when the seed is migrated.
+    asset: { _type: "reference", _ref: "image-seed-placeholder-1600x900-png" },
+    alt,
+    ...(caption ? { caption } : {}),
+  }) as BodyObject;
 
 /** A paragraph ending in a link — the shape most body copy actually needs. */
 const withLink = (
@@ -495,9 +510,19 @@ export const seedPosts: Post[] = [
         "r2",
       ),
       h2("Where the confidence came from", "r3"),
-      block(
-        "Nothing in the system was measuring whether an answer should exist. Retrieval always returned its top six chunks, because that is what a top-k search does — ask it for six and it will find six, even when the corpus contains nothing relevant. The model then did exactly what it was asked and wrote a fluent answer from whatever it was handed.",
+      rich(
         "r4",
+        [
+          span(
+            "Nothing in the system was measuring whether an answer should exist. Retrieval always returned its top six chunks, because that is what a ",
+            "r4a",
+          ),
+          span("top-k", "r4b", ["code"]),
+          span(
+            " search does — ask it for six and it will find six, even when the corpus contains nothing relevant. The model then did exactly what it was asked and wrote a fluent answer from whatever it was handed.",
+            "r4c",
+          ),
+        ],
       ),
       quote(
         "Top-k retrieval has no concept of “nothing here”. It has a concept of “these were the least bad six”.",
@@ -567,6 +592,11 @@ class Result(Enum):
         "If I were starting again I would write the unanswerable cases first, before any retrieval code existed. They are the cheapest test to write and the only one that catches the failure that actually kills adoption.",
         "r19",
       ),
+      callout(
+        "r20",
+        "note",
+        "The 12% refusal figure is from the last run I kept, not a promise. Finishing the write-up is overdue.",
+      ),
     ].flat(),
   },
   {
@@ -575,7 +605,7 @@ class Result(Enum):
     excerpt:
       "I spent two weeks tuning chunk size and overlap. The win came from changing what a chunk was, not how big it was.",
     publishedAt: "2026-03-02T09:00:00Z",
-    readingTime: 3,
+    readingTime: 2,
     tags: [tag("Retrieval", "retrieval")],
     body: [
       block("Token counts are a proxy for meaning, and a bad one.", "c1"),
@@ -620,6 +650,11 @@ const chunks = document.threads.map((thread) => ({
       block(
         "The metadata turned out to matter as much as the boundary. Knowing a thread was superseded lets retrieval demote it before the model ever sees it, which removed a whole category of confidently-outdated answers that no amount of prompting had fixed.",
         "c9",
+      ),
+      image(
+        "c9a",
+        "A support thread split at its natural boundaries: each chunk spans one conversation.",
+        "Thread chunking keeps a resolution attached to the problem it resolves.",
       ),
       h2("What I would keep from the two weeks", "c10"),
       bullets(
