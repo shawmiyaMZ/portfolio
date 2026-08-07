@@ -54,8 +54,8 @@ export function Tag({
 }) {
   const styles =
     tone === "sage"
-      ? { color: "#4E5647", background: "rgba(139,150,131,.20)" }
-      : { color: "var(--color-cobalt)", background: "rgba(62,92,118,.09)" };
+      ? { color: "var(--ink-sage)", background: "var(--surface-tint-sage)" }
+      : { color: "var(--ink-technical)", background: "var(--surface-tint-cobalt)" };
 
   return (
     <span

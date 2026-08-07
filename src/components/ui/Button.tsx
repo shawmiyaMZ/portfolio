@@ -55,7 +55,7 @@ export function Button({
 
   const style =
     variant === "primary"
-      ? { background: "var(--color-madder)", color: "#fff", boxShadow: "var(--shadow-e2)" }
+      ? { background: "var(--color-madder)", color: "var(--ink-on-accent)", boxShadow: "var(--shadow-e2)" }
       : {
           background: "transparent",
           color: "var(--ink-primary)",

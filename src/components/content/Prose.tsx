@@ -56,15 +56,19 @@ async function CodeBlock({
 }
 
 const TONE = {
-  note: { rule: "var(--color-cobalt)", wash: "rgba(62,92,118,.07)", label: "Note" },
+  note: {
+    rule: "var(--color-cobalt)",
+    wash: "var(--surface-tint-cobalt)",
+    label: "Note",
+  },
   insight: {
     rule: "var(--color-sage)",
-    wash: "rgba(139,150,131,.12)",
+    wash: "var(--surface-tint-sage)",
     label: "What I learned",
   },
   warning: {
     rule: "var(--color-madder)",
-    wash: "rgba(178,58,82,.07)",
+    wash: "var(--surface-tint-madder)",
     label: "Watch out",
   },
 } as const;
@@ -128,8 +132,8 @@ const components: PortableTextComponents = {
       <code
         className="text-[0.88em] px-1.5 py-0.5 rounded-xs"
         style={{
-          background: "rgba(62,92,118,.09)",
-          color: "var(--color-cobalt)",
+          background: "var(--surface-tint-cobalt)",
+          color: "var(--ink-technical)",
         }}
       >
         {children}

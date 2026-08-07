@@ -106,12 +106,30 @@
   --ink-link: var(--color-madder);
   --ink-link-hover: var(--color-madder-deep);
   --ink-technical: var(--color-cobalt);
+  /* The ink Sage needs to clear AA for text. Sage itself is 2.80:1 and is
+     fills-and-rules only; this is the darker value the sage tag chips and the
+     journal chapter use, shared so they cannot drift (6.02:1). */
+  --ink-sage: #4e5647;
 
   --ink-primary-inverted: var(--color-porcelain);
   --ink-secondary-inverted: #b6afa5;
 
+  /* Text and marks on a solid accent fill (buttons, active filter chips),
+     where the porcelain inverted ink reads too cream and the contrast budget
+     is smaller. */
+  --ink-on-accent: #ffffff;
+
   --line-hairline: rgba(26, 25, 23, 0.11);
   --line-hairline-inverted: rgba(246, 243, 238, 0.14);
+
+  /* ---------- accent washes ----------
+     The low-opacity tint each accent sits on as a field: the callout wash,
+     the inactive filter chip, the tag chip, the inline-code mark. Was varied
+     7–10% between files before; one value per accent makes the field read as
+     the same surface whichever component asks for it. */
+  --surface-tint-cobalt: rgba(62, 92, 118, 0.08);
+  --surface-tint-sage: rgba(139, 150, 131, 0.14);
+  --surface-tint-madder: rgba(178, 58, 82, 0.07);
 
   --focus-ring: var(--color-cobalt);
 
@@ -205,8 +223,7 @@
 
 [data-chapter="journal"] {
   --chapter-accent: var(--color-sage);
-  /* 6.02:1 — the tone the sage tag chips already use. */
-  --chapter-accent-ink: #4e5647;
+  --chapter-accent-ink: var(--ink-sage);
 }
 
 [data-chapter="about"] {

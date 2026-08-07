@@ -134,8 +134,8 @@ function Chip({
       className="u-tap justify-center text-[13px] font-medium px-3.5 py-2 rounded-full transition-colors cursor-pointer border-0"
       style={
         on
-          ? { background: "var(--color-cobalt)", color: "#fff" }
-          : { background: "rgba(62,92,118,.08)", color: "var(--color-cobalt)" }
+          ? { background: "var(--color-cobalt)", color: "var(--ink-on-accent)" }
+          : { background: "var(--surface-tint-cobalt)", color: "var(--ink-technical)" }
       }
     >
       {children}
