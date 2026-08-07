@@ -1,6 +1,5 @@
 import type { PortableTextBlock } from "@portabletext/react";
 import type {
-  BodyObject,
   Post,
   PostSummary,
   PortableText,
@@ -10,45 +9,46 @@ import type {
 } from "./types";
 
 /**
- * Seed content.
+ * Seed content — the user's real portfolio.
  *
  * Two jobs. It is the copy that gets pushed into Sanity so the site looks
  * alive on day one, and it is what the site renders before Sanity is
- * configured — so every layout can be designed and audited against real
- * text rather than placeholder boxes.
+ * configured — so every layout can be audited against the real portfolio
+ * rather than placeholder boxes.
  *
- * Deliberately includes the shapes that break layouts: a long project title,
- * a dense tag row, a long skill name, a two-line post title.  A grid that
- * only survives short strings is not a finished grid.
+ * This is real content, not scaffolding. The projects (Kandy Cycle, Fit Pat,
+ * the portfolio itself), the journal posts and the profile were written by
+ * the owner and mirror the live CMS, so a fresh setup and an empty dataset
+ * receive the actual portfolio rather than fabricated stand-ins.
  *
- * Bodies are written at the depth the finished portfolio should carry, and in
- * the shapes Sanity actually returns, so migration is transcription rather
- * than a rewrite.  Between them the three posts exercise every renderer in
- * `Prose` — headings, both list kinds, quote, inline code, links, fenced code
- * and all three callout tones — because a renderer that has never rendered is
- * a renderer nobody has designed.
+ * One boundary worth stating: image assets are deliberately not carried in
+ * the seed. Bodies transcribe the real prose but drop `image` members, and
+ * projects carry no cover image or gallery — an uploaded asset has a binary
+ * the seed cannot ship. The rendered fallback uses the designed clay cover
+ * state; the Studio is where real images are uploaded.
  */
 
 /* ---------- portable-text builders ----------
-   These mirror exactly what the Studio emits.  Keys are hand-written and must
+   These mirror exactly what the Studio emits. Keys are hand-written and must
    stay unique within their own array; Sanity generates them, but seed content
-   has to supply its own. */
+   has to supply its own. Exported so the renderer-cover fixtures in
+   `proseRendererFixtures.ts` are built with identical shapes. */
 
 type Span = { _type: "span"; _key: string; text: string; marks: string[] };
 
-const span = (text: string, key: string, marks: string[] = []): Span => ({
-  _type: "span",
-  _key: key,
-  text,
-  marks,
-});
+export const span = (
+  text: string,
+  key: string,
+  marks: string[] = [],
+): Span => ({ _type: "span", _key: key, text, marks });
 
 /** A block built from pre-made spans, for mixed formatting within a paragraph. */
-const rich = (
+export const rich = (
   key: string,
   children: Span[],
   markDefs: Array<Record<string, unknown>> = [],
   style: string = "normal",
+  extras: Partial<PortableTextBlock> = {},
 ): PortableTextBlock =>
   ({
     _type: "block",
@@ -56,18 +56,26 @@ const rich = (
     style,
     markDefs,
     children,
+    ...extras,
   }) as PortableTextBlock;
 
 /** The common case: one unformatted run of text. */
-const block = (text: string, key: string, style = "normal") =>
+export const block = (text: string, key: string, style = "normal") =>
   rich(key, [span(text, `${key}s`)], [], style);
 
-const h2 = (text: string, key: string) => block(text, key, "h2");
-const h3 = (text: string, key: string) => block(text, key, "h3");
-const quote = (text: string, key: string) => block(text, key, "blockquote");
+export const h2 = (text: string, key: string) => block(text, key, "h2");
+export const h3 = (text: string, key: string) => block(text, key, "h3");
+export const quote = (text: string, key: string) => block(text, key, "blockquote");
+
+/** A paragraph opening in bold, followed by an unmarked run. */
+export const strongLead = (lead: string, rest: string, key: string) =>
+  rich(key, [
+    span(lead, `${key}a`, ["strong"]),
+    span(rest, `${key}b`),
+  ]);
 
 /** List items are ordinary blocks carrying `listItem` and `level`. */
-const li = (
+export const li = (
   text: string,
   key: string,
   listItem: "bullet" | "number" = "bullet",
@@ -82,41 +90,27 @@ const li = (
     children: [span(text, `${key}s`)],
   }) as PortableTextBlock;
 
-const bullets = (items: string[], keyBase: string) =>
+export const bullets = (items: string[], keyBase: string) =>
   items.map((t, i) => li(t, `${keyBase}${i}`, "bullet"));
 
-const numbers = (items: string[], keyBase: string) =>
+export const numbers = (items: string[], keyBase: string) =>
   items.map((t, i) => li(t, `${keyBase}${i}`, "number"));
 
-const code = (
+export const codeBlock = (
   key: string,
   language: string,
   source: string,
   filename?: string,
 ) => ({ _type: "codeBlock", _key: key, language, filename, code: source });
 
-const callout = (
+export const callout = (
   key: string,
   tone: "note" | "insight" | "warning",
   body: string,
 ) => ({ _type: "callout", _key: key, tone, body });
 
-const image = (
-  key: string,
-  alt: string,
-  caption?: string,
-): BodyObject =>
-  ({
-    _type: "image",
-    _key: key,
-    // A placeholder asset; swapped for a real upload when the seed is migrated.
-    asset: { _type: "reference", _ref: "image-seed-placeholder-1600x900-png" },
-    alt,
-    ...(caption ? { caption } : {}),
-  }) as BodyObject;
-
 /** A paragraph ending in a link — the shape most body copy actually needs. */
-const withLink = (
+export const withLink = (
   key: string,
   before: string,
   linkText: string,
@@ -135,25 +129,34 @@ const withLink = (
 
 export const seedProfile: Profile = {
   name: "Shawmiya Zarook",
-  headline: "Software Engineering Intern",
+  headline: "Software Engineer growing into AI Engineering",
   thesis:
-    "I'm learning to build software where AI does real work, not demo work. The projects here are what I've built; the journal is what it took to get there.",
-  linkedinUrl: "https://www.linkedin.com/in/shawmiya-zarook",
+    "Great software begins with understanding the problem. I build practical applications now and I'm learning to build intelligent systems next.",
+  linkedinUrl: "https://www.linkedin.com/in/shawmiya-zarook-5a61aa237/",
   bio: [
     block(
-      "I graduated in Computing and I'm now an engineering intern, spending most of my time on systems that use language models for something load-bearing rather than decorative.",
+      "I graduated in Computing in 2025 and I'm now an engineering intern, building with AI engineering.",
       "b1",
     ),
     block(
-      "Most of what I know came from things that did not work the first time — retrieval that returned confident nonsense, evaluations that measured the wrong thing, prompts that worked until they met a real user. I write those down as I go, partly to think clearly and partly because the write-ups I learned from were the ones that admitted what broke.",
-      "b2",
+      "My final-year project was a peer-to-peer bicycle rental platform for cycling tourism in Kandy. It taught me more through what I had to cut than through what I finished: I designed a graph-based route recommender and shipped curated routes instead, because a working simple feature beats a half-built clever one when there is a deadline.",
+      "b3",
+    ),
+    block(
+      "I write here mostly to think clearly. The write-ups I learned the most from were the ones that admitted what broke, so mine try to do the same.",
+      "b5",
     ),
   ],
   education: [
     {
       qualification: "BSc (Hons) Computing",
-      institution: "University of Bedfordshire",
-      period: "2022 — 2025",
+      institution: "University of Gloucestershire",
+      period: "2024 — 2025",
+    },
+    {
+      qualification: "Higher Diploma in Software Engineering",
+      institution: "Open University of Sri Lanka",
+      period: "2022 — 2024",
     },
   ],
   skillGroups: [
@@ -161,332 +164,256 @@ export const seedProfile: Profile = {
       category: "Languages",
       skills: [
         { name: "TypeScript", level: "daily" },
-        { name: "Python", level: "daily" },
+        { name: "JavaScript", level: "daily" },
         { name: "SQL", level: "comfortable" },
-        { name: "Go", level: "learning" },
+        { name: "Python", level: "comfortable" },
       ],
     },
     {
-      category: "AI engineering",
+      category: "Web",
       skills: [
-        { name: "Retrieval-augmented generation", level: "daily" },
-        { name: "Evaluation harnesses", level: "comfortable" },
-        { name: "Prompt design", level: "daily" },
-        { name: "Fine-tuning", level: "learning" },
+        { name: "React", level: "daily" },
+        { name: "Next.js", level: "comfortable" },
+        { name: "Tailwind CSS", level: "daily" },
+        { name: "shadcn/ui", level: "comfortable" },
       ],
     },
     {
-      category: "Platform",
+      category: "Data & services",
       skills: [
-        { name: "Next.js", level: "daily" },
         { name: "PostgreSQL", level: "comfortable" },
-        { name: "Docker", level: "comfortable" },
-        { name: "Kubernetes", level: "learning" },
+        { name: "Supabase", level: "comfortable" },
+        { name: "Sanity", level: "comfortable" },
+        { name: "Stripe", level: "learning" },
       ],
     },
   ],
   milestones: [
     {
       year: "2026",
-      event: "Software Engineering Intern",
-      detail:
-        "Working on retrieval and evaluation for an internal assistant used by support staff.",
+      event: "Software engineering intern",
+      detail: "Building with AI engineering, and writing up what I learn as I go.",
     },
     {
       year: "2025",
-      event: "Graduated BSc Computing",
+      event: "Graduated BSc (Hons) Computing",
       detail:
-        "Final project was a retrieval system that had to say “I don't know” convincingly.",
+        "My dissertation shipped Kandy Cycle: a peer-to-peer bicycle rental platform for cycling tourism in Kandy.",
     },
     {
       year: "2024",
-      event: "First production RAG system",
+      event: "Higher Diploma in Software Engineering",
       detail:
-        "Shipped to forty people. Learned more from the questions it answered badly than the ones it got right.",
+        "Completed at the Open University of Sri Lanka, then moved to the final year of the BSc.",
     },
     {
       year: "2023",
-      event: "Started writing things down",
-      detail: "The journal began as notes I kept losing.",
+      event: "First full applications",
+      detail:
+        "Coursework projects in Python, Java, PHP and JavaScript — the first things I built that someone other than me had to use.",
     },
   ],
 };
 
 export const seedProjects: Project[] = [
   {
-    title: "Ledger — a retrieval assistant that knows when to stop",
-    slug: "ledger",
+    title: "Software Engineering Portfolio CMS",
+    slug: "software-engineering-portfolio-cms",
     summary:
-      "An internal assistant over four years of support tickets. The hard part was not retrieval; it was teaching it to refuse.",
-    date: "2026-04-12",
+      "A portfolio built to separate content from code, making projects and technical writing easier to maintain and publish through a CMS.",
+    date: "2026-08-07",
     featured: true,
-    role: "Sole engineer — retrieval, evaluation, and the interface",
+    role: "Software Engineering Intern (Sole Developer)",
     techTags: [
-      "TypeScript",
-      "Python",
-      "PostgreSQL",
-      "pgvector",
       "Next.js",
-      "OpenAI",
+      "TypeScript",
+      "React",
+      "Sanity CMS",
+      "GROQ",
+      "Tailwind CSS",
+      "Vercel",
     ],
-    // Placeholder project — kept only as development seed content. No real
-    // links until replaced with the user's own projects before release.
-    githubUrl: "",
-    liveUrl: "",
+    githubUrl: "https://github.com/shawmiyaMZ/portfolio",
+    liveUrl: "https://shawmiya.vercel.app/",
     problem: [
       block(
-        "Support staff were answering the same forty questions every week, and the answers were buried in four years of tickets written by people who had all since left.",
-        "lp1",
-      ),
-      block(
-        "The obvious fix — search over the ticket archive — already existed and nobody used it. Keyword search returned thirty threads and no indication which one was still true. A resolution from 2022 and a resolution from last month look identical to a search index, and picking wrong meant giving a customer advice about a system that had been replaced twice since.",
-        "lp2",
-      ),
-      block(
-        "So the requirement was not really retrieval. It was confidence: an answer staff could act on without opening four tickets to check it, or a clear admission that no such answer existed.",
-        "lp3",
+        "Most developer portfolios become harder to maintain as new projects and writing are added because even simple content updates require code changes. I wanted to build a portfolio that could grow with my career, allowing content to evolve independently while keeping the application maintainable and consistent.",
+        "pp1",
       ),
     ],
     approach: [
       block(
-        "Three decisions did most of the work, and only one of them was about the model.",
-        "la1",
-      ),
-      h3("Chunk by thread, not by token count", "la2"),
-      block(
-        "The first version split tickets into 512-token windows, which routinely cut a resolution away from the problem it resolved. Chunking by conversation thread instead meant a chunk was always a complete unit of meaning — sometimes eighty tokens, sometimes four thousand — and retrieval quality moved more from that one change than from any amount of embedding tuning afterwards.",
-        "la3",
-      ),
-      h3("Rerank, then truncate", "la4"),
-      block(
-        "Vector search returns the top fifty by cosine similarity, and a cross-encoder reranks those into a final six. Bi-encoders are fast and approximate; cross-encoders are slow and accurate. Running the slow one over fifty candidates rather than the whole corpus buys most of the accuracy for a fraction of the cost.",
-        "la5",
-      ),
-      h3("Score refusal as an outcome", "la6"),
-      block(
-        "The evaluation set contains cases with no supportable answer, and on those the only correct behaviour is abstention. Because refusal is graded as a success rather than a missing answer, every prompt change gets measured on whether it made the system more willing to guess.",
-        "la7"),
-      code(
-        "la8",
-        "python",
-        `def grade(case, response):
-    """A refusal on an unanswerable case is a pass, not a miss."""
-    if case.unanswerable:
-        return Result.PASS if response.abstained else Result.OVERCONFIDENT
-
-    if response.abstained:
-        return Result.OVERCAUTIOUS
-
-    return Result.PASS if case.matches(response.text) else Result.WRONG`,
-        "eval/grading.py",
-      ),
-      callout(
-        "la9",
-        "insight",
-        "Grading abstention changed the system's behaviour more than any prompt I wrote. Once refusing was worth points, every later change had to justify itself against the option of saying nothing.",
+        "I separated content from the application by introducing a headless CMS, allowing projects, journal posts and profile information to be managed independently of the codebase. Reusable components, typed content models and static rendering kept the application maintainable, while webhook-driven revalidation ensured published changes appeared without a full redeployment.",
+        "pa1",
       ),
     ],
     outcome: [
       block(
-        "Median answer time fell from eleven minutes to under one. That is the number that got the project approved, and it is the least interesting one.",
-        "lo1",
+        "The portfolio became more than a static website — it evolved into a maintainable publishing platform that supports ongoing projects and technical writing without changing the application code. It provides a solid foundation for documenting my growth as a software engineer while maintaining accessibility, performance and a consistent user experience.",
+        "po1",
       ),
-      block(
-        "The number people actually cared about was the refusal rate holding at 12%. High enough that staff believed it when it did answer — the first version refused nothing, was wrong about one time in six, and was abandoned within a fortnight because nobody could tell which sixth.",
-        "lo2",
+      rich(
+        "po2",
+        [
+          span(
+            "The application separates content management from presentation, allowing projects and journal entries to be published through ",
+            "po2a",
+          ),
+          span("Sanity CMS", "po2b", ["strong"]),
+          span(
+            " while keeping the frontend statically generated and performant.",
+            "po2c",
+          ),
+        ],
       ),
       bullets(
         [
-          "Median time to answer: 11 minutes → 52 seconds",
-          "Refusal rate: 12%, stable across three months",
-          "Answers rated actionable by staff: 87%",
-          "Tickets escalated for lack of context: down by roughly half",
+          "Structured content is managed through Sanity CMS.",
+          "GROQ queries fetch typed content into the Next.js application.",
+          "Static pages are generated with ISR for fast performance.",
+          "Publishing content triggers webhook-driven revalidation instead of a full redeployment.",
         ],
-        "lo3_",
-      ).flat(),
-      quote(
-        "The version that admitted ignorance got used. The version that always had an answer got switched off.",
-        "lo4",
+        "po3_",
       ),
     ].flat(),
   },
   {
-    title: "Marginalia",
-    slug: "marginalia",
+    title: "Kandy Cycle",
+    slug: "kandy-cycle",
     summary:
-      "A reading tool that keeps your notes attached to the paragraph that provoked them.",
-    date: "2025-11-03",
+      "A peer-to-peer bicycle rental platform for cycling tourism in Kandy, Sri Lanka. Owners list their bikes, tourists book and pay, and curated routes are followed with live GPS tracking.",
+    date: "2025-08-27",
     featured: true,
-    role: "Design and build",
-    techTags: ["TypeScript", "IndexedDB", "Svelte"],
-    githubUrl: "",
-    liveUrl: "",
-    problem: [
-      block(
-        "Highlights are worthless a month later because they lose the argument they were reacting to. You are left with a sentence you once thought was important and no memory of why.",
-        "mp1",
-      ),
-      block(
-        "Every tool I tried stored the note against a character offset. Offsets survive nothing — not an edit, not a re-flow, not a different reader width. Reopen the document a month later and the notes have all slid one paragraph to the left.",
-        "mp2",
-      ),
+    role:
+      "Final-year dissertation project, BSc (Hons) Computing, University of Gloucestershire. Sole developer: I designed the system, built the React and TypeScript front end, modelled the Postgres schema and its row-level security policies, wrote the Stripe checkout and webhook flow, and implemented the Leaflet map and GPS tracking module.",
+    techTags: [
+      "React 18",
+      "TypeScript",
+      "Supabase",
+      "PostgreSQL",
+      "Stripe",
+      "Tailwind CSS",
+      "shadcn/ui",
+      "React Leaflet",
+      "Express",
+      "GeoJSON",
     ],
-    approach: [
-      block(
-        "Each note anchors to a text range described three ways at once, so the anchor degrades instead of breaking.",
-        "ma1",
-      ),
-      h3("Three selectors, tried in order", "ma2"),
-      numbers(
-        [
-          "An exact quote of the selected text — fastest, and correct while the document is unchanged.",
-          "A prefix and suffix of surrounding context, so a moved passage is still findable.",
-          "An approximate character offset, used only to disambiguate when the quote appears more than once.",
-        ],
-        "ma3_",
-      ).flat(),
-      withLink(
-        "ma4",
-        "The strategy is a simplification of the ",
-        "W3C Web Annotation selector model",
-        "https://www.w3.org/TR/annotation-model/",
-        ", cut down to what one reader actually needs.",
-      ),
-      code(
-        "ma5",
-        "typescript",
-        `// Selectors are tried cheapest-first and the first confident hit wins.
-// Nothing here is clever; the value is entirely in the ordering.
-export function resolve(anchor: Anchor, doc: string): Range | null {
-  return (
-    exact(anchor.quote, doc) ??
-    context(anchor.prefix, anchor.suffix, doc) ??
-    nearest(anchor.offset, anchor.quote, doc)
-  );
-}`,
-        "src/anchor/resolve.ts",
-      ),
-      h3("Where the threshold lives", "ma6"),
-      block(
-        "The third selector is the dangerous one. A nearest-match will always return something, so it needs a similarity floor beneath which it returns nothing at all — and that floor is the entire difference between a tool that quietly misfiles your thinking and one you can trust.",
-        "ma7",
-      ),
-      callout(
-        "ma8",
-        "warning",
-        "Fuzzy matching will happily re-anchor a note to a passage that merely resembles the original. The confidence threshold matters more than the matching algorithm, and mine took three attempts to get right.",
-      ),
-    ].flat(),
-    outcome: [
-      block(
-        "I use it daily, which is the only endorsement I trust from myself.",
-        "mo1",
-      ),
-      block(
-        "The re-anchoring is right about 94% of the time. The remaining 6% is why I still keep a plain-text backup, and why notes that fail to re-anchor are surfaced in a review queue rather than silently dropped.",
-        "mo2",
-      ),
-      bullets(
-        [
-          "Re-anchor accuracy: 94% across roughly 600 notes",
-          "Failures surfaced for review rather than dropped: 100%",
-          "Notes lost outright since the review queue landed: none",
-        ],
-        "mo3_",
-      ).flat(),
-      quote(
-        "A lost note the reader never hears about is worse than one they are asked to re-file.",
-        "mo4",
-      ),
-    ].flat(),
-  },
-  {
-    title: "Kiln",
-    slug: "kiln",
-    summary:
-      "A small evaluation harness for prompt changes, built because spreadsheets stopped scaling.",
-    date: "2025-06-20",
-    featured: true,
-    role: "Sole engineer",
-    techTags: ["Python", "SQLite", "Pytest"],
-    githubUrl: "",
-    liveUrl: "",
+    githubUrl: "https://github.com/shawmiyaMZ/kandy-cycle-journeys",
     problem: [
       block(
-        "Every prompt change felt like an improvement and I had no way to prove any of them were.",
+        "Cycling tourism is growing in Kandy, but there is no online way to rent a bicycle there. Tourists arrive and cannot find what is available, what it costs, or which roads are safe to ride. Local bike owners have no way to reach them at all. The bikes exist and the demand exists — nothing connects the two.",
         "kp1",
       ),
       block(
-        "The honest version: I was reading four or five outputs after each change, deciding it looked better, and moving on. That is not evaluation, it is confirmation. Two regressions reached production before I accepted that the spreadsheet I had been maintaining was a record of my own optimism.",
+        "The wider problem is that much of Sri Lanka's tourism still runs on phone calls and manual booking. My dissertation asked whether a community-run platform could close that gap for one city, and what it would take to build one that people would trust with a payment.",
         "kp2",
       ),
     ],
     approach: [
-      block(
-        "A fixed set of cases with graded rubrics, run on every change, diffed against the previous run. The design constraint was that it had to run in under a minute — anything slower gets skipped exactly when it matters most, which is when you are in a hurry.",
-        "ka1",
+      block("Three decisions shaped everything else.", "ka1"),
+      strongLead(
+        "Booking is a state machine, not a flag. ",
+        "A rental moves pending → approved → paid → completed, and each transition has exactly one owner: the renter requests, the owner approves, Stripe confirms the payment, the handover completes it. Cancelling is only possible before payment. No screen ever has to guess what state a booking is in.",
+        "ka2",
       ),
-      h3("The diff is the product", "ka2"),
-      block(
-        "An absolute score is not actionable. Knowing the suite sits at 88% tells you nothing you can act on; knowing that three specific cases passed yesterday and fail today tells you whether to ship.",
+      strongLead(
+        "The payment webhook is the source of truth. ",
+        "Stripe Checkout handles the card, and an Express endpoint listens for Stripe's events and updates booking and payment status from those. I deliberately did not rely on the browser redirect after checkout — someone closing the tab should not leave a paid booking looking unpaid.",
         "ka3",
       ),
-      code(
+      strongLead(
+        "Authorisation lives in the database. ",
+        "Supabase row-level security decides who can read and write what, so an owner can only edit their own listings and a renter only sees their own bookings. Those rules sit in Postgres rather than in React, so they hold no matter which screen calls them.",
         "ka4",
-        "bash",
-        `$ kiln run --against HEAD~1
-
-  42 cases · 38 pass · 3 regress · 1 new
-
-  REGRESSED  refusal/no-source-available
-             was: abstained          now: answered with citation to unrelated doc
-  REGRESSED  format/json-only
-             was: valid JSON         now: valid JSON wrapped in prose
-  REGRESSED  tone/no-apology
-             was: direct             now: opens with "I apologise, but"`,
       ),
-      h3("Why it is only four hundred lines", "ka5"),
       block(
-        "Everything that could be someone else's problem is. Cases are plain files on disk, results go into SQLite, and the runner is a loop. There is no scheduler, no dashboard and no service to keep alive — three things I would have had to maintain, none of which would have caught a single regression.",
+        "Then there is the part I cut. I specified dynamic route recommendation using Dijkstra and A* — a graph of Kandy's cycling network, junctions as nodes, roads as edges weighted by distance, elevation and scenic value, so a rider could ask for the fastest route or the prettiest one. I did not build it. With the deadline in view it came down to a half-working smart feature or a working simple one, and I shipped curated routes stored as GeoJSON and drawn with React Leaflet, with live GPS tracking over the top.",
+        "ka5",
+      ),
+      block(
+        "The graph design is written up in the dissertation. I would rather hand over something that works and say plainly what is missing.",
         "ka6",
       ),
-      bullets(
-        [
-          "Cases: one directory of plain files, versioned with the prompts they test",
-          "Storage: a single SQLite file, so a run is diffable and portable",
-          "Execution: sequential, because forty-two cases do not need concurrency",
-        ],
-        "ka7_",
-      ).flat(),
-      callout(
-        "ka8",
-        "note",
-        "The diff against the previous run is the whole product. An absolute score tells you nothing actionable; a list of what just broke tells you whether to ship.",
-      ),
-    ].flat(),
+    ],
     outcome: [
       block(
-        "Caught three regressions that would have shipped. Also killed two changes I was emotionally attached to, which was the more useful outcome and the less pleasant one.",
+        "Ten functional test cases passed: registration, booking, payment, GPS recording, route following, route sharing, pickup verification, multi-step form validation, map rendering and real-time updates.",
         "ko1",
       ),
       block(
-        "It now runs on every commit that touches a prompt file. Total runtime is around forty seconds, which is the only reason it still gets run at all.",
+        "Measured: a 10.22-second build, a 1,045 kB bundle, 163 kB of CSS, and page loads of two to three seconds. GPS accuracy came in at ±5–10 metres against a ±5 metre target — recorded as missed rather than quietly rounded down.",
         "ko2",
       ),
-      bullets(
-        [
-          "Runtime: ~40 seconds for 42 cases",
-          "Regressions caught before release: 3",
-          "Changes reverted on the evidence: 2",
-          "Total implementation: under 400 lines",
-        ],
-        "ko3_",
-      ).flat(),
-      quote(
-        "It was smaller than the spreadsheet it replaced, and I put it off for months imagining something much larger.",
-        "ko4",
+      block(
+        "The feature I am least sure about is pickup verification. It captures location, contact details and a timestamp when a bike changes hands, because that handover is where peer-to-peer rental actually breaks. It works, but it has never been tested by two strangers meeting on a street in Kandy, and that is the only test that counts.",
+        "ko3",
       ),
-    ].flat(),
+    ],
+  },
+  {
+    title: "Fit Pat",
+    slug: "fit-pat",
+    summary:
+      "An Android fitness app that starts from your health condition rather than your workout. Pick high blood pressure, back pain, diabetes or obesity, and every exercise after that is filtered by the answer.",
+    date: "2023-05-03",
+    featured: true,
+    role:
+      "Individual coursework project for EEI4369, Mobile Application Development for Android, at the Open University of Sri Lanka. Sole developer: I designed the flow, built every screen in Java and Android XML, wired the motion sensor and location tracking, and stored accounts in SQLite.",
+    techTags: [
+      "Java",
+      "Android Studio",
+      "Android SDK",
+      "SQLite",
+      "Motion sensors",
+      "Geolocation",
+      "XML layouts",
+    ],
+    githubUrl: "https://github.com/shawmiyaMZ/Fit-Pat-MobileApp",
+    problem: [
+      block(
+        "Fitness apps assume you are healthy. If you are managing high blood pressure, diabetes, back pain or obesity, the exercise you need is different from the exercise the app gives everyone — and none of the popular ones ask. The alternative is booking a doctor to be told which movements are safe, and then waiting.",
+        "fp1",
+      ),
+      block(
+        "That is the gap Fit Pat aims at. Not another workout tracker, but an answer to a narrower question: what can I safely do, given this condition?",
+        "fp2",
+      ),
+    ],
+    approach: [
+      strongLead(
+        "The condition comes first, not the workout. ",
+        "The opening screen asks what you are managing, and everything downstream is filtered by that answer: condition, then activity type, then a planned set of exercises with repetitions, duration and a demonstration video.",
+        "fa1",
+      ),
+      strongLead(
+        "I mapped conditions to exercises explicitly. ",
+        "Each condition is its own activity class — HighBloodPressure, BackPain, Diabetes — and each pairing of condition and activity is another, such as YogaDiabetes or StretchBackPain. That does not scale past a handful of conditions, and today I would hold the mapping as data rather than as classes. But it was explicit and easy to check, which mattered more than elegance for content where a wrong suggestion could hurt someone.",
+        "fa2",
+      ),
+      strongLead(
+        "Pictures instead of words. ",
+        "I used illustrations and animation rather than text and buttons throughout, because the users I had in mind — older adults managing a condition — are not necessarily fluent with apps. That was the most deliberate design decision in the project.",
+        "fa3",
+      ),
+      block(
+        "Around that core flow sit a pedometer built on the device's motion sensor, a route tracker for walks and rides, and a BMI calculator, with accounts stored locally in SQLite.",
+        "fa4",
+      ),
+    ],
+    outcome: [
+      block(
+        "The app runs on device: sign-up and login with password reset, four conditions, activity dashboards, exercise plans with embedded video, step counting, route mapping and BMI.",
+        "fo1",
+      ),
+      block(
+        "I listed the weaknesses in my own proposal and they turned out to be the real ones — tracking errors, and a pedometer whose readings are not always accurate. A step counter built on raw motion-sensor events over-counts on rough ground and under-counts a slow walk, and I never solved that.",
+        "fo2",
+      ),
+      block(
+        "The honest limitation is larger than accuracy. The mapping from condition to exercise was mine, assembled from research rather than from a clinician. For an app whose entire premise is that the movements are safe for your condition, that is the part which would need professional sign-off before anyone should rely on it.",
+        "fo3",
+      ),
+    ],
   },
 ];
 
@@ -494,267 +421,172 @@ const tag = (title: string, slug: string) => ({ title, slug });
 
 export const seedPosts: Post[] = [
   {
-    title: "Refusal is a feature, not a failure state",
-    slug: "refusal-is-a-feature",
+    title: "What I learned from writing bad AI prompts",
+    slug: "writing-bad-ai-prompts",
     excerpt:
-      "An assistant that answers everything is easy to build and impossible to trust. Scoring abstention as a real outcome changed how the whole system behaved.",
-    publishedAt: "2026-05-18T09:00:00Z",
+      "The problem wasn't the model. It was how I was asking. For a long time, I assumed better models would produce better answers. Eventually I realized the model wasn't confused. My prompt was.",
+    publishedAt: "2026-08-04T09:33:24.617Z",
     /* Matches what READING_TIME in queries.ts computes for this body —
        round(words / 200) + 1, counting prose only. Seed and CMS must agree
        or every reading time shifts the day the content is migrated. */
-    readingTime: 4,
-    tags: [tag("Retrieval", "retrieval"), tag("Evaluation", "evaluation")],
-    body: [
-      block(
-        "The first version answered every question it was asked. That sounds like success until you read the answers.",
-        "r1",
-      ),
-      block(
-        "Roughly one in six was wrong — not obviously, catastrophically wrong, but wrong in the way that costs an afternoon. A confident paragraph citing a real ticket that happened to describe a system replaced eighteen months earlier. Staff had no way to tell those apart from the five that were right, so within a fortnight they stopped using it entirely. A tool that is right 83% of the time and never signals which 83% is worth less than no tool at all, because now you have to check.",
-        "r2",
-      ),
-      h2("Where the confidence came from", "r3"),
-      rich(
-        "r4",
-        [
-          span(
-            "Nothing in the system was measuring whether an answer should exist. Retrieval always returned its top six chunks, because that is what a ",
-            "r4a",
-          ),
-          span("top-k", "r4b", ["code"]),
-          span(
-            " search does — ask it for six and it will find six, even when the corpus contains nothing relevant. The model then did exactly what it was asked and wrote a fluent answer from whatever it was handed.",
-            "r4c",
-          ),
-        ],
-      ),
-      quote(
-        "Top-k retrieval has no concept of “nothing here”. It has a concept of “these were the least bad six”.",
-        "r5",
-      ),
-      block(
-        "So the failure was not hallucination in the usual sense. Every citation was real. The system was faithfully summarising genuinely retrieved documents that simply did not answer the question.",
-        "r6",
-      ),
-      h2("Making abstention scoreable", "r7"),
-      block(
-        "The change that mattered was not a prompt. It was adding cases to the evaluation set that have no supportable answer, and grading a refusal on those as a pass.",
-        "r8",
-      ),
-      code(
-        "r9",
-        "python",
-        `# Four outcomes, not two. The two middle ones are where the
-# interesting failures live.
-
-class Result(Enum):
-    PASS          = auto()  # answered correctly, or refused correctly
-    WRONG         = auto()  # answered, but the answer was incorrect
-    OVERCONFIDENT = auto()  # answered a question with no supportable answer
-    OVERCAUTIOUS  = auto()  # refused a question that was answerable`,
-        "eval/results.py",
-      ),
-      block(
-        "Two failure modes rather than one is the entire point. Before, any refusal counted as a miss, so every change that reduced refusals looked like an improvement — including the ones that were simply making the system guess more. Splitting the failures apart made that trade visible.",
-        "r10",
-      ),
-      h3("What the grader needs from retrieval", "r11"),
-      block(
-        "Abstention has to be decidable before generation, or the model is being asked to judge its own homework. In practice that meant the reranker's top score became a gate: below a threshold, the question never reaches the model at all.",
-        "r12",
-      ),
-      bullets(
-        [
-          "Score above the threshold — answer, with citations.",
-          "Score below it — refuse, and name what was searched.",
-          "Score near it — answer, but say explicitly that the match is weak.",
-        ],
-        "r13_",
-      ).flat(),
-      block(
-        "That third state did more for trust than the other two combined. A hedged answer with its uncertainty stated is useful; the same answer stated flatly is a trap.",
-        "r14",
-      ),
-      callout(
-        "r15",
-        "insight",
-        "Tuning the threshold is a product decision wearing an engineering costume. There is no correct value — only a position on the trade between refusing too often and guessing too often, and someone has to own where it sits.",
-      ),
-      h2("What it cost", "r16"),
-      block(
-        "Refusal rate settled at 12%, which means roughly one question in eight now returns nothing. That is a real cost and it was not free to defend: “it says I don't know too much” was the most common early complaint, and the honest answer was that the previous version had been saying it never, while being wrong one time in six.",
-        "r17",
-      ),
-      withLink(
-        "r18",
-        "The evaluation harness that made any of this measurable is ",
-        "Kiln",
-        "/work/kiln",
-        ", which came out of exactly this problem.",
-      ),
-      block(
-        "If I were starting again I would write the unanswerable cases first, before any retrieval code existed. They are the cheapest test to write and the only one that catches the failure that actually kills adoption.",
-        "r19",
-      ),
-      callout(
-        "r20",
-        "note",
-        "The 12% refusal figure is from the last run I kept, not a promise. Finishing the write-up is overdue.",
-      ),
-    ].flat(),
-  },
-  {
-    title: "What I got wrong about chunking",
-    slug: "what-i-got-wrong-about-chunking",
-    excerpt:
-      "I spent two weeks tuning chunk size and overlap. The win came from changing what a chunk was, not how big it was.",
-    publishedAt: "2026-03-02T09:00:00Z",
     readingTime: 2,
-    tags: [tag("Retrieval", "retrieval")],
+    tags: [tag("Prompting", "prompting")],
     body: [
-      block("Token counts are a proxy for meaning, and a bad one.", "c1"),
       block(
-        "I lost two weeks to a grid search over chunk size and overlap. Sizes from 256 to 1024, overlaps from zero to half. Forty-odd configurations, each scored against the same evaluation set. The best configuration beat the worst by about four points, and every one of them was mediocre.",
-        "c2",
+        "For a long time, I assumed better models would produce better answers. Whenever an AI gave me something vague, repetitive, or completely off-topic, I blamed the model.",
+        "w1",
       ),
-      h2("The grid search was measuring the wrong axis", "c3"),
+      block("Eventually I realized the model wasn't confused.", "w3"),
+      block("My prompt was.", "w5"),
       block(
-        "A fixed-size window cuts wherever the counter runs out, which in a support archive means cutting between the problem and its resolution about as often as not. No window size fixes that, because the correct boundary is not at a fixed distance — it is wherever the thread ends.",
-        "c4",
-      ),
-      block(
-        "Once chunks followed conversation threads instead, the size distribution became wildly uneven: some eighty tokens, some four thousand. That felt wrong. It scored eleven points better than the best fixed-size configuration.",
-        "c5",
-      ),
-      callout(
-        "c6",
-        "insight",
-        "If a parameter sweep produces a narrow band of mediocre results, the problem is usually not inside the range. It is that you are sweeping the wrong parameter.",
-      ),
-      h2("What replaced it", "c7"),
-      code(
-        "c8",
-        "typescript",
-        `// Before: cut every N tokens, hope the seam falls somewhere harmless.
-const chunks = splitByTokens(document, { size: 512, overlap: 64 });
-
-// After: cut where the document itself says a unit ends.
-const chunks = document.threads.map((thread) => ({
-  text: thread.messages.map(renderMessage).join("\\n\\n"),
-  // Retrieval matches on the text; the metadata is what makes the
-  // result trustworthy once it comes back.
-  meta: {
-    resolvedAt: thread.resolvedAt,
-    supersededBy: thread.supersededBy,
-    product: thread.product,
-  },
-}));`,
-        "src/ingest/chunk.ts",
+        "A prompt isn't just a question — it's the specification for the task. If the instructions are unclear, incomplete, or contradictory, the output will reflect that.",
+        "w7",
       ),
       block(
-        "The metadata turned out to matter as much as the boundary. Knowing a thread was superseded lets retrieval demote it before the model ever sees it, which removed a whole category of confidently-outdated answers that no amount of prompting had fixed.",
-        "c9",
+        "The biggest mistake I made was asking for the destination without explaining the journey.",
+        "w9",
       ),
-      image(
-        "c9a",
-        "A support thread split at its natural boundaries: each chunk spans one conversation.",
-        "Thread chunking keeps a resolution attached to the problem it resolves.",
-      ),
-      h2("What I would keep from the two weeks", "c10"),
-      bullets(
-        [
-          "The evaluation set. It was the only reason I could tell the new approach was better rather than merely different.",
-          "The harness that ran it. Forty configurations by hand would have taken a month and I would have stopped at six.",
-        ],
-        "c11_",
-      ).flat(),
       block(
-        "And what I would drop: the assumption that because a parameter is exposed, it is the parameter that matters. Chunk size is tunable, visible and discussed everywhere, which makes it feel like the lever. It is simply the easiest thing to change.",
-        "c12",
+        "Instead of giving context, constraints, examples, and a clear goal, I would write something like:",
+        "w11",
       ),
-    ].flat(),
+      quote("Build me a portfolio.", "w13"),
+      block("The AI had to guess everything.", "w15"),
+      block(
+        "Once I started writing prompts like a software specification — explaining the audience, design goals, limitations, expected behavior, and success criteria — the quality changed dramatically.",
+        "w17",
+      ),
+      block(
+        "Another lesson was that longer doesn't always mean better. I often wrote prompts packed with unnecessary details while forgetting the one thing that mattered most: what problem I was actually trying to solve.",
+        "w19",
+      ),
+      block("Good prompts reduce ambiguity.", "w21"),
+      block("Bad prompts create it.", "w23"),
+      block(
+        "Working with AI has taught me that prompt engineering isn't about finding magical words. It's about communicating clearly enough that another system — or another person — can understand exactly what success looks like.",
+        "w25",
+      ),
+      block(
+        "The surprising part is that this lesson applies beyond AI. Better prompts have made me better at writing requirements, documenting ideas, and even explaining problems to other developers.",
+        "w27",
+      ),
+      block("The model wasn't the bottleneck. My communication was.", "w29"),
+    ],
   },
   {
-    title: "Evaluations you will actually run",
-    slug: "evaluations-you-will-actually-run",
+    title: "It sounded right, so I stopped checking",
+    slug: "it-sounded-right-so-i-stopped-checking",
     excerpt:
-      "The best harness is the one that runs on every change without being asked. Mine took an afternoon and has paid for itself many times over.",
-    publishedAt: "2026-01-14T09:00:00Z",
-    readingTime: 3,
-    tags: [tag("Evaluation", "evaluation"), tag("Tooling", "tooling")],
+      "I built this site over four days with Claude. The work was good and it explained itself well, so I stopped checking it against my original brief. When I finally asked whether Claude had read that brief, the answer was no — and an hour earlier it had deleted content the brief required.",
+    publishedAt: "2026-08-04T09:06:27.036Z",
+    readingTime: 4,
+    tags: [tag("Tooling", "tooling")],
     body: [
-      block("A test you run manually is a test you do not run.", "e1"),
       block(
-        "I know this about unit tests and had somehow decided prompts were different. They are not. The evaluation I ran when I remembered caught nothing, because I remembered on calm afternoons and never on the Friday when I was changing something quickly.",
-        "e2",
+        "I built this site over four days, in conversation with Claude. I described what I wanted, Claude wrote the code, I reacted to it, and we went round again. It worked. The site got good.",
+        "k1",
       ),
-      h2("Three properties, in order of importance", "e3"),
-      numbers(
+      block(
+        "Then something felt off. I couldn't say what — nothing was broken, nothing looked wrong. So I asked a question I hadn't thought to ask before: had it actually read my project brief?",
+        "k3",
+      ),
+      rich(
+        "k5",
         [
-          "It runs without being asked. On commit, in CI, anywhere that is not my memory.",
-          "It finishes fast enough that nobody is tempted to skip it. Under a minute in practice.",
-          "It reports what changed, not what is true. An absolute score is not actionable; a diff is.",
+          span(
+            "It hadn't. Not that day, and not for a while. It had been working from its own notes ",
+            "k5a",
+          ),
+          span("about", "k5b", ["em"]),
+          span(
+            " my brief — a summary, mostly accurate — and it had been building against the summary.",
+            "k5c",
+          ),
         ],
-        "e4_",
-      ).flat(),
-      block(
-        "Everything else — rubric design, grader choice, how many cases — matters far less than these three, and I spent most of my early effort on those instead.",
-        "e5",
       ),
-      h3("On case count", "e6"),
-      block(
-        "Forty-two cases sounds thin and has been sufficient. The cases were collected as failures happened rather than written up front, which is why they are unevenly distributed and why they keep catching things. A tidy, balanced set of two hundred synthetic cases would look more rigorous and find less.",
-        "e7",
+      h2("What I couldn't put my finger on", "k9"),
+      rich(
+        "k11",
+        [
+          span(
+            "The advice I was getting was good advice. That's what made this hard to see. It just wasn't always advice about ",
+            "k11a",
+          ),
+          span("my", "k11b", ["em"]),
+          span(
+            " project — it was advice about a project like mine, and that's a difference you can only catch if you're holding the original document.",
+            "k11c",
+          ),
+        ],
       ),
-      quote(
-        "Every case in the set exists because something broke once. That is the only curation rule I have and I have not needed another.",
-        "e8",
-      ),
-      h2("The part I got wrong twice", "e9"),
+      block("I wasn't holding it. It was in a chat window from day one.", "k15"),
+      h2("What had already gone wrong", "k17"),
       block(
-        "Grading with a model is convenient and quietly circular. My first grader used the same model family as the system under test, and agreed with it far more than a human did — most visibly on tone, where both had the same taste.",
-        "e10",
+        "An hour before I asked the question, I'd had three sample journal posts deleted. I wanted to start my journal from scratch with my own writing, which felt reasonable.",
+        "k19",
+      ),
+      block(
+        "My brief required exactly those three posts as a deliverable. Neither of us knew. I asked for the deletion, Claude carried it out efficiently, and the requirement it broke was sitting in a document nobody in the room had open.",
+        "k21",
+      ),
+      block(
+        "Being right about my hunch felt good for about four seconds. Then it stopped, because if this had slipped past me in an hour, I had no idea what else had slipped past me over four days.",
+        "k23",
+      ),
+      h2("Why I didn't notice", "k25"),
+      block(
+        "Everything I was handed explained itself. It cited the files it had changed, gave reasons for its decisions, admitted trade-offs, and flagged its own uncertainty. It read like competence.",
+        "k27",
+      ),
+      block("And I treated reading like competence as being correct.", "k29"),
+      block(
+        "That's the actual mistake, and it isn't really about AI. Good work and work that matches your requirements are two different things, and only one of them can be judged by reading it. The other one means going and opening the document.",
+        "k31",
+      ),
+      block(
+        "Four days isn't long enough to get complacent. I managed it anyway.",
+        "k33",
       ),
       callout(
-        "e11",
-        "warning",
-        "If the grader and the system share a model family, measure the grader against human judgement before trusting a single number it produces. Mine agreed with me 71% of the time, which is not a grader, it is a second opinion.",
+        "k35",
+        "insight",
+        "Fluency is not accuracy. A confident, well-reasoned explanation is evidence that something can explain itself. It is not evidence that it's building what you asked for.",
+      ),
+      h2("What I changed", "k36"),
+      rich(
+        "k38",
+        [
+          span("The brief is a file in the repository now. ", "k38a"),
+          span("docs/brief.md", "k38b", ["code"]),
+          span(
+            ", committed. Any session, any tool, any future me can open the real requirements instead of a memory of them.",
+            "k38c",
+          ),
+        ],
       ),
       block(
-        "The fix was not a better grader. It was moving anything mechanically checkable — valid JSON, citation present, no apology opener, abstention on unanswerable cases — into deterministic assertions, and leaving the model to judge only what genuinely needs judgement. Roughly two-thirds of the set turned out to be mechanically checkable.",
-        "e12",
-      ),
-      code(
-        "e13",
-        "python",
-        `# Deterministic where possible, model-graded only where necessary.
-CHECKS = [
-    assert_valid_json,
-    assert_cites_source,
-    assert_no_apology_opener,
-    assert_abstains_when_unsupported,
-]
-
-def grade(case, response):
-    for check in CHECKS:
-        if not check(case, response):
-            return Result.WRONG
-    # Only the genuinely subjective part reaches the model.
-    return judge(case.rubric, response)`,
-        "eval/grade.py",
-      ),
-      withLink(
-        "e14",
-        "The harness itself is ",
-        "Kiln",
-        "/work/kiln",
-        " — an afternoon's work, a SQLite file, and no dependencies worth naming.",
+        "I ran a clause-by-clause audit. Every requirement marked done, partial, or missing. It found three things I'd have shipped without noticing — including a page-transition feature whose CSS was written but never actually switched on.",
+        "k39",
       ),
       block(
-        "The whole thing is under four hundred lines. I mention that because I put it off for months imagining something much larger, and the version that finally got built was smaller than the spreadsheet it replaced.",
-        "e15",
+        "I re-anchor at the start of each session. Every new conversation begins with a summary of the last one, and summaries drop things quietly.",
+        "k40",
       ),
-    ].flat(),
+      h2("What I'd tell someone starting out", "k50"),
+      block(
+        "I'm early in this. I don't have a general theory about working with AI, and I'd be suspicious of anyone claiming one this year.",
+        "k52",
+      ),
+      block(
+        "But I have one specific thing. The risk isn't bad code — most of what I got was better than what I'd have written alone. The risk is quieter: work that's good in general and wrong for you in particular, delivered in a tone that gives you no reason to look closer.",
+        "k54",
+      ),
+      block(
+        "So keep the thing you're being measured against somewhere it can be checked, and check against it on a schedule rather than when you happen to feel uneasy.",
+        "k56",
+      ),
+      block("I got lucky. My unease arrived before my deadline did.", "k58"),
+    ],
   },
 ];
 
@@ -779,9 +611,12 @@ export const seedPostSummaries: PostSummary[] = seedPosts.map((post) => {
 });
 
 export const seedTags = [
-  tag("Retrieval", "retrieval"),
-  tag("Evaluation", "evaluation"),
+  tag("CMS", "cms"),
+  tag("Engineering", "engineering"),
+  tag("Mobile", "mobile"),
+  tag("Prompting", "prompting"),
   tag("Tooling", "tooling"),
+  tag("Web", "web"),
 ];
 
 /** Kept for callers that want the raw body type without importing it. */

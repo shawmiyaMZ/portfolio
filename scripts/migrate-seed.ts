@@ -1,30 +1,28 @@
 /**
  * Push the seed content into Sanity.
  *
- * The seed was written to be migrated: its bodies are already portable text
+ * The seed is the owner's real portfolio (mirrored from the live CMS), so a
+ * fresh dataset receives the actual site content: tags, the profile, the
+ * three projects and the two journal posts. Bodies are already portable text
  * in the shape the Studio emits, so this is a transcription rather than a
- * transformation. Two things genuinely differ between the local shape and
+ * transformation. Three things genuinely differ between the local shape and
  * the CMS shape, and each is handled below:
  *
  *   1. slugs     — a plain string locally, a { _type: "slug", current }
  *                  object in Sanity
  *   2. identity  — documents need stable _ids so re-running this updates
  *                  rather than duplicating
+ *   3. tags      — a local { title, slug } pair becomes a reference to the
+ *                  tag document created earlier in the same transaction
  *
- * Journal posts are deliberately excluded. The seed posts were scaffolding
- * for designing the journal against real copy; the real journal is written
- * in the Studio. They remain in seed.ts because they are still the
- * before-Sanity-is-configured fallback a fresh clone renders — but pushing
- * them into a dataset that now holds genuine posts would resurrect content
- * that was intentionally deleted.
+ * This is a first-run convenience for an EMPTY dataset, and it is explicitly
+ * non-destructive: every document is created with `createIfNotExists`, so
+ * once real content is in the Studio a re-run leaves it untouched. Never
+ * point this at a dataset that already holds content you own.
  *
- * Idempotent by design. `createOrReplace` keyed on a deterministic _id means
- * running it twice leaves the dataset identical, so a failed run can simply
- * be repeated.
- *
- * Images are deliberately not migrated: there are none in the seed, and the
- * clay covers are a designed state rather than a placeholder. Upload real
- * covers in the Studio when you have them.
+ * Images are deliberately not migrated: the seed drops image members and
+ * carries no covers or galleries, because an uploaded asset has a binary the
+ * seed cannot ship. Upload real images in the Studio after seeding.
  *
  *   npx tsx scripts/migrate-seed.ts
  *
@@ -34,7 +32,12 @@
  */
 
 import { createClient } from "next-sanity";
-import { seedProfile, seedTags } from "../src/sanity/lib/seed";
+import {
+  seedPosts,
+  seedProfile,
+  seedProjects,
+  seedTags,
+} from "../src/sanity/lib/seed";
 
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
@@ -67,13 +70,21 @@ const client = createClient({
 
 /** Deterministic ids, so re-running updates in place. */
 const tagId = (slug: string) => `tag-${slug}`;
+const projectIdFor = (slug: string) => `project-${slug}`;
+const postIdFor = (slug: string) => `post-${slug}`;
 const slugField = (current: string) => ({ _type: "slug", current });
+
+/** Resolve local { title, slug } tags to references the Studio understands. */
+const toTagReferences = (tags?: Array<{ slug: string }>) =>
+  tags?.map((t) => ({ _type: "reference", _ref: tagId(t.slug) }));
 
 async function migrate() {
   const docs: Array<Record<string, unknown>> = [];
 
-  // Tags first — posts reference them, so they must exist.
-  for (const tag of seedTags) {
+  // Tags first — posts and projects reference them, so they must exist.
+  const seedTagSet = new Map(seedTags.map((tag) => [tag.slug, tag]));
+
+  for (const tag of seedTagSet.values()) {
     docs.push({
       _id: tagId(tag.slug),
       _type: "tag",
@@ -103,12 +114,47 @@ async function migrate() {
     })),
   });
 
+  // Projects and journal posts, keyed by their own deterministic ids.
+  for (const project of seedProjects) {
+    docs.push({
+      _id: projectIdFor(project.slug),
+      _type: "project",
+      title: project.title,
+      slug: slugField(project.slug),
+      summary: project.summary,
+      date: project.date,
+      featured: project.featured,
+      role: project.role,
+      techTags: project.techTags,
+      githubUrl: project.githubUrl,
+      liveUrl: project.liveUrl,
+      tags: toTagReferences(project.tags),
+      problem: project.problem,
+      approach: project.approach,
+      outcome: project.outcome,
+    });
+  }
+
+  for (const post of seedPosts) {
+    docs.push({
+      _id: postIdFor(post.slug),
+      _type: "post",
+      title: post.title,
+      slug: slugField(post.slug),
+      excerpt: post.excerpt,
+      publishedAt: post.publishedAt,
+      tags: toTagReferences(post.tags),
+      body: post.body,
+      // readingTime is computed in GROQ, so it is not stored on the document.
+    });
+  }
+
   // `createIfNotExists`, never `createOrReplace`.
   //
   // This script seeds an empty dataset. Once real content exists it must not
-  // touch it — the profile in particular, which now carries a real education
-  // record and a real skill list that the seed's invented values would
-  // silently overwrite. Seeding is a first-run convenience, not a reset.
+  // touch it — everything here, the profile included, is a first-run seed and
+  // a later run must leave Studio edits alone. Seeding is a convenience, not
+  // a reset, and it is therefore safe only against an empty dataset.
   const tx = docs.reduce(
     (t, doc) => t.createIfNotExists(doc as never),
     client.transaction(),
@@ -118,10 +164,12 @@ async function migrate() {
 
   console.log(
     `Seeded ${projectId}/${dataset} with up to ${docs.length} documents:\n` +
-      `  ${seedTags.length} tags\n` +
-      `  1 profile\n\n` +
+      `  ${seedTagSet.size} tags\n` +
+      `  1 profile\n` +
+      `  ${seedProjects.length} projects\n` +
+      `  ${seedPosts.length} journal posts\n\n` +
       `Anything that already existed was left untouched.\n` +
-      `Projects and journal posts are written in the Studio, not seeded.\n` +
+      `Images were not migrated — upload real covers and bodies in the Studio.\n` +
       `Open /studio to confirm.`,
   );
 }

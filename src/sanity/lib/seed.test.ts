@@ -10,6 +10,7 @@ import {
   seedProjects,
   seedTags,
 } from "./seed";
+import { proseRendererFixtures } from "./proseRendererFixtures";
 
 type Block = PortableText[number];
 
@@ -45,8 +46,6 @@ const summarize = (bodies: PortableText[]) => ({
     ),
   ),
 });
-
-const union = summarize(seedPosts.map((p) => p.body));
 
 describe("seed data invariants", () => {
   it("keeps slugs unique across projects and posts", () => {
@@ -119,6 +118,8 @@ describe("seed data invariants", () => {
 });
 
 describe("renderer coverage", () => {
+  const union = summarize(proseRendererFixtures.map((f) => f.body));
+
   it("covers every block style Prose renders", () => {
     expect([...union.styles]).toEqual(
       expect.arrayContaining(["normal", "h2", "h3", "blockquote"]),
@@ -146,8 +147,12 @@ describe("renderer coverage", () => {
   });
 
   it("marks go to resolvable markDefs or known decorators", () => {
-    for (const post of seedPosts) {
-      for (const block of blocksOf(post.body)) {
+    // Known decorators — rendered by @portabletext/react defaults, and the
+    // code mark styled by Prose itself. `em` and `strong` appear in the real
+    // journal, so they are exercised here alongside the fixtures.
+    const KNOWN_DECORATORS = new Set(["code", "em", "strong"]);
+    for (const fixture of proseRendererFixtures) {
+      for (const block of blocksOf(fixture.body)) {
         const defKeys = new Set((block.markDefs ?? []).map((m) => m._key));
         for (const child of block.children ?? []) {
           for (const mark of child.marks ?? []) {
@@ -157,14 +162,14 @@ describe("renderer coverage", () => {
                 if (def._type === "link") {
                   expect(
                     typeof (def as { href?: unknown }).href,
-                    post.slug,
+                    fixture.name,
                   ).toBe("string");
                 }
               }
-            } else if (mark === "code") {
+            } else if (KNOWN_DECORATORS.has(mark)) {
               expect((child.text ?? "").trim().length).toBeGreaterThan(0);
             } else {
-              expect.fail(`${post.slug}: dangling mark "${mark}"`);
+              expect.fail(`${fixture.name}: dangling mark "${mark}"`);
             }
           }
         }
