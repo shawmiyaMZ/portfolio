@@ -229,8 +229,10 @@ export const seedProjects: Project[] = [
       "Next.js",
       "OpenAI",
     ],
-    githubUrl: "https://github.com/example/ledger",
-    liveUrl: "https://example.com",
+    // Placeholder project — kept only as development seed content. No real
+    // links until replaced with the user's own projects before release.
+    githubUrl: "",
+    liveUrl: "",
     problem: [
       block(
         "Support staff were answering the same forty questions every week, and the answers were buried in four years of tickets written by people who had all since left.",
@@ -317,7 +319,8 @@ export const seedProjects: Project[] = [
     featured: true,
     role: "Design and build",
     techTags: ["TypeScript", "IndexedDB", "Svelte"],
-    githubUrl: "https://github.com/example/marginalia",
+    githubUrl: "",
+    liveUrl: "",
     problem: [
       block(
         "Highlights are worthless a month later because they lose the argument they were reacting to. You are left with a sentence you once thought was important and no memory of why.",
@@ -406,7 +409,8 @@ export function resolve(anchor: Anchor, doc: string): Range | null {
     featured: true,
     role: "Sole engineer",
     techTags: ["Python", "SQLite", "Pytest"],
-    githubUrl: "https://github.com/example/kiln",
+    githubUrl: "",
+    liveUrl: "",
     problem: [
       block(
         "Every prompt change felt like an improvement and I had no way to prove any of them were.",
