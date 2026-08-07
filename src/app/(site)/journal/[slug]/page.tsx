@@ -6,7 +6,7 @@ import { Prose } from "@/components/content/Prose";
 import { ReadingProgress, TableOfContents } from "@/components/content/PostChrome";
 import { StudioField } from "@/components/field/StudioField";
 import { Tag, formatDate } from "@/components/ui/primitives";
-import { extractHeadings } from "@/lib/headings";
+import { countWords, extractHeadings } from "@/lib/headings";
 import {
   getPost,
   getPostNavigation,
@@ -62,7 +62,7 @@ export default async function PostPage({ params }: Params) {
     url: `${siteUrl}/journal/${slug}`,
     mainEntityOfPage: `${siteUrl}/journal/${slug}`,
     keywords: post.tags?.map((t) => t.title).join(", "),
-    wordCount: post.readingTime * 200,
+    wordCount: countWords(post.body),
   };
 
   return (

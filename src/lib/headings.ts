@@ -48,3 +48,15 @@ export function bodyToPlainText(body?: PortableText): string {
   if (!body) return "";
   return body.filter(isBlock).map(blockToText).join(" ");
 }
+
+/**
+ * Word count of a body, used for the JSON-LD `wordCount` field.
+ *
+ * Counts whitespace-separated tokens, exactly as the reading-time GROQ query
+ * does after it has normalised block boundaries to spaces. Keeping the page
+ * and the query on the same definition is the whole point — the metadata must
+ * not invent a number `readingTime * 200` would happen to imply.
+ */
+export function countWords(body?: PortableText): number {
+  return bodyToPlainText(body).split(/\s+/).filter(Boolean).length;
+}

@@ -14,14 +14,23 @@ export const TAGS = {
 /**
  * Reading time, computed in the query rather than the component.
  *
- * `pt::text` flattens portable text to a plain string; splitting on
- * whitespace gives a word count we can divide by 200wpm. Doing it here means
- * the journal index gets reading times without ever transferring the full
- * body of every post — which is the difference between a small payload and
- * shipping the entire journal to render a list.
+ * `pt::text` flattens portable text to a plain string, joining block
+ * boundaries with newlines; normalising those to spaces (then dropping the
+ * empty cells a split leaves behind) gives the same whitespace-token count as
+ * `countWords` in the page. Dividing by 200wpm yields the reading time.
+ * Doing it here means the journal index gets reading times without ever
+ * transferring the full body of every post — which is the difference between
+ * a small payload and shipping the entire journal to render a list.
  */
 const READING_TIME = groq`
-  "readingTime": round(length(string::split(pt::text(body), " ")) / 200) + 1
+  "readingTime": round(
+    length(
+      string::split(
+        array::join(string::split(pt::text(body), "\n"), " "),
+        " "
+      )[@ != ""]
+    ) / 200
+  ) + 1
 `;
 
 const POST_SUMMARY = groq`

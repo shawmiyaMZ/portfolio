@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PortableTextBlock } from "@portabletext/react";
-import { bodyToPlainText } from "@/lib/headings";
+import { countWords } from "@/lib/headings";
 import type { PortableText } from "./types";
 import {
   seedPostSummaries,
@@ -94,8 +94,7 @@ describe("seed data invariants", () => {
 
   it("keeps manual readingTime in step with the GROQ formula", () => {
     for (const post of seedPosts) {
-      const words = bodyToPlainText(post.body).split(/\s+/).filter(Boolean);
-      const expected = Math.round(words.length / 200) + 1;
+      const expected = Math.round(countWords(post.body) / 200) + 1;
       expect(post.readingTime, post.slug).toBe(expected);
     }
   });

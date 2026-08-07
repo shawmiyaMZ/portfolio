@@ -3,6 +3,7 @@ import type { PortableTextBlock } from "@portabletext/react";
 import {
   blockToText,
   bodyToPlainText,
+  countWords,
   extractHeadings,
   slugifyHeading,
 } from "./headings";
@@ -106,6 +107,22 @@ describe("bodyToPlainText", () => {
   it("returns empty string for empty or missing bodies", () => {
     expect(bodyToPlainText()).toBe("");
     expect(bodyToPlainText([])).toBe("");
+  });
+});
+
+describe("countWords", () => {
+  it("counts whitespace-separated tokens across blocks", () => {
+    const body: PortableText = [
+      block("one two"),
+      block("three"),
+      { _type: "image", _key: "i", asset: {} },
+    ];
+    expect(countWords(body)).toBe(3);
+  });
+
+  it("returns 0 for empty or missing bodies", () => {
+    expect(countWords()).toBe(0);
+    expect(countWords([])).toBe(0);
   });
 });
 
