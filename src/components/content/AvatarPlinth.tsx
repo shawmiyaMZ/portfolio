@@ -18,6 +18,37 @@ import { AvatarParallax } from "@/components/content/AvatarParallax";
  * recede, settle, parallax and float are separate nested boxes with one job
  * each. Nested divs are free; fighting animations are not.
  */
+/**
+ * What the avatar actually occupies, per breakpoint.
+ *
+ * This element is sized by HEIGHT — `.avatar-stage` sets `--avatar-cap` and
+ * the layers take `max-height: var(--avatar-cap)` with `width: auto`. Its
+ * width is therefore the cap times the render's 1400/1596 ratio, and is
+ * governed by the viewport's height, not its width.
+ *
+ * `sizes` can only speak in widths, so the previous `62vw, 42vw` was
+ * describing a layout that does not exist. At 1536px it claimed 645px for an
+ * element painting 323px, and the browser dutifully fetched `w=828` — 77 KB
+ * across both layers where ~404 device pixels were needed. Both carry
+ * `priority` and are preloaded, so those bytes were on the critical path.
+ *
+ * These are the caps converted to widths (cap x 0.8772), which makes each one
+ * an upper bound: a tall viewport reaches it exactly, a short one paints
+ * smaller and the hint merely over-declares slightly. Under-declaring would
+ * be the expensive mistake — this is the LCP element, and a soft avatar is
+ * worse than a few extra kilobytes.
+ *
+ * Keep in step with `--avatar-cap` in field.css. If a cap changes, this
+ * changes.
+ */
+const AVATAR_SIZES = [
+  "(max-width: 389px) 290px", // cap min(38vh, 330px)
+  "(max-width: 479px) 316px", // cap min(40vh, 360px)
+  "(max-width: 767px) 342px", // cap min(42vh, 390px)
+  "(max-width: 1023px) 386px", // cap min(46vh, 440px)
+  "500px", // cap min(58vh, 570px)
+].join(", ");
+
 export function AvatarPlinth({ alt }: { alt: string }) {
   return (
     <div className="avatar-stage">
@@ -42,7 +73,7 @@ export function AvatarPlinth({ alt }: { alt: string }) {
             height={1596}
             priority
             quality={90}
-            sizes="(max-width: 1023px) 62vw, 42vw"
+            sizes={AVATAR_SIZES}
             className="avatar-stage__shadow"
           />
 
@@ -54,7 +85,7 @@ export function AvatarPlinth({ alt }: { alt: string }) {
               height={1596}
               priority
               quality={92}
-              sizes="(max-width: 1023px) 62vw, 42vw"
+              sizes={AVATAR_SIZES}
               className="avatar-stage__figure"
             />
           </AvatarParallax>
