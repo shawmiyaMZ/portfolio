@@ -234,48 +234,98 @@ export const seedProjects: Project[] = [
       "Vercel",
     ],
     githubUrl: "https://github.com/shawmiyaMZ/portfolio",
-    liveUrl: "https://shawmiya.vercel.app/",
+    /* No liveUrl. The live demo of this project is the site the reader is
+       already on, so the button pointed at the current page and appeared to
+       do nothing. Blank means the case study renders without it. */
     problem: [
       block(
-        "Most developer portfolios become harder to maintain as new projects and writing are added because even simple content updates require code changes. I wanted to build a portfolio that could grow with my career, allowing content to evolve independently while keeping the application maintainable and consistent.",
+        "A portfolio that keeps its content in code makes every edit a deployment. Fixing one sentence in a case study means editing a file, committing it, and waiting for a build. I wanted to separate the content from the application so I could publish projects and journal entries without changing the code.",
         "pp1",
+      ),
+      block(
+        "That mattered here because the portfolio itself is part of how I present my engineering work. It needs to be easy to maintain and keep accurate as the projects and writing change.",
+        "pp2",
       ),
     ],
     approach: [
-      block(
-        "I separated content from the application by introducing a headless CMS, allowing projects, journal posts and profile information to be managed independently of the codebase. Reusable components, typed content models and static rendering kept the application maintainable, while webhook-driven revalidation ensured published changes appeared without a full redeployment.",
-        "pa1",
+      block("Three decisions shaped everything else.", "pa1"),
+      strongLead(
+        "I kept all content reads behind one boundary.",
+        " The GROQ queries live in a single module, with each query carrying the cache tag it depends on, so pages don't have to know how Sanity is queried or how its data should be invalidated. This made the publishing path easier to reason about: the query and the cache it depends on stay together instead of being maintained in separate places.",
+        "pa2",
+      ),
+      strongLead(
+        "I kept syntax highlighting on the server.",
+        " Shiki highlights code while the page is rendered and sends the browser styled HTML, so there is no client-side highlighting code to download or execute. The alternative would add roughly 40–100 KB of JavaScript and introduce a flash of unstyled code for the same result.",
+        "pa3",
+      ),
+      strongLead(
+        "I made publishing invalidate content by document type.",
+        " When Sanity publishes a change, the webhook tells the application which type changed, and only that cache tag is revalidated. A journal update doesn't need to invalidate project content, and a project update doesn't need to touch the journal.",
+        "pa4",
       ),
     ],
+    /* The published case study closes on an architecture diagram. It is not
+       reproduced here for the reason given at the top of this file: an
+       uploaded asset has no meaning outside the dataset that holds it. */
     outcome: [
       block(
-        "The portfolio became more than a static website — it evolved into a maintainable publishing platform that supports ongoing projects and technical writing without changing the application code. It provides a solid foundation for documenting my growth as a software engineer while maintaining accessibility, performance and a consistent user experience.",
+        "The publishing workflow works: I can write or update content in Sanity and have the change reach the live site without a deployment.",
         "po1",
       ),
-      rich(
-        "po2",
-        [
-          span(
-            "The application separates content management from presentation, allowing projects and journal entries to be published through ",
-            "po2a",
-          ),
-          span("Sanity CMS", "po2b", ["strong"]),
-          span(
-            " while keeping the frontend statically generated and performant.",
-            "po2c",
-          ),
-        ],
+      rich("po2", [
+        span(
+          "But building the system also exposed a problem I hadn't expected. The sitemap had frozen at the previous deployment. Its ",
+          "po2a",
+        ),
+        span("lastmod", "po2b", ["code"]),
+        span(
+          " still showed the build timestamp 62 hours later, which meant a project published during that period was missing from the sitemap even though it was already visible on ",
+          "po2c",
+        ),
+        span("/work", "po2d", ["code"]),
+        span(".", "po2e"),
+      ]),
+      rich("po3", [
+        span("I found the issue by checking the sitemap's own ", "po3a"),
+        span("lastmod", "po3b", ["code"]),
+        span(
+          " value rather than assuming the cache was behaving correctly. Two of my initial assumptions about where the stale response was coming from were wrong, so I traced the rendering path instead of trying another cache change.",
+          "po3c",
+        ),
+      ]),
+      block(
+        "The fix was to make the sitemap render dynamically. I then published a real change through Sanity and checked the result without redeploying the site. The updated project reached the sitemap in 36 seconds, while the deployment build fingerprint remained unchanged. That gave me evidence that the publishing path, not a new deployment, was responsible for the update.",
+        "po4",
       ),
-      bullets(
-        [
-          "Structured content is managed through Sanity CMS.",
-          "GROQ queries fetch typed content into the Next.js application.",
-          "Static pages are generated with ISR for fast performance.",
-          "Publishing content triggers webhook-driven revalidation instead of a full redeployment.",
-        ],
-        "po3_",
+      rich("po5", [
+        span(
+          "I also found a smaller correctness issue in the structured data. The ",
+          "po5a",
+        ),
+        span("wordCount", "po5b", ["code"]),
+        span(
+          " was being estimated from rounded reading time, so a 229-word post was being reported as 400 words. I replaced that with a real word count and made the page and query use the same definition.",
+          "po5c",
+        ),
+      ]),
+      block(
+        "Neither issue was visible in the UI. The sitemap still looked valid, and the incorrect word count didn't change what a reader saw. I found both by checking the parts of the system that aren't immediately visible.",
+        "po6",
       ),
-    ].flat(),
+      block(
+        "I measured the site with Lighthouse on a production build, taking the median of three runs after discarding a warm-up. A single run is not worth much here: one case study run came back at 87 when the other two were both 93.",
+        "po7",
+      ),
+      block(
+        "Performance came out at 88 on the home page, 92 on a journal post and 93 on a case study. Accessibility, best practices and SEO are 100 on all three, and cumulative layout shift is 0.000.",
+        "po8",
+      ),
+      block(
+        "The home page misses the 90 I wanted, and it is worth saying why rather than rounding it up. Its largest contentful paint is the hero paragraph rather than the avatar, and almost all of that time is render delay rather than network, so the text is waiting on fonts. The page loads 168 KB of them, and 118 KB of that is the display face on its own, because it carries the optical size and wonk axes the headings actually use. Stripping those axes measures at 91, but it gives me a flatter face and a font binary in the repository that nobody could regenerate from the source I installed. I decided the typography was worth more than the three points.",
+        "po9",
+      ),
+    ],
   },
   {
     title: "Kandy Cycle",
