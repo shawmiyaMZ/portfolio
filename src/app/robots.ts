@@ -8,7 +8,11 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       // The Studio is an authenticated editing surface, not content.
-      disallow: ["/studio", "/api/"],
+      // `/design-system` is a reference page for building the site, linked
+      // from the README so a reader can find it deliberately. It stays
+      // reachable, but it is not one of the pages this site wants ranked
+      // against its own work and writing.
+      disallow: ["/studio", "/api/", "/design-system"],
     },
     sitemap: `${siteUrl}/sitemap.xml`,
   };
