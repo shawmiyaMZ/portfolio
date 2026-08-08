@@ -12,7 +12,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   title: "Work",
   description:
-    "Projects and case studies — the problem, the approach, the stack, and what actually came out of it.",
+    "Projects and case studies: the problem, the approach, the stack, and what actually came out of it.",
   alternates: { canonical: `${siteUrl}/work` }
 };
 
@@ -38,8 +38,8 @@ export default async function WorkPage() {
               color: "var(--ink-secondary)",
             }}
           >
-            Each case study follows the same four beats — problem, approach,
-            stack, outcome — so they can actually be compared rather than just
+            Each case study follows the same four beats (problem, approach,
+            stack, outcome), so they can actually be compared rather than just
             admired.
           </p>
         </div>

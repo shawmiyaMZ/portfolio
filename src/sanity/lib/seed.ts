@@ -210,7 +210,7 @@ export const seedProfile: Profile = {
       year: "2023",
       event: "First full applications",
       detail:
-        "Coursework projects in Python, Java, PHP and JavaScript — the first things I built that someone other than me had to use.",
+        "Coursework projects in Python, Java, PHP and JavaScript: the first things I built that someone other than me had to use.",
     },
   ],
 };
@@ -318,7 +318,7 @@ export const seedProjects: Project[] = [
       ),
       strongLead(
         "The payment webhook is the source of truth. ",
-        "Stripe Checkout handles the card, and an Express endpoint listens for Stripe's events and updates booking and payment status from those. I deliberately did not rely on the browser redirect after checkout — someone closing the tab should not leave a paid booking looking unpaid.",
+        "Stripe Checkout handles the card, and an Express endpoint listens for Stripe's events and updates booking and payment status from those. I deliberately did not rely on the browser redirect after checkout. Someone closing the tab should not leave a paid booking looking unpaid.",
         "ka3",
       ),
       strongLead(
@@ -327,7 +327,7 @@ export const seedProjects: Project[] = [
         "ka4",
       ),
       block(
-        "Then there is the part I cut. I specified dynamic route recommendation using Dijkstra and A* — a graph of Kandy's cycling network, junctions as nodes, roads as edges weighted by distance, elevation and scenic value, so a rider could ask for the fastest route or the prettiest one. I did not build it. With the deadline in view it came down to a half-working smart feature or a working simple one, and I shipped curated routes stored as GeoJSON and drawn with React Leaflet, with live GPS tracking over the top.",
+        "Then there is the part I cut. I specified dynamic route recommendation using Dijkstra and A*: a graph of Kandy's cycling network, junctions as nodes, roads as edges weighted by distance, elevation and scenic value, so a rider could ask for the fastest route or the prettiest one. I did not build it. With the deadline in view it came down to a half-working smart feature or a working simple one, and I shipped curated routes stored as GeoJSON and drawn with React Leaflet, with live GPS tracking over the top.",
         "ka5",
       ),
       block(
@@ -371,7 +371,7 @@ export const seedProjects: Project[] = [
     githubUrl: "https://github.com/shawmiyaMZ/Fit-Pat-MobileApp",
     problem: [
       block(
-        "Fitness apps assume you are healthy. If you are managing high blood pressure, diabetes, back pain or obesity, the exercise you need is different from the exercise the app gives everyone — and none of the popular ones ask. The alternative is booking a doctor to be told which movements are safe, and then waiting.",
+        "Fitness apps assume you are healthy. If you are managing high blood pressure, diabetes, back pain or obesity, the exercise you need is different from the exercise the app gives everyone, and none of the popular ones ask. The alternative is booking a doctor to be told which movements are safe, and then waiting.",
         "fp1",
       ),
       block(
@@ -387,12 +387,12 @@ export const seedProjects: Project[] = [
       ),
       strongLead(
         "I mapped conditions to exercises explicitly. ",
-        "Each condition is its own activity class — HighBloodPressure, BackPain, Diabetes — and each pairing of condition and activity is another, such as YogaDiabetes or StretchBackPain. That does not scale past a handful of conditions, and today I would hold the mapping as data rather than as classes. But it was explicit and easy to check, which mattered more than elegance for content where a wrong suggestion could hurt someone.",
+        "Each condition is its own activity class (HighBloodPressure, BackPain, Diabetes), and each pairing of condition and activity is another, such as YogaDiabetes or StretchBackPain. That does not scale past a handful of conditions, and today I would hold the mapping as data rather than as classes. But it was explicit and easy to check, which mattered more than elegance for content where a wrong suggestion could hurt someone.",
         "fa2",
       ),
       strongLead(
         "Pictures instead of words. ",
-        "I used illustrations and animation rather than text and buttons throughout, because the users I had in mind — older adults managing a condition — are not necessarily fluent with apps. That was the most deliberate design decision in the project.",
+        "I used illustrations and animation rather than text and buttons throughout, because the users I had in mind, older adults managing a condition, are not necessarily fluent with apps. That was the most deliberate design decision in the project.",
         "fa3",
       ),
       block(
@@ -406,7 +406,7 @@ export const seedProjects: Project[] = [
         "fo1",
       ),
       block(
-        "I listed the weaknesses in my own proposal and they turned out to be the real ones — tracking errors, and a pedometer whose readings are not always accurate. A step counter built on raw motion-sensor events over-counts on rough ground and under-counts a slow walk, and I never solved that.",
+        "I listed the weaknesses in my own proposal and they turned out to be the real ones: tracking errors, and a pedometer whose readings are not always accurate. A step counter built on raw motion-sensor events over-counts on rough ground and under-counts a slow walk, and I never solved that.",
         "fo2",
       ),
       block(
@@ -439,7 +439,7 @@ export const seedPosts: Post[] = [
       block("Eventually I realized the model wasn't confused.", "w3"),
       block("My prompt was.", "w5"),
       block(
-        "A prompt isn't just a question — it's the specification for the task. If the instructions are unclear, incomplete, or contradictory, the output will reflect that.",
+        "A prompt isn't just a question. It's the specification for the task. If the instructions are unclear, incomplete, or contradictory, the output will reflect that.",
         "w7",
       ),
       block(
@@ -453,7 +453,7 @@ export const seedPosts: Post[] = [
       quote("Build me a portfolio.", "w13"),
       block("The AI had to guess everything.", "w15"),
       block(
-        "Once I started writing prompts like a software specification — explaining the audience, design goals, limitations, expected behavior, and success criteria — the quality changed dramatically.",
+        "Once I started writing prompts like a software specification, explaining the audience, design goals, limitations, expected behavior, and success criteria, the quality changed dramatically.",
         "w17",
       ),
       block(
@@ -463,7 +463,7 @@ export const seedPosts: Post[] = [
       block("Good prompts reduce ambiguity.", "w21"),
       block("Bad prompts create it.", "w23"),
       block(
-        "Working with AI has taught me that prompt engineering isn't about finding magical words. It's about communicating clearly enough that another system — or another person — can understand exactly what success looks like.",
+        "Working with AI has taught me that prompt engineering isn't about finding magical words. It's about communicating clearly enough that another system, or another person, can understand exactly what success looks like.",
         "w25",
       ),
       block(
@@ -477,7 +477,7 @@ export const seedPosts: Post[] = [
     title: "It sounded right, so I stopped checking",
     slug: "it-sounded-right-so-i-stopped-checking",
     excerpt:
-      "I built this site over four days with Claude. The work was good and it explained itself well, so I stopped checking it against my original brief. When I finally asked whether Claude had read that brief, the answer was no — and an hour earlier it had deleted content the brief required.",
+      "I built this site over four days with Claude. The work was good and it explained itself well, so I stopped checking it against my original brief. When I finally asked whether Claude had read that brief, the answer was no, and an hour earlier it had deleted content the brief required.",
     publishedAt: "2026-08-04T09:06:27.036Z",
     readingTime: 4,
     tags: [tag("Tooling", "tooling")],
@@ -487,7 +487,7 @@ export const seedPosts: Post[] = [
         "k1",
       ),
       block(
-        "Then something felt off. I couldn't say what — nothing was broken, nothing looked wrong. So I asked a question I hadn't thought to ask before: had it actually read my project brief?",
+        "Then something felt off. I couldn't say what. Nothing was broken, nothing looked wrong. So I asked a question I hadn't thought to ask before: had it actually read my project brief?",
         "k3",
       ),
       rich(
@@ -499,7 +499,7 @@ export const seedPosts: Post[] = [
           ),
           span("about", "k5b", ["em"]),
           span(
-            " my brief — a summary, mostly accurate — and it had been building against the summary.",
+            " my brief (a summary, mostly accurate) and it had been building against the summary.",
             "k5c",
           ),
         ],
@@ -514,7 +514,7 @@ export const seedPosts: Post[] = [
           ),
           span("my", "k11b", ["em"]),
           span(
-            " project — it was advice about a project like mine, and that's a difference you can only catch if you're holding the original document.",
+            " project. It was advice about a project like mine, and that's a difference you can only catch if you're holding the original document.",
             "k11c",
           ),
         ],
@@ -565,7 +565,7 @@ export const seedPosts: Post[] = [
         ],
       ),
       block(
-        "I ran a clause-by-clause audit. Every requirement marked done, partial, or missing. It found three things I'd have shipped without noticing — including a page-transition feature whose CSS was written but never actually switched on.",
+        "I ran a clause-by-clause audit. Every requirement marked done, partial, or missing. It found three things I'd have shipped without noticing, including a page-transition feature whose CSS was written but never actually switched on.",
         "k39",
       ),
       block(
@@ -578,7 +578,7 @@ export const seedPosts: Post[] = [
         "k52",
       ),
       block(
-        "But I have one specific thing. The risk isn't bad code — most of what I got was better than what I'd have written alone. The risk is quieter: work that's good in general and wrong for you in particular, delivered in a tone that gives you no reason to look closer.",
+        "But I have one specific thing. The risk isn't bad code. Most of what I got was better than what I'd have written alone. The risk is quieter: work that's good in general and wrong for you in particular, delivered in a tone that gives you no reason to look closer.",
         "k54",
       ),
       block(

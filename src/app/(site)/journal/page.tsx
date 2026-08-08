@@ -10,7 +10,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   title: "Journal",
   description:
-    "Notes from building AI-powered systems — what worked, what did not, and what I would do differently.",
+    "Notes from building AI-powered systems: what worked, what did not, and what I would do differently.",
   alternates: { canonical: `${siteUrl}/journal` }
 };
 

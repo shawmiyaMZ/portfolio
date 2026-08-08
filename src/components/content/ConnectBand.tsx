@@ -23,7 +23,7 @@ export function ConnectBand({ linkedinUrl }: { linkedinUrl?: string }) {
             color: "var(--ink-secondary-inverted)",
           }}
         >
-          LinkedIn is the best place to reach me — about roles, collaboration,
+          LinkedIn is the best place to reach me about roles, collaboration,
           or something I have written that you disagree with.
         </p>
 

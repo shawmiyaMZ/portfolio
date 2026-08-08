@@ -26,7 +26,7 @@ export function NotFoundBody() {
         style={{ maxWidth: "var(--measure-default)", color: "var(--ink-secondary)" }}
       >
         Either the page moved, or the link that sent you here was wrong. Both
-        are worth knowing about — the work and the writing are still where you
+        are worth knowing about. The work and the writing are still where you
         would expect.
       </p>
 

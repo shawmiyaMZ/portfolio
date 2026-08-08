@@ -32,7 +32,7 @@ export function ErrorBody({
         className="mt-6 text-(length:--text-prose)/[1.7]"
         style={{ maxWidth: "var(--measure-default)", color: "var(--ink-secondary)" }}
       >
-        The rest of the site is still standing — this is usually a transient
+        The rest of the site is still standing. This is usually a transient
         blip. Retrying is safe and often enough; if it keeps happening, it
         would help to hear about it.
       </p>
