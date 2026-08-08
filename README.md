@@ -8,7 +8,7 @@ where I write about learning AI-powered engineering. Every piece of content is
 edited through a CMS rather than in code, so publishing a new post or project does
 not require a developer or a redeploy.
 
-**Live site:** not yet deployed
+**Live site:** <https://shawmiya.vercel.app>
 **CMS:** Sanity Studio, embedded at `/studio`
 **Publishing:** see [`docs/publishing.md`](docs/publishing.md) for how to write and
 publish without touching code
