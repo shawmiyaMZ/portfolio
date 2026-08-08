@@ -180,16 +180,15 @@
    Blur increases and opacity falls with distance, which is what
    actually sells depth on a flat ground — not scale alone. */
 
-/* Depth blur.
-   `filter: blur()` on a 190px element repaints a large surface every frame
-   and is by far the most expensive thing in the field. Halving the far
-   layer's radius and dropping the mid layer's to 3px is visually
-   indistinguishable at these opacities — the tint and scale carry the depth
-   — and cuts the per-frame cost substantially. */
-/* Blur softened from 9px and 3px. It was erasing the very edges that make a
-   rotation legible, so the far layers turned without appearing to. Recession
-   still comes from blur, alpha and scale together — this only recovers enough
-   silhouette for the motion to register. */
+/* Depth blur, and the most expensive thing in the field.
+   `filter: blur()` on a 190px element repaints a large surface every frame,
+   so these radii are a performance number as much as a visual one.
+
+   Now 6px and 2px, down from 9px and 3px. That was two wins at once: the
+   larger radii were erasing the very silhouettes that make a rotation
+   legible, so the far layers turned without appearing to, and they cost more
+   per frame to repaint. Recession still reads — it comes from blur, alpha
+   and scale together, and the tint carries most of it at these opacities. */
 .field__layer[data-depth="2"] .field__solid {
   filter: blur(6px);
 }
@@ -228,7 +227,15 @@
        parallax and `.field__solid` owns its own for drift, and stacking a
        third animation onto either would overwrite rather than compose — the
        same trap the avatar stack is split into separate elements to avoid. */
-    .field {
+    /* Hero only, and that scoping is load-bearing.
+       `perspective-origin` is not a compositor property, so each animated
+       field repaints its whole subtree — blurred solids included — on every
+       scroll frame. Running it on all five fields measured 135ms blocking
+       time and a 2373ms speed index; scoping it to the one field a visitor
+       actually studies gives 81ms and 1842ms. Removing it altogether reaches
+       67ms and 1818ms, so the hero's camera costs about 14ms. That is the
+       price of the effect, paid once, where it is seen. */
+    [data-chapter="hero"] .field {
       animation: field-camera linear both;
       animation-timeline: view(block);
     }
