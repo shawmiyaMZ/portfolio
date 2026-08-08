@@ -92,11 +92,18 @@ export const getPostSlugs = () =>
     tags: [q.TAGS.post],
   });
 
+/**
+ * The one read allowed to fail quietly. Having no previous or next post is a
+ * real state — the first and last posts are always in it — and the design
+ * already renders it, so losing these links is not worth failing a post the
+ * reader can otherwise read in full.
+ */
 export const getPostNavigation = (publishedAt: string) =>
   sanityFetch<PostNavigation>(q.postNavigationQuery, {
     params: { publishedAt },
     fallback: { previous: null, next: null },
     tags: [q.TAGS.post],
+    optional: true,
   });
 
 /**
