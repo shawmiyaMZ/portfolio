@@ -11,27 +11,42 @@
 
 /* ---------- ambient: the Studio Field ---------- */
 
+/*
+ * The scale term is not decoration.
+ *
+ * Three of the seven solids are balls, and a circle is identical at every
+ * angle — rotation is invisible on them no matter how fast it runs. The
+ * breath gives those three something to show while the cubes and capsules
+ * keep reading through rotation, so the whole field animates rather than
+ * four sevenths of it.
+ *
+ * `scale()` inside the transform, not the standalone `scale` property: the
+ * chapter rules already use that property to size solids per section, and
+ * these must multiply rather than overwrite each other.
+ */
 @keyframes field-drift-a {
   0% {
-    transform: translate3d(0, 0, 0) rotate3d(1, 0.6, 0.2, 0deg);
+    transform: translate3d(0, 0, 0) rotate3d(1, 0.6, 0.2, 0deg) scale(1);
   }
   50% {
-    transform: translate3d(2.5vw, -3.5vh, 0) rotate3d(1, 0.6, 0.2, 180deg);
+    transform: translate3d(2.5vw, -3.5vh, 0) rotate3d(1, 0.6, 0.2, 180deg)
+      scale(1.05);
   }
   100% {
-    transform: translate3d(0, 0, 0) rotate3d(1, 0.6, 0.2, 360deg);
+    transform: translate3d(0, 0, 0) rotate3d(1, 0.6, 0.2, 360deg) scale(1);
   }
 }
 
 @keyframes field-drift-b {
   0% {
-    transform: translate3d(0, 0, 0) rotate3d(0.4, 1, 0.3, 0deg);
+    transform: translate3d(0, 0, 0) rotate3d(0.4, 1, 0.3, 0deg) scale(1);
   }
   50% {
-    transform: translate3d(-3vw, 3vh, 0) rotate3d(0.4, 1, 0.3, -180deg);
+    transform: translate3d(-3vw, 3vh, 0) rotate3d(0.4, 1, 0.3, -180deg)
+      scale(1.05);
   }
   100% {
-    transform: translate3d(0, 0, 0) rotate3d(0.4, 1, 0.3, -360deg);
+    transform: translate3d(0, 0, 0) rotate3d(0.4, 1, 0.3, -360deg) scale(1);
   }
 }
 

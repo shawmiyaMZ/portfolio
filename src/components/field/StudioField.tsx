@@ -12,7 +12,15 @@ type Solid = {
   size: number;
   /** Capsules only. */
   height?: number;
-  /** Drift period in seconds. Slower = further away. */
+  /**
+   * Drift period in seconds. Slower = further away.
+   *
+   * Shortened by about a quarter after a review found the field read as a
+   * static 3D object rather than an animation. The far layer was turning at
+   * roughly 4° per second behind 9px of blur at 8% alpha, which is motion
+   * nobody can see. Still slow enough to read as ambient: the furthest solid
+   * takes over a minute to come back round.
+   */
   period: number;
   /** Which of the two drift keyframes, so neighbouring solids never move in lockstep. */
   path: "a" | "b";
@@ -29,16 +37,16 @@ type Solid = {
  * where headings land.
  */
 const SOLIDS: Solid[] = [
-  // Layer 2 — far. Large, heavily blurred, barely there.
+  // Layer 2 — far. Large, softly blurred, quiet but no longer invisible.
   {
     shape: "ball",
     depth: 2,
     x: "6%",
     y: "14%",
     size: 190,
-    period: 90,
+    period: 68,
     path: "a",
-    fill: { light: "rgba(140,135,127,.08)", inverted: "rgba(246,243,238,.05)" },
+    fill: { light: "rgba(140,135,127,.11)", inverted: "rgba(246,243,238,.05)" },
   },
   {
     shape: "cube",
@@ -46,9 +54,9 @@ const SOLIDS: Solid[] = [
     x: "78%",
     y: "8%",
     size: 150,
-    period: 96,
+    period: 72,
     path: "b",
-    fill: { light: "rgba(140,135,127,.08)", inverted: "rgba(246,243,238,.05)" },
+    fill: { light: "rgba(140,135,127,.11)", inverted: "rgba(246,243,238,.05)" },
   },
   // Layer 3 — mid. The two accents meet here, at opposite temperatures.
   {
@@ -57,9 +65,9 @@ const SOLIDS: Solid[] = [
     x: "64%",
     y: "52%",
     size: 120,
-    period: 60,
+    period: 45,
     path: "a",
-    fill: { light: "rgba(178,58,82,.10)", inverted: "rgba(178,58,82,.16)" },
+    fill: { light: "rgba(178,58,82,.14)", inverted: "rgba(178,58,82,.16)" },
   },
   {
     shape: "capsule",
@@ -68,18 +76,19 @@ const SOLIDS: Solid[] = [
     y: "64%",
     size: 172,
     height: 76,
-    period: 66,
+    period: 50,
     path: "b",
-    fill: { light: "rgba(62,92,118,.07)", inverted: "rgba(62,92,118,.20)" },
+    fill: { light: "rgba(62,92,118,.11)", inverted: "rgba(62,92,118,.20)" },
   },
   // Layer 4 — near. Small, sharp, and the only layer with a contact shadow.
+  // Already legible, so these keep their fills and only gain a little pace.
   {
     shape: "ball",
     depth: 4,
     x: "72%",
     y: "64%",
     size: 64,
-    period: 40,
+    period: 30,
     path: "a",
     fill: { light: "rgba(178,58,82,.13)", inverted: "rgba(139,150,131,.20)" },
   },
@@ -89,7 +98,7 @@ const SOLIDS: Solid[] = [
     x: "44%",
     y: "20%",
     size: 44,
-    period: 46,
+    period: 34,
     path: "b",
     fill: { light: "rgba(139,150,131,.16)", inverted: "rgba(124,69,101,.20)" },
   },
@@ -100,7 +109,7 @@ const SOLIDS: Solid[] = [
     y: "80%",
     size: 96,
     height: 42,
-    period: 52,
+    period: 39,
     path: "a",
     fill: { light: "rgba(62,92,118,.11)", inverted: "rgba(62,92,118,.22)" },
   },

@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { AvatarParallax } from "@/components/content/AvatarParallax";
 
 /**
  * The avatar, as two layered static images.
@@ -11,12 +10,14 @@ import { AvatarParallax } from "@/components/content/AvatarParallax";
  * it. A single baked image floating as one piece is what makes most hero
  * float animations read as a sticker.
  *
- * Still no WebGL and no 3D runtime — 164 KB of WebP across both layers.
+ * Still no WebGL and no 3D runtime — 164 KB of WebP across both layers, and
+ * now no JavaScript either: the cursor parallax that used to wrap the figure
+ * was removed, so the whole avatar is CSS.
  *
  * Each transform gets its own element. Multiple CSS animations on one
- * element's `transform` overwrite each other rather than composing, so
- * recede, settle, parallax and float are separate nested boxes with one job
- * each. Nested divs are free; fighting animations are not.
+ * element's `transform` overwrite each other rather than composing, so recede,
+ * settle and float are separate nested boxes with one job each. Nested divs
+ * are free; fighting animations are not.
  */
 /**
  * What the avatar actually occupies, per breakpoint.
@@ -56,8 +57,8 @@ export function AvatarPlinth({ alt }: { alt: string }) {
 
       <div className="avatar-stage__recede">
         <div className="avatar-stage__settle">
-          {/* Ground plane. Never parallaxes and never floats — it is the
-              thing everything else is measured against. */}
+          {/* Ground plane. Never floats — it is the thing everything else is
+              measured against. */}
           {/* `priority` stays, and this is the best-evidenced of the three.
               Removing it was re-measured on 2026-08-05 with three warm runs:
               cumulative layout shift is 0.354 in every one of them — not the
@@ -77,18 +78,16 @@ export function AvatarPlinth({ alt }: { alt: string }) {
             className="avatar-stage__shadow"
           />
 
-          <AvatarParallax>
-            <Image
-              src="/avatar/avatar-hero-figure.webp"
-              alt={alt}
-              width={1400}
-              height={1596}
-              priority
-              quality={92}
-              sizes={AVATAR_SIZES}
-              className="avatar-stage__figure"
-            />
-          </AvatarParallax>
+          <Image
+            src="/avatar/avatar-hero-figure.webp"
+            alt={alt}
+            width={1400}
+            height={1596}
+            priority
+            quality={92}
+            sizes={AVATAR_SIZES}
+            className="avatar-stage__figure"
+          />
         </div>
       </div>
     </div>
