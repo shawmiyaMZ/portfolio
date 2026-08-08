@@ -47,20 +47,24 @@ export function techIcon(name: string): SimpleIcon | null {
  * built on porcelain and two accents. The brand colour arrives on hover —
  * recognition comes from the form, warmth from the interaction.
  *
- * Not every technology has a mark. OpenAI, for one, is absent from Simple
- * Icons entirely, so the fallback is a real state rather than a defensive
- * afterthought: a clay chip in the same vocabulary as everything else,
- * carrying the technology's initial.
+ * Not every technology has a mark. Simple Icons is a *brand* set, so anything
+ * that is a language or a standard rather than a product is absent by design
+ * — SQL is, and so is OpenAI. The fallback is therefore a real state, not a
+ * defensive afterthought: a clay chip in the same vocabulary as everything
+ * else, which keeps the icon column aligned and the row height constant.
+ *
+ * The chip used to carry the technology's initial. It cannot: this component
+ * only ever renders immediately before the name, so the initial always
+ * duplicated the first letter of the label beside it. With SQL that read as
+ * "S SQL" and was reported as a typo in the skills list — the one place on a
+ * portfolio where a typo is least affordable. A quiet neutral dot says "no
+ * mark for this one" without repeating the word it sits next to.
  */
 export function TechIcon({ name }: { name: string }) {
   const icon = techIcon(name);
 
   if (!icon) {
-    return (
-      <span className="tech-icon tech-icon--fallback" aria-hidden="true">
-        {name.trim().charAt(0)}
-      </span>
-    );
+    return <span className="tech-icon tech-icon--fallback" aria-hidden="true" />;
   }
 
   return (
